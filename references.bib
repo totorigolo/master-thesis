@@ -1,0 +1,310 @@
+
+@inproceedings{schwarz_formal_2014,
+	title = {Formal verification of secure user mode device execution with {DMA}},
+	booktitle = {Haifa {Verification} {Conference}},
+	publisher = {Springer},
+	author = {Schwarz, Oliver and Dam, Mads},
+	year = {2014},
+	pages = {236--251},
+	file = {Full Text:/home/t/h/tholac/Zotero/storage/JFHKPQY5/Schwarz and Dam - 2014 - Formal verification of secure user mode device exe.pdf:application/pdf;Snapshot:/home/t/h/tholac/Zotero/storage/JKCPGVZI/10.html:text/html}
+}
+
+@incollection{hutchison_trustworthy_2010,
+	address = {Berlin, Heidelberg},
+	title = {A {Trustworthy} {Monadic} {Formalization} of the {ARMv}7 {Instruction} {Set} {Architecture}},
+	volume = {6172},
+	isbn = {978-3-642-14051-8 978-3-642-14052-5},
+	url = {http://link.springer.com/10.1007/978-3-642-14052-5_18},
+	abstract = {This paper presents a new HOL4 formalization of the current ARM instruction set architecture, ARMv7. This is a modern RISC architecture with many advanced features. The formalization is detailed and extensive. Considerable tool support has been developed, with the goal of making the model accessible and easy to work with. The model and supporting tools are publicly available – we wish to encourage others to make use of this resource. This paper explains our monadic speciﬁcation approach and gives some details of the endeavours that have been made to ensure that the sizeable model is valid and trustworthy. A novel and eﬃcient testing approach has been developed, based on automated forward proof and communication with ARM development boards.},
+	language = {en},
+	urldate = {2019-01-15},
+	booktitle = {Interactive {Theorem} {Proving}},
+	publisher = {Springer Berlin Heidelberg},
+	author = {Fox, Anthony and Myreen, Magnus O.},
+	editor = {Hutchison, David and Kanade, Takeo and Kittler, Josef and Kleinberg, Jon M. and Mattern, Friedemann and Mitchell, John C. and Naor, Moni and Nierstrasz, Oscar and Pandu Rangan, C. and Steffen, Bernhard and Sudan, Madhu and Terzopoulos, Demetri and Tygar, Doug and Vardi, Moshe Y. and Weikum, Gerhard and Kaufmann, Matt and Paulson, Lawrence C.},
+	year = {2010},
+	doi = {10.1007/978-3-642-14052-5_18},
+	pages = {243--258},
+	file = {Fox and Myreen - 2010 - A Trustworthy Monadic Formalization of the ARMv7 I.pdf:/home/t/h/tholac/Zotero/storage/L527HLPZ/Fox and Myreen - 2010 - A Trustworthy Monadic Formalization of the ARMv7 I.pdf:application/pdf}
+}
+
+@misc{dam_thomas_2018,
+	title = {Thomas internship title},
+	author = {Dam, Mads},
+	collaborator = {Lacroix, Thomas},
+	month = nov,
+	year = {2018}
+}
+
+@article{haglund_formal_2016,
+	title = {Formal verification of systems software},
+	abstract = {No Execution of Malicious Software in Linux in Networked Embedded Systems},
+	language = {en},
+	author = {Haglund, Jonas},
+	month = nov,
+	year = {2016},
+	pages = {290},
+	file = {Haglund - Formell verifiering av systemmjukvara.pdf:/home/t/h/tholac/Zotero/storage/87WQB87N/Haglund - Formell verifiering av systemmjukvara.pdf:application/pdf}
+}
+
+@misc{noauthor_prosper:_nodate,
+	title = {{PROSPER}: {Provably} {Secure} {Execution} {Platforms} for {Embedded} {Systems}},
+	url = {http://prosper.sics.se/},
+	urldate = {2019-02-04},
+	file = {PROSPER\: Provably Secure Execution Platforms for Embedded Systems:/home/t/h/tholac/Zotero/storage/6799RM2B/prosper.sics.se.html:text/html}
+}
+
+@inproceedings{dam_formal_2013,
+	title = {Formal {Verification} of {Information} {Flow} {Security} for a {Simple} {ARM}-{Based} {Separation} {Kernel}},
+	url = {http://urn.kb.se/resolve?urn=urn:nbn:se:kth:diva-136348},
+	abstract = {A separation kernel simulates a distributed environment us-ing a single physical machine by executing partitions in iso-lation and appropriately controlling communication amongthem. We present a fo ...},
+	language = {eng},
+	urldate = {2019-02-04},
+	publisher = {ACM Press},
+	author = {Dam, Mads and Guanciale, Roberto and Khakpour, Narges and Nemati, Hamed and Schwarz, Oliver},
+	year = {2013},
+	file = {Full Text PDF:/home/t/h/tholac/Zotero/storage/X5SGK26R/Dam et al. - 2013 - Formal Verification of Information Flow Security f.pdf:application/pdf;Snapshot:/home/t/h/tholac/Zotero/storage/5X6GWK59/record.html:text/html}
+}
+
+@misc{noauthor_prosper:_nodate-1,
+	title = {{PROSPER}: achievments},
+	url = {http://prosper.sics.se/ach.html},
+	urldate = {2019-02-04},
+	file = {PROSPER\: achievments:/home/t/h/tholac/Zotero/storage/QMM32JJ3/ach.html:text/html}
+}
+
+@inproceedings{nemati_trustworthy_2015,
+	series = {Lecture {Notes} in {Computer} {Science}},
+	title = {Trustworthy {Memory} {Isolation} of {Linux} on {Embedded} {Devices}},
+	isbn = {978-3-319-22846-4},
+	abstract = {The isolation of security critical components from an untrusted OS allows to both protect applications and to harden the OS itself, for instance by run-time monitoring. Virtualization of the memory subsystem is a key component to provide such isolation. We present the design, implementation and verification of a virtualization platform for the ARMv7-A processor family. Our design is based on direct paging, an MMU virtualization mechanism previously introduced by Xen for the x86 architecture, and used later with minor variants by the Secure Virtual Architecture, SVA. We show that the direct paging mechanism can be implemented using a compact design, suitable for formal verification down to a low level of abstraction, without penalizing system performance. The verification is performed using the HOL4 theorem prover and uses a detailed model of the ARMv7-A ISA, including the MMU. We prove memory isolation of the hosted components along with information flow security for an abstract top level model of the virtualization mechanism. The abstract model is refined down to a HOL4 transition system closely resembling a C implementation. The virtualization mechanism is demonstrated on real hardware via a hypervisor capable of hosting Linux as an untrusted guest.},
+	language = {en},
+	booktitle = {Trust and {Trustworthy} {Computing}},
+	publisher = {Springer International Publishing},
+	author = {Nemati, Hamed and Dam, Mads and Guanciale, Roberto and Do, Viktor and Vahidi, Arash},
+	editor = {Conti, Mauro and Schunter, Matthias and Askoxylakis, Ioannis},
+	year = {2015},
+	keywords = {Address Translation, Exception Handler, Page Table, Physical Block, Virtual Address},
+	pages = {125--142},
+	file = {Springer Full Text PDF:/home/t/h/tholac/Zotero/storage/Y2Z3KLQJ/Nemati et al. - 2015 - Trustworthy Memory Isolation of Linux on Embedded .pdf:application/pdf}
+}
+
+@misc{noauthor_hol_nodate,
+	title = {{HOL} {Interactive} {Theorem} {Prover}},
+	url = {https://hol-theorem-prover.org/},
+	urldate = {2019-02-04},
+	file = {HOL Interactive Theorem Prover:/home/t/h/tholac/Zotero/storage/WTNSPXLI/hol-theorem-prover.org.html:text/html}
+}
+
+@misc{noauthor_canonical_2019,
+	title = {Canonical sources for {HOL}4 theorem-proving system.   {Branch} `develop` is where “mainline development” occurs; when `develop` passes our regression tests, `master` is merged forward to catch up.: {H}..},
+	copyright = {View license},
+	shorttitle = {Canonical sources for {HOL}4 theorem-proving system.   {Branch} `develop` is where “mainline development” occurs; when `develop` passes our regression tests, `master` is merged forward to catch up.},
+	url = {https://github.com/HOL-Theorem-Prover/HOL},
+	urldate = {2019-02-04},
+	publisher = {HOL Theorem Proving System},
+	month = feb,
+	year = {2019},
+	note = {original-date: 2009-10-29T02:47:31Z}
+}
+
+@inproceedings{armstrong_isa_2019,
+	title = {{ISA} {Semantics} for {ARMv}8-{A}, {RISC}-{V}, and {CHERI}-{MIPS}},
+	doi = {10.1145/3290384},
+	abstract = {Architecture specifications notionally define the fundamental interface between hardware and software: the envelope of allowed behaviour for processor implementations, and the basic assumptions for software development and verification. But in practice, they are typically prose and pseudocode documents, not rigorous or executable artifacts, leaving software and verification on shaky ground. In this paper, we present rigorous semantic models for the sequential behaviour of large parts of the mainstream ARMv8-A, RISC-V, and MIPS architectures, and the research CHERI-MIPS architecture, that are complete enough to boot operating systems, variously Linux, FreeBSD, or seL4. Our ARMv8-A models are automatically translated from authoritative ARM-internal definitions, and (in one variant) tested against the ARM Architecture Validation Suite. We do this using a custom language for ISA semantics, Sail, with a lightweight dependent type system, that supports automatic generation of emulator code in C and OCaml, and automatic generation of proof-assistant definitions for Isabelle, HOL4, and (currently only for MIPS) Coq. We use the former for validation, and to assess specification coverage. To demonstrate the usability of the latter, we prove (in Isabelle) correctness of a purely functional characterisation of ARMv8-A address translation. We moreover integrate the RISC-V model into the RMEM tool for (user-mode) relaxed-memory concurrency exploration. We prove (on paper) the soundness of the core Sail type system. We thereby take a big step towards making the architectural abstraction actually well-defined, establishing foundations for verification and reasoning.},
+	booktitle = {Proc. 46th {ACM} {SIGPLAN} {Symposium} on {Principles} of {Programming} {Languages}},
+	author = {Armstrong, Alasdair and Bauereiss, Thomas and Campbell, Brian and Reid, Alastair and Gray, Kathryn E. and Norton, Robert M. and Mundkur, Prashanth and Wassell, Mark and French, Jon and Pulte, Christopher and Flur, Shaked and Stark, Ian and Krishnaswami, Neel and Sewell, Peter},
+	month = jan,
+	year = {2019}
+}
+
+@misc{noauthor_hoare_2019,
+	title = {Hoare logic},
+	copyright = {Creative Commons Attribution-ShareAlike License},
+	url = {https://en.wikipedia.org/w/index.php?title=Hoare_logic&oldid=878856533},
+	abstract = {Hoare logic (also known as Floyd–Hoare logic or Hoare rules) is a formal system with a set of logical rules for reasoning rigorously about the correctness of computer programs. It was proposed in 1969 by the British computer scientist and logician Tony Hoare, and subsequently refined by Hoare and other researchers. The original ideas were seeded by the work of Robert W. Floyd, who had published a similar system for flowcharts.},
+	language = {en},
+	urldate = {2019-02-05},
+	journal = {Wikipedia},
+	month = jan,
+	year = {2019},
+	note = {Page Version ID: 878856533},
+	file = {Snapshot:/home/t/h/tholac/Zotero/storage/BV3642GE/index.html:text/html}
+}
+
+@article{lindner_trabin:_2019,
+	title = {{TrABin}: {Trustworthy} analyses of binaries},
+	volume = {174},
+	issn = {0167-6423},
+	shorttitle = {{TrABin}},
+	url = {http://www.sciencedirect.com/science/article/pii/S0167642318301667},
+	doi = {10.1016/j.scico.2019.01.001},
+	abstract = {Verification of microkernels, device drivers, and crypto routines requires analyses at the binary level. In order to automate these analyses, in the last years several binary analysis platforms have been introduced. These platforms share a common design: the adoption of hardware-independent intermediate representations, a mechanism to translate architecture dependent code to this representation, and a set of architecture independent analyses that process the intermediate representation. The usage of these platforms to verify software introduces the need for trusting both the correctness of the translation from binary code to intermediate language (called transpilation) and the correctness of the analyses. Achieving a high degree of trust is challenging since the transpilation must handle (i) all the side effects of the instructions, (ii) multiple instruction encodings (e.g. ARM Thumb), and (iii) variable instruction length (e.g. Intel). Similarly, analyses can use complex transformations (e.g. loop unrolling) and simplifications (e.g. partial evaluation) of the artifacts, whose bugs can jeopardize correctness of the results. We overcome these problems by developing a binary analysis platform on top of the interactive theorem prover HOL4. First, we formally model a binary intermediate language and we prove correctness of several supporting tools (i.e. a type checker). Then, we implement two proof-producing transpilers, which respectively translate ARMv8 and CortexM0 programs to the intermediate language and generate a certificate. This certificate is a HOL4 proofdemonstrating correctness of the translation. As demonstrating analysis, we implement a proof-producing weakest precondition generator, which can be used to verify that a given loop-free program fragment satisfies a contract. Finally, we use an AES encryption implementation to benchmark our platform.},
+	urldate = {2019-02-05},
+	journal = {Science of Computer Programming},
+	author = {Lindner, Andreas and Guanciale, Roberto and Metere, Roberto},
+	month = apr,
+	year = {2019},
+	keywords = {Binary analysis, Formal verification, Proof producing analysis, Theorem proving},
+	pages = {72--89},
+	file = {ScienceDirect Snapshot:/home/t/h/tholac/Zotero/storage/6XPD4VSC/S0167642318301667.html:text/html;Submitted Version:/home/t/h/tholac/Zotero/storage/X22IK4GJ/Lindner et al. - 2019 - TrABin Trustworthy analyses of binaries.pdf:application/pdf}
+}
+
+@article{dijkstra_guarded_1975,
+	title = {Guarded {Commands}, {Nondeterminacy} and {Formal} {Derivation} of {Programs}},
+	volume = {18},
+	issn = {0001-0782},
+	url = {http://doi.acm.org/10.1145/360933.360975},
+	doi = {10.1145/360933.360975},
+	abstract = {So-called “guarded commands” are introduced as a building block for alternative and repetitive constructs that allow nondeterministic program components for which at least the activity evoked, but possibly even the final state, is not necessarily uniquely determined by the initial state. For the formal derivation of programs expressed in terms of these constructs, a calculus will be be shown.},
+	number = {8},
+	urldate = {2019-02-15},
+	journal = {Commun. ACM},
+	author = {Dijkstra, Edsger W.},
+	month = aug,
+	year = {1975},
+	keywords = {case-construction, correctness proof, derivation of programs, nondeterminancy, program semantics, programming language semantics, programming languages, programming methodology, repetition, sequencing primitives, termination},
+	pages = {453--457},
+	file = {ACM Full Text PDF:/home/t/h/tholac/Zotero/storage/CZUIYM93/Dijkstra - 1975 - Guarded Commands, Nondeterminacy and Formal Deriva.pdf:application/pdf}
+}
+
+@inproceedings{klein_sel4:_2009,
+	address = {Big Sky, Montana, USA},
+	title = {{seL}4: formal verification of an {OS} kernel},
+	isbn = {978-1-60558-752-3},
+	shorttitle = {{seL}4},
+	url = {http://portal.acm.org/citation.cfm?doid=1629575.1629596},
+	doi = {10.1145/1629575.1629596},
+	abstract = {Complete formal veriﬁcation is the only known way to guarantee that a system is free of programming errors.},
+	language = {en},
+	urldate = {2019-02-15},
+	booktitle = {Proceedings of the {ACM} {SIGOPS} 22nd symposium on {Operating} systems principles - {SOSP} '09},
+	publisher = {ACM Press},
+	author = {Klein, Gerwin and Norrish, Michael and Sewell, Thomas and Tuch, Harvey and Winwood, Simon and Elphinstone, Kevin and Heiser, Gernot and Andronick, June and Cock, David and Derrin, Philip and Elkaduwe, Dhammika and Engelhardt, Kai and Kolanski, Rafal},
+	year = {2009},
+	pages = {207},
+	file = {Klein et al. - 2009 - seL4 formal verification of an OS kernel.pdf:/home/t/h/tholac/Zotero/storage/9N4FAWFH/Klein et al. - 2009 - seL4 formal verification of an OS kernel.pdf:application/pdf}
+}
+
+@book{schulte_vx86:_2008,
+	title = {Vx86: x86 {Assembler} {Simulated} in {C} {Powered} by {Automated} {Theorem} {Proving}},
+	volume = {5140},
+	isbn = {978-3-540-79979-5},
+	shorttitle = {Vx86},
+	url = {https://www.microsoft.com/en-us/research/publication/vx86-x86-assembler-simulated-in-c-powered-by-automated-theorem-proving/},
+	abstract = {Vx86 is the first static analyzer for sequential Intel x86 assembler code using automated deductive verification. It proves the correctness of assembler code against function contracts, which are expressed in terms of pre-, post-, and frame conditions using first-order predicates. Vx86 takes the annotated assembler code, translates it into C code simulating the processor, and …},
+	language = {en-US},
+	urldate = {2019-02-18},
+	author = {Schulte, Wolfram},
+	month = jan,
+	year = {2008},
+	file = {Full Text PDF:/home/t/h/tholac/Zotero/storage/U983ZDM4/Schulte - 2008 - Vx86 x86 Assembler Simulated in C Powered by Auto.pdf:application/pdf;Snapshot:/home/t/h/tholac/Zotero/storage/W989JX24/vx86-x86-assembler-simulated-in-c-powered-by-automated-theorem-proving.html:text/html}
+}
+
+@inproceedings{leinenbach_verifying_2009,
+	series = {Lecture {Notes} in {Computer} {Science}},
+	title = {Verifying the {Microsoft} {Hyper}-{V} {Hypervisor} with {VCC}},
+	isbn = {978-3-642-05089-3},
+	abstract = {VCC is an industrial-strength verification suite for the formal verification of concurrent, low-level C code. It is being developed by Microsoft Research, Redmond, and the European Microsoft Innovation Center, Aachen. The development is driven by two applications from the Verisoft XT project: the Microsoft Hyper-V Hypervisor and SYSGO’s PikeOS micro kernel.This paper gives a brief overview on the Hypervisor with a special focus on verification related challenges this kind of low-level software poses. It discusses how the design of VCC addresses these challenges, and highlights some specific issues of the Hypervisor verification and how they can be solved with VCC.},
+	language = {en},
+	booktitle = {{FM} 2009: {Formal} {Methods}},
+	publisher = {Springer Berlin Heidelberg},
+	author = {Leinenbach, Dirk and Santen, Thomas},
+	editor = {Cavalcanti, Ana and Dams, Dennis R.},
+	year = {2009},
+	keywords = {Address Translation, Assembly Code, Machine Instruction, Page Table, Virtual Machine},
+	pages = {806--809},
+	file = {Springer Full Text PDF:/home/t/h/tholac/Zotero/storage/DYIESQM9/Leinenbach and Santen - 2009 - Verifying the Microsoft Hyper-V Hypervisor with VC.pdf:application/pdf}
+}
+
+@incollection{richards_modeling_2010,
+	address = {Boston, MA},
+	title = {Modeling and {Security} {Analysis} of a {Commercial} {Real}-{Time} {Operating} {System} {Kernel}},
+	isbn = {978-1-4419-1539-9},
+	url = {https://doi.org/10.1007/978-1-4419-1539-9_10},
+	abstract = {This chapter summarizes the modeling and formal analysis effort that led to an EAL6+ certification for a commercial real-time operating system kernel. We begin by describing the INTEGRITY-178B kernel, as well as the approach taken for the Common Criteria evaluation effort. We present a generalization of the GWV theorem, formulated in order to capture the meaning of separation in a dynamic system. We detail how the INTEGRITY-178B kernel was modeled, including System State, Behavior, and Information Flow. We discuss the proof architecture used to demonstrate correspondence and conclude with a description of the informal analysis of the hardware abstraction layer.},
+	language = {en},
+	urldate = {2019-02-18},
+	booktitle = {Design and {Verification} of {Microprocessor} {Systems} for {High}-{Assurance} {Applications}},
+	publisher = {Springer US},
+	author = {Richards, Raymond J.},
+	editor = {Hardin, David S.},
+	year = {2010},
+	doi = {10.1007/978-1-4419-1539-9_10},
+	keywords = {Common Criterion, Representation Correspondence, Schedule Loop, Security Analysis, State Element},
+	pages = {301--322},
+	file = {Springer Full Text PDF:/home/t/h/tholac/Zotero/storage/PQP5TRFG/Richards - 2010 - Modeling and Security Analysis of a Commercial Rea.pdf:application/pdf}
+}
+
+@article{nethercote_valgrind:_2003,
+	series = {{RV} '2003, {Run}-time {Verification} ({Satellite} {Workshop} of {CAV} '03)},
+	title = {Valgrind: {A} {Program} {Supervision} {Framework}},
+	volume = {89},
+	issn = {1571-0661},
+	shorttitle = {Valgrind},
+	url = {http://www.sciencedirect.com/science/article/pii/S1571066104810429},
+	doi = {10.1016/S1571-0661(04)81042-9},
+	abstract = {Valgrind is a programmable framework for creating program supervision tools such as bug detectors and profilers. It executes supervised programs using dynamic binary translation, giving it total control over their every part without requiring source code, and without the need for recompilation or relinking prior to execution. New supervision tools can be easily created by writing skins that plug into Valgrind's core. As an example, we describe one skin that performs Purify-style memory checks for C and C++ programs.},
+	number = {2},
+	urldate = {2019-02-18},
+	journal = {Electronic Notes in Theoretical Computer Science},
+	author = {Nethercote, Nicholas and Seward, Julian},
+	month = oct,
+	year = {2003},
+	pages = {44--66},
+	file = {ScienceDirect Full Text PDF:/home/t/h/tholac/Zotero/storage/N6WCKXSI/Nethercote and Seward - 2003 - Valgrind A Program Supervision Framework.pdf:application/pdf;ScienceDirect Snapshot:/home/t/h/tholac/Zotero/storage/W99ACEP9/S1571066104810429.html:text/html}
+}
+
+@mastersthesis{lattner_llvm:_2002,
+	address = {Urbana, IL},
+	title = {{LLVM}: {An} {Infrastructure} for {Multi}-{Stage} {Optimization}},
+	school = {Computer Science Dept., University of Illinois at Urbana-Champaign},
+	author = {Lattner, Chris},
+	month = dec,
+	year = {2002},
+	file = {Lattner - 2002 - LLVM An Infrastructure for Multi-Stage Optimizati.pdf:/home/t/h/tholac/Zotero/storage/YDP6CKDX/Lattner - 2002 - LLVM An Infrastructure for Multi-Stage Optimizati.pdf:application/pdf}
+}
+
+@inproceedings{cha_unleashing_2012,
+	address = {San Francisco, CA, USA},
+	title = {Unleashing {Mayhem} on {Binary} {Code}},
+	isbn = {978-1-4673-1244-8 978-0-7695-4681-0},
+	url = {http://ieeexplore.ieee.org/document/6234425/},
+	doi = {10.1109/SP.2012.31},
+	abstract = {In this paper we present MAYHEM, a new system for automatically ﬁnding exploitable bugs in binary (i.e., executable) programs. Every bug reported by MAYHEM is accompanied by a working shell-spawning exploit. The working exploits ensure soundness and that each bug report is securitycritical and actionable. MAYHEM works on raw binary code without debugging information. To make exploit generation possible at the binary-level, MAYHEM addresses two major technical challenges: actively managing execution paths without exhausting memory, and reasoning about symbolic memory indices, where a load or a store address depends on user input. To this end, we propose two novel techniques: 1) hybrid symbolic execution for combining online and ofﬂine (concolic) execution to maximize the beneﬁts of both techniques, and 2) index-based memory modeling, a technique that allows MAYHEM to efﬁciently reason about symbolic memory at the binary level. We used MAYHEM to ﬁnd and demonstrate 29 exploitable vulnerabilities in both Linux and Windows programs, 2 of which were previously undocumented.},
+	language = {en},
+	urldate = {2019-02-18},
+	booktitle = {2012 {IEEE} {Symposium} on {Security} and {Privacy}},
+	publisher = {IEEE},
+	author = {Cha, Sang Kil and Avgerinos, Thanassis and Rebert, Alexandre and Brumley, David},
+	month = may,
+	year = {2012},
+	pages = {380--394},
+	file = {Cha et al. - 2012 - Unleashing Mayhem on Binary Code.pdf:/home/t/h/tholac/Zotero/storage/CXGGHZJ6/Cha et al. - 2012 - Unleashing Mayhem on Binary Code.pdf:application/pdf}
+}
+
+@inproceedings{brumley_bap:_2011,
+	series = {Lecture {Notes} in {Computer} {Science}},
+	title = {{BAP}: {A} {Binary} {Analysis} {Platform}},
+	isbn = {978-3-642-22110-1},
+	shorttitle = {{BAP}},
+	abstract = {BAP is a publicly available infrastructure for performing program verification and analysis tasks on binary (i.e., executable) code. In this paper, we describe BAP as well as lessons learned from previous incarnations of binary analysis platforms. BAP explicitly represents all side effects of instructions in an intermediate language (IL), making syntaxdirected analysis possible. We have used BAP to routinely generate and solve verification conditions that are hundreds of megabytes in size and encompass 100,000’s of assembly instructions.},
+	language = {en},
+	booktitle = {Computer {Aided} {Verification}},
+	publisher = {Springer Berlin Heidelberg},
+	author = {Brumley, David and Jager, Ivan and Avgerinos, Thanassis and Schwartz, Edward J.},
+	editor = {Gopalakrishnan, Ganesh and Qadeer, Shaz},
+	year = {2011},
+	keywords = {Binary Analysis, Binary Code, Intermediate Language, Strongly Connect Component, Symbolic Execution},
+	pages = {463--469},
+	file = {Springer Full Text PDF:/home/t/h/tholac/Zotero/storage/Y429XUVD/Brumley et al. - 2011 - BAP A Binary Analysis Platform.pdf:application/pdf}
+}
+
+@article{shoshitaishvili_state_nodate,
+	title = {({State} of) {The} {Art} of {War}: {Offensive} {Techniques} in {Binary} {Analysis}},
+	abstract = {Finding and exploiting vulnerabilities in binary code is a challenging task. The lack of high-level, semantically rich information about data structures and control constructs makes the analysis of program properties harder to scale. However, the importance of binary analysis is on the rise. In many situations binary analysis is the only possible way to prove (or disprove) properties about the code that is actually executed. In this paper, we present a binary analysis framework that implements a number of analysis techniques that have been proposed in the past. We present a systematized implementation of these techniques, which allows other researchers to compose them and develop new approaches. In addition, the implementation of these techniques in a unifying framework allows for the direct comparison of these approaches and the identiﬁcation of their advantages and disadvantages. The evaluation included in this paper is performed using a recent dataset created by DARPA for evaluating the effectiveness of binary vulnerability analysis techniques.},
+	language = {en},
+	author = {Shoshitaishvili, Yan and Wang, Ruoyu and Salls, Christopher and Stephens, Nick and Polino, Mario and Dutcher, Audrey and Grosen, John and Feng, Siji and Hauser, Christophe and Kruegel, Christopher and Vigna, Giovanni},
+	pages = {20},
+	file = {Shoshitaishvili et al. - (State of) The Art of War Offensive Techniques in.pdf:/home/t/h/tholac/Zotero/storage/59SSRJKZ/Shoshitaishvili et al. - (State of) The Art of War Offensive Techniques in.pdf:application/pdf}
+}
