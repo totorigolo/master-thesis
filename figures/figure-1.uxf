@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>460</x>
+      <y>470</y>
+      <w>320</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>valign=center
+halign=center
+fontsize=18
+bg=white
+transparency=0
+Hardware</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>460</x>
+      <y>350</y>
+      <w>120</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>valign=center
+halign=center
+fontsize=18
+bg=white
+transparency=0
+Linux
+(ex: CCTV)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>460</x>
+      <y>440</y>
+      <w>320</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>valign=center
+halign=center
+fontsize=18
+bg=white
+transparency=0
+Hypervisor</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>590</x>
+      <y>350</y>
+      <w>190</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>valign=center
+halign=center
+fontsize=18
+bg=white
+transparency=0
+Linux
+(ex: entertainment 
+system)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>460</x>
+      <y>350</y>
+      <w>320</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>layer=-1
+bg=black</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
