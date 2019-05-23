@@ -148,47 +148,57 @@ TODOs:
 \textit{This chapter intends to lay the concepts and theory that are essential to the reader in order to understand the problem that this degree project aims to explore.  This includes an overview of virtualization and hypervisors, a presentation of Interactive Theorem Proving and formal proofs, relevant theory about Hoare Triple and Weakest Precondition analysis, and an introduction of the \gls{holba} framework.}
 
 
-
 \chapter{NIC model}
-\begin{itemize}
-\item Présentation du modèle HOL4 du NIC (+ DepGraph)
-\item Expérimentation avec Alice et Bob (+ CFG (+ interface))
-\item Modèle BSL (-> prez de BSL)
+% * Présentation du modèle HOL4 du NIC (+ DepGraph)
+% * Expérimentation avec Alice et Bob (+ CFG (+ interface))
+% * Modèle BSL (-> prez de BSL)
+%
+% * Liberté de la méthode et question sur comment traduire le modèle
+%
+% * Impossibilité de tout représenter avec BIR (pourquoi?)
+%   -> identification (> DepGraph) et fragmentation
+%   -> transition vers la preuve
 
-\item Liberté de la méthode et question sur comment traduire le modèle
-
-\item Impossibilité de tout représenter avec BIR (pourquoi?)
--> identification (> DepGraph) et fragmentation
--> transition vers la preuve
-\end{itemize}
 
 \chapter{Proving properties}
-\begin{itemize}
-\item Rappels sur le WP existant dans HolBA
-\item Explication de l'utilisation de SMT solver
-- Ajout des arrays dans l'export existant
-- Experiments with SMT (before and after array): without and with BIR
---- With BIR needed BIR EXP -> Words (why?)
------ Non proof-producing + explain why (mention that PP has been done in the proof)
-\item Non proof-producing WP lib
-+ easy
-- proof-producing would have been feasible
-  -> but would have took more time, that's not the aim of the thesis
-\item BIR PP because huge WP BIR expressions
-\item WP tests
-- simple
-- Gauss analysis (how to handle loop, mult problem with SMT)
-- memories
-- cjmp bug?
-- explain the simp (ie. the subst theory) + the exponential growth issue
-\item Using the WP tool on simple properties on the BIR NIC model
-- Remind about the impossibility to express certain properties using contracts
-\item Explain the PP proof
-- Whiteboard explanation
-- Pen and paper proof
-- About implementation
---- About PP BIR to words
-\end{itemize}
+
+% * Rappels sur le WP existant dans HolBA
+% * Explication de l'utilisation de SMT solver
+%   - Ajout des arrays dans l'export existant
+%   - Experiments with SMT (before and after array): without and with BIR
+%   --- With BIR needed BIR EXP -> Words (why?)
+%   ----- Non proof-producing + explain why (mention that PP has been done in the proof)
+% * Non proof-producing WP lib
+%   + easy
+%   - proof-producing would have been feasible
+%     -> but would have took more time, that's not the aim of the thesis
+% * BIR PP because huge WP BIR expressions
+% * WP tests
+%   - simple
+%   - Gauss analysis (how to handle loop, mult problem with SMT)
+%   - memories
+%   - cjmp bug?
+%   - explain the simp (ie. the subst theory) + the exponential growth issue
+% * Using the WP tool on simple properties on the BIR NIC model
+%   - Remind about the impossibility to express certain properties using contracts
+% * Explain the PP proof
+%   - Whiteboard explanation
+%   - Pen and paper proof
+%   - About implementation
+%   --- About PP BIR to words
+
+\section{Overview of HolBA's WP tool}
+
+\section{Using SMT solvers to prove contracts}
+
+\section{Implementation of a non proof-producing WP library}
+\subsection{Pretty-printing to visualize huge BIR expressions}
+\subsection{Testing the library}
+
+\section{Simple automatized proofs on the NIC model}
+
+\section{Trustful analysis on the NIC model}
+
 
 \chapter{Conclusions}
 
