@@ -28,14 +28,6 @@
 	file = {Fox and Myreen - 2010 - A Trustworthy Monadic Formalization of the ARMv7 I.pdf:/home/t/h/tholac/Zotero/storage/L527HLPZ/Fox and Myreen - 2010 - A Trustworthy Monadic Formalization of the ARMv7 I.pdf:application/pdf}
 }
 
-@misc{dam_thomas_2018,
-	title = {Thomas internship title},
-	author = {Dam, Mads},
-	collaborator = {Lacroix, Thomas},
-	month = nov,
-	year = {2018}
-}
-
 @article{haglund_formal_2016,
 	title = {Formal verification of systems software},
 	abstract = {No Execution of Malicious Software in Linux in Networked Embedded Systems},
@@ -67,7 +59,7 @@
 }
 
 @misc{noauthor_prosper:_nodate-1,
-	title = {{PROSPER}: achievments},
+	title = {{PROSPER}: achievements},
 	url = {http://prosper.sics.se/ach.html},
 	urldate = {2019-02-04},
 	file = {PROSPER\: achievments:/home/t/h/tholac/Zotero/storage/QMM32JJ3/ach.html:text/html}
@@ -132,42 +124,6 @@
 	file = {Snapshot:/home/t/h/tholac/Zotero/storage/BV3642GE/index.html:text/html}
 }
 
-@article{lindner_trabin:_2019,
-	title = {{TrABin}: {Trustworthy} analyses of binaries},
-	volume = {174},
-	issn = {0167-6423},
-	shorttitle = {{TrABin}},
-	url = {http://www.sciencedirect.com/science/article/pii/S0167642318301667},
-	doi = {10.1016/j.scico.2019.01.001},
-	abstract = {Verification of microkernels, device drivers, and crypto routines requires analyses at the binary level. In order to automate these analyses, in the last years several binary analysis platforms have been introduced. These platforms share a common design: the adoption of hardware-independent intermediate representations, a mechanism to translate architecture dependent code to this representation, and a set of architecture independent analyses that process the intermediate representation. The usage of these platforms to verify software introduces the need for trusting both the correctness of the translation from binary code to intermediate language (called transpilation) and the correctness of the analyses. Achieving a high degree of trust is challenging since the transpilation must handle (i) all the side effects of the instructions, (ii) multiple instruction encodings (e.g. ARM Thumb), and (iii) variable instruction length (e.g. Intel). Similarly, analyses can use complex transformations (e.g. loop unrolling) and simplifications (e.g. partial evaluation) of the artifacts, whose bugs can jeopardize correctness of the results. We overcome these problems by developing a binary analysis platform on top of the interactive theorem prover HOL4. First, we formally model a binary intermediate language and we prove correctness of several supporting tools (i.e. a type checker). Then, we implement two proof-producing transpilers, which respectively translate ARMv8 and CortexM0 programs to the intermediate language and generate a certificate. This certificate is a HOL4 proofdemonstrating correctness of the translation. As demonstrating analysis, we implement a proof-producing weakest precondition generator, which can be used to verify that a given loop-free program fragment satisfies a contract. Finally, we use an AES encryption implementation to benchmark our platform.},
-	urldate = {2019-02-05},
-	journal = {Science of Computer Programming},
-	author = {Lindner, Andreas and Guanciale, Roberto and Metere, Roberto},
-	month = apr,
-	year = {2019},
-	keywords = {Binary analysis, Formal verification, Proof producing analysis, Theorem proving},
-	pages = {72--89},
-	file = {ScienceDirect Snapshot:/home/t/h/tholac/Zotero/storage/6XPD4VSC/S0167642318301667.html:text/html;Submitted Version:/home/t/h/tholac/Zotero/storage/X22IK4GJ/Lindner et al. - 2019 - TrABin Trustworthy analyses of binaries.pdf:application/pdf}
-}
-
-@article{dijkstra_guarded_1975,
-	title = {Guarded {Commands}, {Nondeterminacy} and {Formal} {Derivation} of {Programs}},
-	volume = {18},
-	issn = {0001-0782},
-	url = {http://doi.acm.org/10.1145/360933.360975},
-	doi = {10.1145/360933.360975},
-	abstract = {So-called “guarded commands” are introduced as a building block for alternative and repetitive constructs that allow nondeterministic program components for which at least the activity evoked, but possibly even the final state, is not necessarily uniquely determined by the initial state. For the formal derivation of programs expressed in terms of these constructs, a calculus will be be shown.},
-	number = {8},
-	urldate = {2019-02-15},
-	journal = {Commun. ACM},
-	author = {Dijkstra, Edsger W.},
-	month = aug,
-	year = {1975},
-	keywords = {case-construction, correctness proof, derivation of programs, nondeterminancy, program semantics, programming language semantics, programming languages, programming methodology, repetition, sequencing primitives, termination},
-	pages = {453--457},
-	file = {ACM Full Text PDF:/home/t/h/tholac/Zotero/storage/CZUIYM93/Dijkstra - 1975 - Guarded Commands, Nondeterminacy and Formal Deriva.pdf:application/pdf}
-}
-
 @inproceedings{klein_sel4:_2009,
 	address = {Big Sky, Montana, USA},
 	title = {{seL}4: formal verification of an {OS} kernel},
@@ -184,21 +140,6 @@
 	year = {2009},
 	pages = {207},
 	file = {Klein et al. - 2009 - seL4 formal verification of an OS kernel.pdf:/home/t/h/tholac/Zotero/storage/9N4FAWFH/Klein et al. - 2009 - seL4 formal verification of an OS kernel.pdf:application/pdf}
-}
-
-@book{schulte_vx86:_2008,
-	title = {Vx86: x86 {Assembler} {Simulated} in {C} {Powered} by {Automated} {Theorem} {Proving}},
-	volume = {5140},
-	isbn = {978-3-540-79979-5},
-	shorttitle = {Vx86},
-	url = {https://www.microsoft.com/en-us/research/publication/vx86-x86-assembler-simulated-in-c-powered-by-automated-theorem-proving/},
-	abstract = {Vx86 is the first static analyzer for sequential Intel x86 assembler code using automated deductive verification. It proves the correctness of assembler code against function contracts, which are expressed in terms of pre-, post-, and frame conditions using first-order predicates. Vx86 takes the annotated assembler code, translates it into C code simulating the processor, and …},
-	language = {en-US},
-	urldate = {2019-02-18},
-	author = {Schulte, Wolfram},
-	month = jan,
-	year = {2008},
-	file = {Full Text PDF:/home/t/h/tholac/Zotero/storage/U983ZDM4/Schulte - 2008 - Vx86 x86 Assembler Simulated in C Powered by Auto.pdf:application/pdf;Snapshot:/home/t/h/tholac/Zotero/storage/W989JX24/vx86-x86-assembler-simulated-in-c-powered-by-automated-theorem-proving.html:text/html}
 }
 
 @inproceedings{leinenbach_verifying_2009,
@@ -300,11 +241,58 @@
 	file = {Springer Full Text PDF:/home/t/h/tholac/Zotero/storage/Y429XUVD/Brumley et al. - 2011 - BAP A Binary Analysis Platform.pdf:application/pdf}
 }
 
-@article{shoshitaishvili_state_nodate,
-	title = {({State} of) {The} {Art} of {War}: {Offensive} {Techniques} in {Binary} {Analysis}},
-	abstract = {Finding and exploiting vulnerabilities in binary code is a challenging task. The lack of high-level, semantically rich information about data structures and control constructs makes the analysis of program properties harder to scale. However, the importance of binary analysis is on the rise. In many situations binary analysis is the only possible way to prove (or disprove) properties about the code that is actually executed. In this paper, we present a binary analysis framework that implements a number of analysis techniques that have been proposed in the past. We present a systematized implementation of these techniques, which allows other researchers to compose them and develop new approaches. In addition, the implementation of these techniques in a unifying framework allows for the direct comparison of these approaches and the identiﬁcation of their advantages and disadvantages. The evaluation included in this paper is performed using a recent dataset created by DARPA for evaluating the effectiveness of binary vulnerability analysis techniques.},
+@inproceedings{metere_sound_2017,
+	series = {Lecture {Notes} in {Computer} {Science}},
+	title = {Sound {Transpilation} from {Binary} to {Machine}-{Independent} {Code}},
+	isbn = {978-3-319-70848-5},
+	abstract = {In order to handle the complexity and heterogeneity of modern instruction set architectures, analysis platforms share a common design, the adoption of hardware-independent intermediate representations. The usage of these platforms to verify systems down to binary-level is appealing due to the high degree of automation they provide. However, it introduces the need for trusting the correctness of the translation from binary code to intermediate language. Achieving a high degree of trust is challenging since this transpilation must handle (i) all the side effects of the instructions, (ii) multiple instruction encoding (e.g. ARM Thumb), and (iii) variable instruction length (e.g. Intel). We overcome these problems by formally modeling one of such intermediate languages in the interactive theorem prover HOL4 and by implementing a proof-producing transpiler. This tool translates ARMv8 programs to the intermediate language and generates a HOL4 proof that demonstrates the correctness of the translation in the form of a simulation theorem. We also show how the transpiler theorems can be used to transfer properties verified on the intermediate language to the binary code.},
 	language = {en},
-	author = {Shoshitaishvili, Yan and Wang, Ruoyu and Salls, Christopher and Stephens, Nick and Polino, Mario and Dutcher, Audrey and Grosen, John and Feng, Siji and Hauser, Christophe and Kruegel, Christopher and Vigna, Giovanni},
-	pages = {20},
-	file = {Shoshitaishvili et al. - (State of) The Art of War Offensive Techniques in.pdf:/home/t/h/tholac/Zotero/storage/59SSRJKZ/Shoshitaishvili et al. - (State of) The Art of War Offensive Techniques in.pdf:application/pdf}
+	booktitle = {Formal {Methods}: {Foundations} and {Applications}},
+	publisher = {Springer International Publishing},
+	author = {Metere, Roberto and Lindner, Andreas and Guanciale, Roberto},
+	editor = {Cavalheiro, Simone and Fiadeiro, José},
+	year = {2017},
+	keywords = {Binary analysis, Formal verification, Proof producing analysis, Theorem proving},
+	pages = {197--214},
+	file = {Springer Full Text PDF:/home/t/h/tholac/Zotero/storage/IBUJQLWY/Metere et al. - 2017 - Sound Transpilation from Binary to Machine-Indepen.pdf:application/pdf}
+}
+
+@article{lindner_trabin:_2019,
+	title = {{TrABin}: {Trustworthy} analyses of binaries},
+	volume = {174},
+	issn = {0167-6423},
+	shorttitle = {{TrABin}},
+	url = {http://www.sciencedirect.com/science/article/pii/S0167642318301667},
+	doi = {10.1016/j.scico.2019.01.001},
+	abstract = {Verification of microkernels, device drivers, and crypto routines requires analyses at the binary level. In order to automate these analyses, in the last years several binary analysis platforms have been introduced. These platforms share a common design: the adoption of hardware-independent intermediate representations, a mechanism to translate architecture dependent code to this representation, and a set of architecture independent analyses that process the intermediate representation. The usage of these platforms to verify software introduces the need for trusting both the correctness of the translation from binary code to intermediate language (called transpilation) and the correctness of the analyses. Achieving a high degree of trust is challenging since the transpilation must handle (i) all the side effects of the instructions, (ii) multiple instruction encodings (e.g. ARM Thumb), and (iii) variable instruction length (e.g. Intel). Similarly, analyses can use complex transformations (e.g. loop unrolling) and simplifications (e.g. partial evaluation) of the artifacts, whose bugs can jeopardize correctness of the results. We overcome these problems by developing a binary analysis platform on top of the interactive theorem prover HOL4. First, we formally model a binary intermediate language and we prove correctness of several supporting tools (i.e. a type checker). Then, we implement two proof-producing transpilers, which respectively translate ARMv8 and CortexM0 programs to the intermediate language and generate a certificate. This certificate is a HOL4 proofdemonstrating correctness of the translation. As demonstrating analysis, we implement a proof-producing weakest precondition generator, which can be used to verify that a given loop-free program fragment satisfies a contract. Finally, we use an AES encryption implementation to benchmark our platform.},
+	urldate = {2019-05-21},
+	journal = {Science of Computer Programming},
+	author = {Lindner, Andreas and Guanciale, Roberto and Metere, Roberto},
+	month = apr,
+	year = {2019},
+	keywords = {Binary analysis, Formal verification, Proof producing analysis, Theorem proving},
+	pages = {72--89},
+	file = {ScienceDirect Snapshot:/home/t/h/tholac/Zotero/storage/V9TYSQYE/S0167642318301667.html:text/html;Submitted Version:/home/t/h/tholac/Zotero/storage/2L59V54U/Lindner et al. - 2019 - TrABin Trustworthy analyses of binaries.pdf:application/pdf}
+}
+
+@misc{noauthor_holba_2019,
+	title = {{HolBA} - {Binary} analysis in {HOL}},
+	copyright = {View license},
+	url = {https://github.com/kth-step/HolBA},
+	urldate = {2019-05-21},
+	publisher = {KTH STEP group},
+	month = may,
+	year = {2019},
+	note = {original-date: 2017-11-29T00:55:48Z}
+}
+
+@misc{noauthor_binary_2019,
+	title = {Binary {Analysis} {Platform}. {Contribute} to {BinaryAnalysisPlatform}/bap development by creating an account on {GitHub}},
+	copyright = {View license},
+	url = {https://github.com/BinaryAnalysisPlatform/bap},
+	urldate = {2019-05-21},
+	publisher = {BinaryAnalysisPlatform},
+	month = may,
+	year = {2019},
+	note = {original-date: 2014-10-30T11:59:43Z}
 }
