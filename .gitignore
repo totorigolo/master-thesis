@@ -1,0 +1,10 @@
+*.aux
+*.bcf
+*.glo
+*.glsdefs
+*.ist
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
