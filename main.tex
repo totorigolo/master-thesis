@@ -11,6 +11,7 @@
 \usepackage{geometry}
 \usepackage[toc]{glossaries} % https://www.overleaf.com/learn/latex/Glossaries
 \usepackage{parskip} % empty line between paragraphs
+\usepackage[textwidth=2cm]{todonotes}
 
 % hyperref setup
 \definecolor{darkgreen}{RGB}{0,180,0}
@@ -49,6 +50,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Glossary
 
+\renewcommand*{\glstextformat}[1]{\textcolor{black}{\textbf{#1}}}
+
 \makeglossaries
 
 %\gls{latex} or \Gls{latex}, \Glspl{formula}
@@ -78,8 +81,21 @@
     description={\acrshort{holba}'s machine-independent binary intermediate language}
 }
 \newacronym{isa}{ISA}{Instruction Set Architecture}
+\newacronym{SMT}{SMT}{Satisfiability Modulo Theories}
+\newacronym{SAT}{SAT}{Boolean SATisfiability Problem}
 
 %% End of Glossary
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Some macros
+
+\newcommand{\htriple}[3]{\ensuremath{\{#1\}~#2~\{#3\}}}
+\newcommand{\WP}{\ensuremath{\mathit{WP}}}
+
+%% End of macros
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -91,11 +107,11 @@
 
 \begin{abstract}
   With the advent of virtualization, more and more work is put into the verification of hypervisors. Being low level softwares, such verification should preferably be performed at binary level. Binary analysis platforms are being developed to help perform these proofs, but a lot of the work has to be carried out manually.
-  
+
   In this thesis, we focus on the formal verification of a Network Interface Controller (NIC), more specifically we look at how to automate and reduce the boilerplate work from an existing proof. We base our work on the HolBA platform, its hardware-independent intermediate representation language BIR and supporting tools, and we experiment on how to perform this proof by leveraging existing tools.
-  
+
   We first replaced the existing NIC model written in HOL4 to an equivalent one written using BIR, enabling the use of HolBA tools. Secondly, we developed some visualization tools to help navigate and gain some insight in the existing proof and its structure. Thirdly, we experimented with the use of Hoare triples in conjunction with an SMT solver to perform contract verification. Finally, we proved a simple contract written in terms of the formal NIC model on the BIR implementation of this model, unlocking the way of performing more complex proofs using the HolBA platform.
-  
+
   \textit{Keywords}: binary analysis, formal verification, proof producing analysis, theorem proving
 \end{abstract}
 
@@ -106,14 +122,21 @@
 \begin{otherlanguage}{french}
   \begin{abstract}
     Avec la démocratisation de la virtualisation, de plus en plus d'efforts sont consacrés à la vérification des hyperviseurs. S'agissant de logiciels de bas niveau, une telle vérification devrait de préférence être effectuée au niveau binaire. Des plates-formes d'analyse binaire sont en cours de développement pour aider à réaliser ces preuves, mais une grande partie du travail doit encore être effectuée manuellement.
-      
+
     Dans cette thèse, nous nous concentrons sur la vérification formelle d'un Contrôleur d'Interface Réseau (NIC), plus spécifiquement sur la manière d'automatiser et de réduire le travial d'une preuve existante. Nous nous basons sur la plate-forme HolBA, son langage de représentation intermédiaire indépendant du matériel, BIR et ses outils de support, et nous nous intéressons à la manière de réaliser cette preuve en utilisant des outils existants.
-    
+
     Nous avons d'abord remplacé le modèle NIC existant écrit en HOL4 par un modèle équivalent écrit en BIR, permettant ainsi l'utilisation des outils de HolBA. Deuxièmement, nous avons développé des outils de visualisation pour vous aider à naviguer et à mieux comprendre la preuve existante et sa structure. Troisièmement, nous avons expérimenté l'utilisation des triplets de Hoare en conjonction avec un solveur SMT pour effectuer une vérification par contrat. Enfin, nous avons prouvé un contrat simple écrit en termes du modèle formel du NIC sur l'implémentation de ce modèle en BIR, ouvrant la voie à la réalisation de preuves plus complexes avec la plate-forme HolBA.
-    
+
     \textit{Mot-clés} : binary analysis, formal verification, proof producing analysis, theorem proving
   \end{abstract}
 \end{otherlanguage}
+
+\listoftodos
+\todo{Include:%
+a) Git workflow for a team;%
+b) LogLib (and tracing in general);%
+c) CI to track regressions + static analysis;%
+}
 
 \tableofcontents
 
@@ -123,16 +146,6 @@
 
 \chapter{Introduction}
 \textit{This chapter serves as an introduction to the degree project and presents the background of the work along with this thesis objective. Delimitations to the project and the choice of methodology are also discussed.}
-
-TODOs:
-\begin{itemize}
-  \item Where to mention
-  \begin{itemize}
-  \item Git workflow for a team
-  \item LogLib (and tracing in general)
-  \item CI to track regressions + static analysis
-  \end{itemize}
-\end{itemize}
 
 \section{Background}
 
@@ -154,6 +167,8 @@ TODOs:
 % * Modèle BSL (-> prez de BSL)
 %
 % * Liberté de la méthode et question sur comment traduire le modèle
+%
+% * Présentation de BIR
 %
 % * Impossibilité de tout représenter avec BIR (pourquoi?)
 %   -> identification (> DepGraph) et fragmentation
@@ -190,42 +205,83 @@ TODOs:
 
 \section{Contract based verification}
 
-Contract based verification is a powerful approach for verifying programs. For a given program $prog$ consisting of a list of instructions, a Hoare triple ${P}prog{Q}$
+\subsection{Hoare triples}
 
-%According to Wikipedia, ``Hoare logic (also known as Floyd–Hoare logic or Hoare rules) is a formal system with a set of logical rules for reasoning rigorously about the correctness of computer programs'' \cite{noauthor_hoare_2019}.
+Contract based verification is a powerful approach for verifying programs. For a given program $prog$ consisting of a list of instructions and two predicates $P$ and $Q$ called respectively pre- and postcondition, a Hoare triple \htriple{P}{prog}{Q} states that when executing the program $prog$ from a state $S$ terminates in a state $S'$, if $P$ holds in $S$ then $Q$ will hold in $S'$ (Equation \ref{ht_def}). Hereafter, we assume programs and states to be well-typed.
 
-%The main tool of Hoare logic is the Hoare triple, which describes how the execution of a program $C$ affects the state of the execution. They are written $$\{P\}~C~\{Q\}$$ where $P$ and $Q$ are two predicates, called respectively precondition and postcondition. $P$ describes the whole set of possible states as inputs of $C$, and $Q$ describes all the possible states after execution of $C$.
+\begin{equation}
+  \htriple{P}{prog}{Q} \triangleq S' = exec(S, prog) \implies P(S) \implies Q(S')
+  \label{ht_def}
+\end{equation}
 
-%Here are some simple examples of Hoare triples:
-%\begin{itemize}
-%	\item[--] $\{P\}~\varnothing~\{P\}$: an empty program doesn't change the
-%	      state of the execution.
-%	\item[--] $\{n\in \mathbb{N} \land odd(n)\}~n:=n+1;~\{even(n)\}$:
-%	      incrementing the value of an odd integer variable by one makes it even.
-%\end{itemize}
+For example, \htriple{P}{\varnothing}{P} holds because an empty program doesn't change the state of the execution. \htriple{n=1}{n:=n+1}{even(n)}, with $n \in \mathbb{N}$, holds because $1+1=2$, which is even.
 
-%With Hoare logic comes the idea of weakest precondition: given a program $C$ and a desired final state $Q$, we want to derive the weakest precondition $P$ allowing to reach a state satisfying $Q$ after executing $C$. Hence, $P$ describes all such states. For example, given the program $x:=x+5$ and the postcondition $\{x \geq 10\}$ the weakest precondition $P$ is $\{x \geq 5\}$. This means that all states that satisfy $P$, i.e. all states where $x \geq 5$, are guaranteed to produce states where $Q$ holds, i.e. where $x \geq 10$.
+In order to perform the verification, the Hoare logic introduces a set of axioms describing the effect of each instruction of a given language over the execution state \cite{hoare_axiomatic_1969}. For an assignment $x:=f$ where $x$ is a variable identifier and $f$ an expression without side-effects, Equation \ref{axiom_assignment_def} defines the axiom of assignment, where $P[f/x]$ denotes the subtitution of all occurences of $x$ by $f$ in $P$.
 
+\begin{equation}
+  \htriple{P[f/x]}{x:=f}{P}
+  \label{axiom_assignment_def}
+\end{equation}
 
-\subsection{Overview of HolBA's WP tool}
+\subsection{Weakest precondition derivation}
+
+While Hoare logic introduces sufficient preconditions, Dijkstra introduced the concept of nessecary and sufficient preconditions, called ``weakest'' preconditions. Such weakest preconditions can be automatically derived from a program $prog$ and a postcondition $Q$. Let's call $\WP(prog, Q)$ such a weakest precondition. Then, from Equation \ref{ht_def} follows: \todo{check that equation \ref{ht_wp_eq} is valid}
+
+\begin{equation}
+  \forall (prog, Q),
+  \htriple{\WP(prog,Q)}{prog}{Q}
+  \label{ht_wp_eq}
+\end{equation}
+
+For the program $n:=n+1$ mentioned above, we can generate the weakest precondition for the postcondition $even(n)$. First, we can rewrite $even(n)$ as $n~MOD~2 = 0$ with $MOD$ denoting the arithmetic modulo. Then, we derive the weakest precondition of the statement $n:=n+1$ by transforming the predicate $n~MOD~2 = 0$ by substituting all occurences of $n$ by $n+1$:
+
+\begin{equation}
+  \WP(``n:=n+1'',n~MOD~2 = 0)=(n+1~MOD~2 = 0)
+  \label{wp_comp_n_inc_even}
+\end{equation}
+
+From the properties of the modulo, we can simplify $n+1~MOD~2 = 0$ to $n~MOD~2 = 1$ or $odd(n)$. Therefore, \htriple{odd(n)}{n:=n+1}{even(n)}, i.e. incrementing the value of an odd integer variable by one makes it even.
+
+While the triple \htriple{n=1}{n:=n+1}{even(n)} uses a sufficient precondition for establishing its postcondition, the triple \htriple{odd(n)}{n:=n+1}{even(n)} uses the weakest precondition. The later being the weakest precondition of the former, the two contracts are in relation:
+
+\begin{equation}
+  n=1 \implies odd(n)
+\end{equation}
+
+More generally, for a triple \htriple{P}{prog}{Q} to hold, $P$ must be stronger than the weakest precondition, i.e. we need to prove that $P \implies \WP(prog, Q)$.
+
+\todo{Here and above, should we mention/explain termination?}
+
+\begin{equation}
+  (P \implies \WP(prog, Q)) \implies \htriple{P}{prog}{Q}
+  \label{p_imp_wp}
+\end{equation}
+
+\subsection{Using SMT solvers to prove contracts}
+
+From Equation \ref{p_imp_wp} we see that, in order to prove that a triple \htriple{P}{prog}{Q}, we need to prove $P \implies \WP(prog, Q)$. While multiple methods exist to perform such proofs, \acrshort{SMT} solvers offer a convient and automatic solution.
+
+\acrfull{SMT} problem is a decision problem for logical formulas with respect to combinations of background theories such as arithmetic, bit-vectors, arrays, and uninterpreted functions \cite{nikolaj_bjorner_programming_2019}. \gls{SMT} problem is a generalisation of \gls{SAT} problem supporting more theories. When given a formula, a \gls{SMT} solver decides if the formula is satisfiable, i.e. if there exist a valuation of its variables where the formula evaluates to true. As a \gls{SMT} solver can fail to decide a given instance, there are three possible outputs: ``satisfiable'', ``unsatisfiable'' and ``unknown''. Another useful feature of some \gls{SMT} solvers is the ability to ask for a satisfying model, which represents a counter-example of a false predicate.
+
+A predicate $P$ holds if it evaluates to true for all possible values of its variables \todo{isn't that the definition of tautologies?}. Alternatively, the negation of a predicate $\neg P$ holds if there exist no valuation of its variables where the predicate evaluates to true, i.e. if the instance is unsatisfiable. Therefore, if a \gls{SMT} solver report that $\neg P$ is ``unsatisfiable'', then $P$ holds.
+
+Using De Morgan's Laws, we know that $\neg (P \implies \WP) \equiv (P \land \neg \WP)$. Therefore, proving that $\neg (P \implies \WP)$ is ``unsatisfiable'' using an \gls{SMT} solver can be seen as proving that there exist no model where $P$ holds and $WP$ doesn't.
+
+\subsection{Contract based verification in HolBA}
+
+\gls{holba} provides a tool for automatically deriving weakest preconditions on loop-free \gls{BIR} programs whose control flow can be statically identified \cite{lindner_trabin:_2019}.
+
 
 \section{Using SMT solvers to prove contracts}
-
 \section{Implementation of a non proof-producing WP library}
 \subsection{Pretty-printing to visualize huge BIR expressions}
 \subsection{Testing the library}
-
 \section{Simple automatized proofs on the NIC model}
-
 \section{Trustful analysis on the NIC model}
 
-
 \chapter{Conclusions}
-
 \section{Results}
-
 \section{Discussion}
-
 \section{Future work}
 
 \printbibliography[heading=bibintoc]

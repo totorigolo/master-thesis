@@ -124,6 +124,42 @@
 	file = {Snapshot:/home/t/h/tholac/Zotero/storage/BV3642GE/index.html:text/html}
 }
 
+@article{lindner_trabin:_2019,
+	title = {{TrABin}: {Trustworthy} analyses of binaries},
+	volume = {174},
+	issn = {0167-6423},
+	shorttitle = {{TrABin}},
+	url = {http://www.sciencedirect.com/science/article/pii/S0167642318301667},
+	doi = {10.1016/j.scico.2019.01.001},
+	abstract = {Verification of microkernels, device drivers, and crypto routines requires analyses at the binary level. In order to automate these analyses, in the last years several binary analysis platforms have been introduced. These platforms share a common design: the adoption of hardware-independent intermediate representations, a mechanism to translate architecture dependent code to this representation, and a set of architecture independent analyses that process the intermediate representation. The usage of these platforms to verify software introduces the need for trusting both the correctness of the translation from binary code to intermediate language (called transpilation) and the correctness of the analyses. Achieving a high degree of trust is challenging since the transpilation must handle (i) all the side effects of the instructions, (ii) multiple instruction encodings (e.g. ARM Thumb), and (iii) variable instruction length (e.g. Intel). Similarly, analyses can use complex transformations (e.g. loop unrolling) and simplifications (e.g. partial evaluation) of the artifacts, whose bugs can jeopardize correctness of the results. We overcome these problems by developing a binary analysis platform on top of the interactive theorem prover HOL4. First, we formally model a binary intermediate language and we prove correctness of several supporting tools (i.e. a type checker). Then, we implement two proof-producing transpilers, which respectively translate ARMv8 and CortexM0 programs to the intermediate language and generate a certificate. This certificate is a HOL4 proofdemonstrating correctness of the translation. As demonstrating analysis, we implement a proof-producing weakest precondition generator, which can be used to verify that a given loop-free program fragment satisfies a contract. Finally, we use an AES encryption implementation to benchmark our platform.},
+	urldate = {2019-02-05},
+	journal = {Science of Computer Programming},
+	author = {Lindner, Andreas and Guanciale, Roberto and Metere, Roberto},
+	month = apr,
+	year = {2019},
+	keywords = {Binary analysis, Formal verification, Proof producing analysis, Theorem proving},
+	pages = {72--89},
+	file = {ScienceDirect Snapshot:/home/t/h/tholac/Zotero/storage/6XPD4VSC/S0167642318301667.html:text/html;Submitted Version:/home/t/h/tholac/Zotero/storage/X22IK4GJ/Lindner et al. - 2019 - TrABin Trustworthy analyses of binaries.pdf:application/pdf}
+}
+
+@article{dijkstra_guarded_1975,
+	title = {Guarded {Commands}, {Nondeterminacy} and {Formal} {Derivation} of {Programs}},
+	volume = {18},
+	issn = {0001-0782},
+	url = {http://doi.acm.org/10.1145/360933.360975},
+	doi = {10.1145/360933.360975},
+	abstract = {So-called “guarded commands” are introduced as a building block for alternative and repetitive constructs that allow nondeterministic program components for which at least the activity evoked, but possibly even the final state, is not necessarily uniquely determined by the initial state. For the formal derivation of programs expressed in terms of these constructs, a calculus will be be shown.},
+	number = {8},
+	urldate = {2019-02-15},
+	journal = {Commun. ACM},
+	author = {Dijkstra, Edsger W.},
+	month = aug,
+	year = {1975},
+	keywords = {case-construction, correctness proof, derivation of programs, nondeterminancy, program semantics, programming language semantics, programming languages, programming methodology, repetition, sequencing primitives, termination},
+	pages = {453--457},
+	file = {ACM Full Text PDF:/home/t/h/tholac/Zotero/storage/CZUIYM93/Dijkstra - 1975 - Guarded Commands, Nondeterminacy and Formal Deriva.pdf:application/pdf}
+}
+
 @inproceedings{klein_sel4:_2009,
 	address = {Big Sky, Montana, USA},
 	title = {{seL}4: formal verification of an {OS} kernel},
@@ -153,7 +189,7 @@
 	author = {Leinenbach, Dirk and Santen, Thomas},
 	editor = {Cavalcanti, Ana and Dams, Dennis R.},
 	year = {2009},
-	keywords = {Address Translation, Assembly Code, Machine Instruction, Page Table, Virtual Machine},
+	keywords = {Address Translation, Page Table, Assembly Code, Machine Instruction, Virtual Machine},
 	pages = {806--809},
 	file = {Springer Full Text PDF:/home/t/h/tholac/Zotero/storage/DYIESQM9/Leinenbach and Santen - 2009 - Verifying the Microsoft Hyper-V Hypervisor with VC.pdf:application/pdf}
 }
@@ -257,24 +293,6 @@
 	file = {Springer Full Text PDF:/home/t/h/tholac/Zotero/storage/IBUJQLWY/Metere et al. - 2017 - Sound Transpilation from Binary to Machine-Indepen.pdf:application/pdf}
 }
 
-@article{lindner_trabin:_2019,
-	title = {{TrABin}: {Trustworthy} analyses of binaries},
-	volume = {174},
-	issn = {0167-6423},
-	shorttitle = {{TrABin}},
-	url = {http://www.sciencedirect.com/science/article/pii/S0167642318301667},
-	doi = {10.1016/j.scico.2019.01.001},
-	abstract = {Verification of microkernels, device drivers, and crypto routines requires analyses at the binary level. In order to automate these analyses, in the last years several binary analysis platforms have been introduced. These platforms share a common design: the adoption of hardware-independent intermediate representations, a mechanism to translate architecture dependent code to this representation, and a set of architecture independent analyses that process the intermediate representation. The usage of these platforms to verify software introduces the need for trusting both the correctness of the translation from binary code to intermediate language (called transpilation) and the correctness of the analyses. Achieving a high degree of trust is challenging since the transpilation must handle (i) all the side effects of the instructions, (ii) multiple instruction encodings (e.g. ARM Thumb), and (iii) variable instruction length (e.g. Intel). Similarly, analyses can use complex transformations (e.g. loop unrolling) and simplifications (e.g. partial evaluation) of the artifacts, whose bugs can jeopardize correctness of the results. We overcome these problems by developing a binary analysis platform on top of the interactive theorem prover HOL4. First, we formally model a binary intermediate language and we prove correctness of several supporting tools (i.e. a type checker). Then, we implement two proof-producing transpilers, which respectively translate ARMv8 and CortexM0 programs to the intermediate language and generate a certificate. This certificate is a HOL4 proofdemonstrating correctness of the translation. As demonstrating analysis, we implement a proof-producing weakest precondition generator, which can be used to verify that a given loop-free program fragment satisfies a contract. Finally, we use an AES encryption implementation to benchmark our platform.},
-	urldate = {2019-05-21},
-	journal = {Science of Computer Programming},
-	author = {Lindner, Andreas and Guanciale, Roberto and Metere, Roberto},
-	month = apr,
-	year = {2019},
-	keywords = {Binary analysis, Formal verification, Proof producing analysis, Theorem proving},
-	pages = {72--89},
-	file = {ScienceDirect Snapshot:/home/t/h/tholac/Zotero/storage/V9TYSQYE/S0167642318301667.html:text/html;Submitted Version:/home/t/h/tholac/Zotero/storage/2L59V54U/Lindner et al. - 2019 - TrABin Trustworthy analyses of binaries.pdf:application/pdf}
-}
-
 @misc{noauthor_holba_2019,
 	title = {{HolBA} - {Binary} analysis in {HOL}},
 	copyright = {View license},
@@ -295,4 +313,33 @@
 	month = may,
 	year = {2019},
 	note = {original-date: 2014-10-30T11:59:43Z}
+}
+
+@article{hoare_axiomatic_1969,
+	title = {An {Axiomatic} {Basis} for {Computer} {Programming}},
+	volume = {12},
+	issn = {0001-0782},
+	url = {http://doi.acm.org/10.1145/363235.363259},
+	doi = {10.1145/363235.363259},
+	abstract = {In this paper an attempt is made to explore the logical foundations of computer programming by use of techniques which were first applied in the study of geometry and have later been extended to other branches of mathematics. This involves the elucidation of sets of axioms and rules of inference which can be used in proofs of the properties of computer programs. Examples are given of such axioms and rules, and a formal proof of a simple theorem is displayed. Finally, it is argued that important advantage, both theoretical and practical, may follow from a pursuance of these topics.},
+	number = {10},
+	urldate = {2019-05-24},
+	journal = {Commun. ACM},
+	author = {Hoare, C. A. R.},
+	month = oct,
+	year = {1969},
+	keywords = {axiomatic method, formal language definition, machine-independent programming, program documentation, programming language design, theory of programming' proofs of programs},
+	pages = {576--580},
+	file = {ACM Full Text PDF:/home/t/h/tholac/Zotero/storage/JEEVWPGD/Hoare - 1969 - An Axiomatic Basis for Computer Programming.pdf:application/pdf}
+}
+
+@misc{nikolaj_bjorner_programming_2019,
+	title = {Programming {Z}3},
+	url = {https://theory.stanford.edu/~nikolaj/programmingz3.html},
+	abstract = {This tutorial provides a programmer's introduction to the Satisfiability Modulo Theories Solver Z3. It describes how to use Z3 through scripts, provided in the Python scripting language, and it describes several of the algorithms underlying the decision procedures within Z3. It aims to broadly cover almost all available features of Z3 and the essence of the underlying algorithms.},
+	urldate = {2019-05-24},
+	author = {{Nikolaj Bjørner} and {Leonardo de Moura} and {Lev Nachmanson} and {Christoph Wintersteiger}},
+	month = apr,
+	year = {2019},
+	note = {Microsoft Research}
 }
