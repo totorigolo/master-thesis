@@ -162,7 +162,8 @@ TODOs:
 
 \chapter{Proving properties}
 
-% * Rappels sur le WP existant dans HolBA
+% * Introduction des WP
+%   - Rappels sur le WP existant dans HolBA
 % * Explication de l'utilisation de SMT solver
 %   - Ajout des arrays dans l'export existant
 %   - Experiments with SMT (before and after array): without and with BIR
@@ -187,7 +188,26 @@ TODOs:
 %   - About implementation
 %   --- About PP BIR to words
 
-\section{Overview of HolBA's WP tool}
+\section{Contract based verification}
+
+Contract based verification is a powerful approach for verifying programs. For a given program $prog$ consisting of a list of instructions, a Hoare triple ${P}prog{Q}$
+
+%According to Wikipedia, ``Hoare logic (also known as Floyd–Hoare logic or Hoare rules) is a formal system with a set of logical rules for reasoning rigorously about the correctness of computer programs'' \cite{noauthor_hoare_2019}.
+
+%The main tool of Hoare logic is the Hoare triple, which describes how the execution of a program $C$ affects the state of the execution. They are written $$\{P\}~C~\{Q\}$$ where $P$ and $Q$ are two predicates, called respectively precondition and postcondition. $P$ describes the whole set of possible states as inputs of $C$, and $Q$ describes all the possible states after execution of $C$.
+
+%Here are some simple examples of Hoare triples:
+%\begin{itemize}
+%	\item[--] $\{P\}~\varnothing~\{P\}$: an empty program doesn't change the
+%	      state of the execution.
+%	\item[--] $\{n\in \mathbb{N} \land odd(n)\}~n:=n+1;~\{even(n)\}$:
+%	      incrementing the value of an odd integer variable by one makes it even.
+%\end{itemize}
+
+%With Hoare logic comes the idea of weakest precondition: given a program $C$ and a desired final state $Q$, we want to derive the weakest precondition $P$ allowing to reach a state satisfying $Q$ after executing $C$. Hence, $P$ describes all such states. For example, given the program $x:=x+5$ and the postcondition $\{x \geq 10\}$ the weakest precondition $P$ is $\{x \geq 5\}$. This means that all states that satisfy $P$, i.e. all states where $x \geq 5$, are guaranteed to produce states where $Q$ holds, i.e. where $x \geq 10$.
+
+
+\subsection{Overview of HolBA's WP tool}
 
 \section{Using SMT solvers to prove contracts}
 
