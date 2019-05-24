@@ -216,7 +216,7 @@ Contract based verification is a powerful approach for verifying programs. For a
 
 For example, \htriple{P}{\varnothing}{P} holds because an empty program doesn't change the state of the execution. \htriple{n=1}{n:=n+1}{even(n)}, with $n \in \mathbb{N}$, holds because $1+1=2$, which is even.
 
-In order to perform the verification, the Hoare logic introduces a set of axioms describing the effect of each instruction of a given language over the execution state \cite{hoare_axiomatic_1969}. For an assignment $x:=f$ where $x$ is a variable identifier and $f$ an expression without side-effects, Equation \ref{axiom_assignment_def} defines the axiom of assignment, where $P[f/x]$ denotes the subtitution of all occurences of $x$ by $f$ in $P$.
+In order to perform the verification, the Hoare logic introduces a set of axioms describing the effect of each instruction of a given language over the execution state \cite{hoare_axiomatic_1969}. For an assignment $x:=f$ where $x$ is a variable identifier and $f$ an expression without side-effects, Equation \ref{axiom_assignment_def} defines the axiom of assignment, where $P[f/x]$ denotes the substitution of all occurrences of $x$ by $f$ in $P$.
 
 \begin{equation}
   \htriple{P[f/x]}{x:=f}{P}
@@ -259,9 +259,9 @@ More generally, for a triple \htriple{P}{prog}{Q} to hold, $P$ must be stronger 
 
 \subsection{Using SMT solvers to prove contracts}
 
-From Equation \ref{p_imp_wp} we see that, in order to prove that a triple \htriple{P}{prog}{Q}, we need to prove $P \implies \WP(prog, Q)$. While multiple methods exist to perform such proofs, \acrshort{SMT} solvers offer a convient and automatic solution.
+From Equation \ref{p_imp_wp} we see that, in order to prove that a triple \htriple{P}{prog}{Q}, we need to prove $P \implies \WP(prog, Q)$. While multiple methods exist to perform such proofs, \acrshort{SMT} solvers offer a convenient and automatic solution.
 
-\acrfull{SMT} problem is a decision problem for logical formulas with respect to combinations of background theories such as arithmetic, bit-vectors, arrays, and uninterpreted functions \cite{nikolaj_bjorner_programming_2019}. \gls{SMT} problem is a generalisation of \gls{SAT} problem supporting more theories. When given a formula, a \gls{SMT} solver decides if the formula is satisfiable, i.e. if there exist a valuation of its variables where the formula evaluates to true. As a \gls{SMT} solver can fail to decide a given instance, there are three possible outputs: ``satisfiable'', ``unsatisfiable'' and ``unknown''. Another useful feature of some \gls{SMT} solvers is the ability to ask for a satisfying model, which represents a counter-example of a false predicate.
+\acrfull{SMT} problem is a decision problem for logical formulas with respect to combinations of background theories such as arithmetic, bit-vectors, arrays, and uninterpreted functions \cite{nikolaj_bjorner_programming_2019}. \gls{SMT} problem is a generalization of \gls{SAT} problem supporting more theories. When given a formula, a \gls{SMT} solver decides if the formula is satisfiable, i.e. if there exist a valuation of its variables where the formula evaluates to true. As a \gls{SMT} solver can fail to decide a given instance, there are three possible outputs: ``satisfiable'', ``unsatisfiable'' and ``unknown''. Another useful feature of some \gls{SMT} solvers is the ability to ask for a satisfying model, which represents a counter-example of a false predicate.
 
 A predicate $P$ holds if it evaluates to true for all possible values of its variables \todo{isn't that the definition of tautologies?}. Alternatively, the negation of a predicate $\neg P$ holds if there exist no valuation of its variables where the predicate evaluates to true, i.e. if the instance is unsatisfiable. Therefore, if a \gls{SMT} solver report that $\neg P$ is ``unsatisfiable'', then $P$ holds.
 
