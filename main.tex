@@ -269,13 +269,28 @@ Using De Morgan's Laws, we know that $\neg (P \implies \WP) \equiv (P \land \neg
 
 \subsection{Contract based verification in HolBA}
 
-\gls{holba} provides a tool for automatically deriving weakest preconditions on loop-free \gls{BIR} programs whose control flow can be statically identified \cite{lindner_trabin:_2019}.
+\gls{holba} provides a proof-producing tool for automatically deriving weakest preconditions on loop-free \gls{BIR} programs whose control flow can be statically identified \cite{lindner_trabin:_2019}. This tool is proof-producing \todo{check that "proof-producing" has been introduced before} in that it give a soundness theorem (Definition \ref{holba_wp_soundness_thm}) and a Hoare triple theorem (Definition \ref{holba_wp_ht_thm}) about the derived weakest precondition. However, it doesn't prove that the generated expression is actually the weakest precondition but only that it is a sufficient. However, this theorem isn't needed to perform verification if the generated ``weakest'' precondition is weak enough so that our precondition can imply it.
 
+\begin{equation}
+  (P \implies \WP(prog, Q)) \implies \htriple{P}{prog}{Q}
+  \label{holba_wp_soundness_thm}
+\end{equation}
 
-\section{Using SMT solvers to prove contracts}
+\begin{equation}
+  (P \implies \WP(prog, Q)) \implies \htriple{P}{prog}{Q}
+  \label{holba_wp_ht_thm}
+\end{equation}
+
+Definitions \ref{holba_wp_soundness_thm} and \ref{holba_wp_ht_thm} introduce additional conditions about well-typedness and initialization that are needed in BIR today\footnotemark
+
+\footnotetext{Removal of the need of initialization is being discussed at the time of the writing, because actual hardware registers and memories are in facts always initialized \todo{link to the GitHub issue about BDeclare}.}
+
 \section{Implementation of a non proof-producing WP library}
+
 \subsection{Pretty-printing to visualize huge BIR expressions}
+
 \subsection{Testing the library}
+
 \section{Simple automatized proofs on the NIC model}
 \section{Trustful analysis on the NIC model}
 
