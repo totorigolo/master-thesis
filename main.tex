@@ -12,6 +12,8 @@
 \usepackage[toc]{glossaries} % https://www.overleaf.com/learn/latex/Glossaries
 \usepackage{parskip} % empty line between paragraphs
 \usepackage[textwidth=2cm]{todonotes}
+\usepackage{listings}
+\usepackage{pmboxdraw}
 
 % hyperref setup
 \definecolor{darkgreen}{RGB}{0,180,0}
@@ -83,6 +85,7 @@
 \newacronym{isa}{ISA}{Instruction Set Architecture}
 \newacronym{SMT}{SMT}{Satisfiability Modulo Theories}
 \newacronym{SAT}{SAT}{Boolean SATisfiability Problem}
+\newacronym{NIC}{NIC}{Network Interface Controller}
 
 %% End of Glossary
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -94,7 +97,18 @@
 
 \newcommand{\htriple}[3]{\ensuremath{\{#1\}~#2~\{#3\}}}
 \newcommand{\WP}{\ensuremath{\mathit{WP}}}
+\newcommand{\notimplies}{%
+  \mathrel{{\ooalign{\hidewidth$\not\phantom{=}$\hidewidth\cr$\implies$}}}}
 
+
+%% Listing settings
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{codeblue}{rgb}{0.10,0,0.82}
+\definecolor{codebackcolour}{rgb}{0.95,0.95,0.92}
+ 
 %% End of macros
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -160,6 +174,7 @@ c) CI to track regressions + static analysis;%
 \chapter{Definitions and relevant theory}
 \textit{This chapter intends to lay the concepts and theory that are essential to the reader in order to understand the problem that this degree project aims to explore.  This includes an overview of virtualization and hypervisors, a presentation of Interactive Theorem Proving and formal proofs, relevant theory about Hoare Triple and Weakest Precondition analysis, and an introduction of the \gls{holba} framework.}
 
+\textbf{TODO}: Define "proof-producing"
 
 \chapter{NIC model}
 % * Présentation du modèle HOL4 du NIC (+ DepGraph)
@@ -225,7 +240,7 @@ In order to perform the verification, the Hoare logic introduces a set of axioms
 
 \subsection{Weakest precondition derivation}
 
-While Hoare logic introduces sufficient preconditions, Dijkstra introduced the concept of nessecary and sufficient preconditions, called ``weakest'' preconditions. Such weakest preconditions can be automatically derived from a program $prog$ and a postcondition $Q$. Let's call $\WP(prog, Q)$ such a weakest precondition. Then, from Equation \ref{ht_def} follows: \todo{check that equation \ref{ht_wp_eq} is valid}
+While Hoare logic introduces sufficient preconditions, Dijkstra introduced the concept of necessary and sufficient preconditions, called ``weakest'' preconditions. Such weakest preconditions can be automatically derived from a program $prog$ and a postcondition $Q$. Let's call $\WP(prog, Q)$ such a weakest precondition. Then, from Equation \ref{ht_def} follows: \todo{check that equation \ref{ht_wp_eq} is valid}
 
 \begin{equation}
   \forall (prog, Q),
@@ -233,7 +248,7 @@ While Hoare logic introduces sufficient preconditions, Dijkstra introduced the c
   \label{ht_wp_eq}
 \end{equation}
 
-For the program $n:=n+1$ mentioned above, we can generate the weakest precondition for the postcondition $even(n)$. First, we can rewrite $even(n)$ as $n~MOD~2 = 0$ with $MOD$ denoting the arithmetic modulo. Then, we derive the weakest precondition of the statement $n:=n+1$ by transforming the predicate $n~MOD~2 = 0$ by substituting all occurences of $n$ by $n+1$:
+For the program $n:=n+1$ mentioned above, we can generate the weakest precondition for the postcondition $even(n)$. First, we can rewrite $even(n)$ as $n~MOD~2 = 0$ with $MOD$ denoting the arithmetic modulo. Then, we derive the weakest precondition of the statement $n:=n+1$ by transforming the predicate $n~MOD~2 = 0$ by substituting all occurrences of $n$ by $n+1$:
 
 \begin{equation}
   \WP(``n:=n+1'',n~MOD~2 = 0)=(n+1~MOD~2 = 0)
@@ -257,7 +272,7 @@ More generally, for a triple \htriple{P}{prog}{Q} to hold, $P$ must be stronger 
   \label{p_imp_wp}
 \end{equation}
 
-\subsection{Using SMT solvers to prove contracts}
+\subsection{Using SMT solvers to prove contracts} \label{using-smt-to-prove-contracts}
 
 From Equation \ref{p_imp_wp} we see that, in order to prove that a triple \htriple{P}{prog}{Q}, we need to prove $P \implies \WP(prog, Q)$. While multiple methods exist to perform such proofs, \acrshort{SMT} solvers offer a convenient and automatic solution.
 
@@ -265,34 +280,279 @@ From Equation \ref{p_imp_wp} we see that, in order to prove that a triple \htrip
 
 A predicate $P$ holds if it evaluates to true for all possible values of its variables \todo{isn't that the definition of tautologies?}. Alternatively, the negation of a predicate $\neg P$ holds if there exist no valuation of its variables where the predicate evaluates to true, i.e. if the instance is unsatisfiable. Therefore, if a \gls{SMT} solver report that $\neg P$ is ``unsatisfiable'', then $P$ holds.
 
-Using De Morgan's Laws, we know that $\neg (P \implies \WP) \equiv (P \land \neg \WP)$. Therefore, proving that $\neg (P \implies \WP)$ is ``unsatisfiable'' using an \gls{SMT} solver can be seen as proving that there exist no model where $P$ holds and $WP$ doesn't.
+Another way of thinking about how to prove logical formulas with \gls{SMT} solvers is by using De Morgan's Laws: we know that $\neg (P \implies \WP) \equiv (P \land \neg \WP)$. Therefore, proving that $\neg (P \implies \WP)$ is ``unsatisfiable'' using an \gls{SMT} solver can be seen as proving that there exist no model where $P$ holds and $\WP$ doesn't.
+
+\subsubsection{Reason about BIR memories with SMT solvers}
+
+\textbf{TODO}: About adding support for BIR memories
 
 \subsection{Contract based verification in HolBA}
 
-\gls{holba} provides a proof-producing tool for automatically deriving weakest preconditions on loop-free \gls{BIR} programs whose control flow can be statically identified \cite{lindner_trabin:_2019}. This tool is proof-producing \todo{check that "proof-producing" has been introduced before} in that it give a soundness theorem (Definition \ref{holba_wp_soundness_thm}) and a Hoare triple theorem (Definition \ref{holba_wp_ht_thm}) about the derived weakest precondition. However, it doesn't prove that the generated expression is actually the weakest precondition but only that it is a sufficient. However, this theorem isn't needed to perform verification if the generated ``weakest'' precondition is weak enough so that our precondition can imply it.
+\gls{holba} provides a proof-producing tool for automatically deriving weakest preconditions on loop-free \gls{BIR} programs whose control flow can be statically identified \cite{lindner_trabin:_2019}. This tool is proof-producing in that it proves Theorem \ref{triple_wp_thm} which is the instantiation of Definition \ref{holba_wp_ht_thm}, with $(p,~entry\_l,~end\_ls)$ defining the program, $wp$ the derived weakest precondition, $post$ the given postcondition.
 
 \begin{equation}
-  (P \implies \WP(prog, Q)) \implies \htriple{P}{prog}{Q}
-  \label{holba_wp_soundness_thm}
+    bir\_exec\_to\_labels\_triple~prog~entry\_l~end\_ls~\mathbf{wp}~post
+    \label{triple_wp_thm}
 \end{equation}
 
+\begin{small}
 \begin{equation}
-  (P \implies \WP(prog, Q)) \implies \htriple{P}{prog}{Q}
-  \label{holba_wp_ht_thm}
+\begin{split}
+    \vdash \forall &(prog :\alpha~bir\_program\_t)~(entry\_l :bir\_label\_t)%
+    ~(end\_ls :bir\_label\_t \rightarrow bool)\\
+    & (pre :bir\_exp\_t)~(post :bir\_exp\_t).\\
+    & bir\_exec\_to\_labels\_triple~prog~entry\_l~end\_ls~pre~post \Leftrightarrow\\
+    & ~~\forall~(s~:bir\_state\_t)~(r~:\alpha~bir\_execution\_result\_t).\\
+    & ~~~~~~~~~~~~~~~~~bir\_env\_vars\_are\_initialised~s.bst\_environ~(bir\_vars\_of\_program~prog)\\
+    & ~~~~~~\implies s.bst\_pc.bpc\_index~=~0~\land~s.bst\_pc.bpc\_label~=~entry\_l\\
+    & ~~~~~~\implies s.bst\_status~=~BST\_Running\\
+    & ~~~~~~\implies bir\_is\_bool\_exp\_env~s.bst\_environ~pre\\
+    & ~~~~~~\implies bir\_eval\_exp~pre~s.bst\_environ~=~bir\_val\_true\\
+    & ~~~~~~\implies bir\_exec\_to\_labels~end\_ls~prog~s~=~r\\
+    & ~~~~~~\implies \exists~(obs~:\alpha~list)~(step\_count~:num)%
+    ~(pc\_count~:num)~(s'~:bir\_state\_t).\\
+    & ~~~~~~~~~~~~~~~~~~~~~~~~r~=~BER\_Ended~obs~step\_count~pc\_count~s'\\
+    & ~~~~~~~~~~~~~~~~~~~\land~s'.bst\_status~=~BST\_Running\\
+    & ~~~~~~~~~~~~~~~~~~~\land~bir\_is\_bool\_exp\_env~s'.bst\_environ~post\\
+    & ~~~~~~~~~~~~~~~~~~~\land~bir\_eval\_exp~post~s'.bst\_environ~=~bir\_val\_true\\
+    & ~~~~~~~~~~~~~~~~~~~\land~s'.bst\_pc.bpc\_index~=~0~\land~s'.bst\_pc.bpc\_label~\in~end\_ls
+\end{split}
+\label{holba_wp_ht_thm}
+\end{equation}
+\end{small}
+\todo{Include bir\_exec\_to\_labels\_triple in a readable way}
+
+It is to be noted that this tool doesn't produce a theorem stating that the generated expression is actually \textit{the} weakest precondition. However, this theorem isn't needed to perform contract-based verification if the generated ``weakest'' precondition is weak enough so that our precondition can imply it. However, without this theorem it is impossible to prove that a given precondition $P$ isn't strong enough to establish the postcondition. We will still use the term ``weakest precondition'' as it is in practice how we are using this tool.
+
+Definitions \ref{holba_wp_ht_thm} introduces additional conditions about well-typedness and initialization that are needed in BIR today\footnotemark, as well as the notion of ``Block Program Counter'' for multi-statement blocks. %However, those can easily be proved and we are then left with the Hoare triple definition expressed in terms of evaluating the pre- and post-conditions in the initial and final state.
+
+\footnotetext{Removal of the need of initialization is being discussed at the time of the writing, because actual hardware registers and memories are in facts always initialized: \url{https://github.com/kth-step/HolBA/issues/63}}
+
+This tool doesn't provide a simple interface to compute weakest preconditions for a given program and postcondition, nor does it provide and support for proving the relation between the precondition and the weakest precondition. Then, in order to prove that the Hoare triple holds from this generated Theorem \ref{triple_wp_thm}, we need to prove:
+
+\begin{equation} 
+    bir\_exec\_to\_labels\_triple~p~entry\_l~end\_ls~\mathbf{pre}~post
+    \label{triple_pre_thm}
 \end{equation}
 
-Definitions \ref{holba_wp_soundness_thm} and \ref{holba_wp_ht_thm} introduce additional conditions about well-typedness and initialization that are needed in BIR today\footnotemark
+Assuming well-typedness and initialization, after rewriting the definition of $bir\_exec\_to\_labels\_triple$, we have to show $bir\_eval\_exp~\mathbf{wp}~s.bst\_environ~=~bir\_val\_true$ in order to prove our goal using the \textit{modus ponens} with Theorem \ref{triple_wp_thm}. This correspond to proving the following implication:
 
-\footnotetext{Removal of the need of initialization is being discussed at the time of the writing, because actual hardware registers and memories are in facts always initialized \todo{link to the GitHub issue about BDeclare}.}
+\begin{small}
+\begin{equation}
+\begin{split}
+    &bir\_eval\_exp~\mathbf{pre}~s.bst\_environ~=~bir\_val\_true\\
+    &\implies bir\_eval\_exp~\mathbf{wp}~s.bst\_environ~=~bir\_val\_true
+\end{split}
+\label{eval_pre_imp_eval_wp}
+\end{equation}
+\end{small}
 
-\section{Implementation of a non proof-producing WP library}
+In Equation \ref{eval_pre_imp_eval_wp} we can recognize Equation \ref{p_imp_wp} that we discussed how to prove using \gls{SMT} solvers in Section \ref{using-smt-to-prove-contracts}. However, the expressions are expressed as BIR expressions. We then have to find a way to use an SMT solver. This is the focus of the following of this thesis. Section \ref{impl-non-pp-wp-lib} will use a non proof-producing method for translating those BIR expressions into an equivalent formula that SMT solvers can work on, then focus on automating the whole verification process. Section \ref{trustful-nic-analysis} will complete this proof and use it to lift properties that have been proved on the BIR implementation to the \gls{NIC} model.
+
+\section{Implementation of a non proof-producing automatic contract verification library} \label{impl-non-pp-wp-lib}
+
+In the previous section, we learned about contract verification and the current status of \gls{holba}'s implementation. To perform verification on the \gls{NIC} model, we would like to automate the process as much as possible. \gls{holba} currently offers tools for automatic weakest precondition generation, therefore we need to close the gap between BIR expression and SMT solvers, as well as to implement a convenient interface on top.
+
+\subsection{Exporting BIR expressions to SMT solvers}
+
+As an intermediate language for formal verification, \gls{BIR} possesses a precise semantic. The semantic of BIR expressions is expressed as a set of definitions \todo{axioms?} describing what are the equivalent operations using \textit{wordsTheory}. This theory contains definitions and theorems about ``words'', i.e. bounded $N$-bit integers that are used to reason about integer types in programming languages and hardware memory in general. For example, the semantic of binary operators in BIR is defined with the following theorems\footnotemark:
+
+\footnotetext{Theorems \ref{bir_bin_exp_GET_OPER_def} and \ref{bir_bin_exp_def} have been reduced to only two operators and well-typed 64-bit expressions.}
+
+\begin{small}
+    \begin{equation}
+        \begin{split}
+            \vdash~&bir\_bin\_exp\_GET\_OPER~BIExp\_And = words\_and\\
+                   &\land bir\_bin\_exp\_GET\_OPER~BIExp\_Or = words\_or\\
+        \end{split}
+        \label{bir_bin_exp_GET_OPER_def}
+    \end{equation}
+    \begin{equation}
+        \begin{split}
+            \vdash~&\forall (bin\_op :bir\_bin\_exp\_t)~(w1 :word64)~(w2 :word64).\\
+                   &~~~~~bir\_bin\_exp~bin\_op~(Imm64~w1)~(Imm64~w2)\\
+                   &~~~~~= Imm64~(bir\_bin\_exp\_GET\_OPER~bin\_op~w1~w2)
+        \end{split}
+        \label{bir_bin_exp_def}
+    \end{equation}
+\end{small}
+
+Similarly, a set of definitions and theorems describe the semantic of operations on BIR memories. However, correct handling of endianness, alignment and genericity over the size of memories cells and addresses, these definitions and theorems are pretty complicated to work with. The same is true for the semantic of operations on BIR variables, because of well-typedness and initialization.
+
+For this reason---i.e. writing proof-producing code is costly---, I decided to write a non-proof producing function \texttt{bir\_exp\_to\_words} that translates BIR expressions to the equivalent words expression. The obvious downside of such a function is that we now have to trust the translation to be sound, because we no longer get any guarantee from the theorem prover. However, development time is dramatically decreased and offers more time for experimenting. Moreover, this function can later be implemented in a proof-producing way for more trustful verification. Then, in order to have a high confidence of correctness, software engineering practices apply:
+
+\begin{itemize}
+    \item write small and understandable pieces of code and compose them, and
+    \item write a comprehensive suite of tests.
+\end{itemize}
+
+BIR expressions are defined as a HOL4 algebraic data type in Listing \ref{bir_exp_t_def}. Hence, in order to translate BIR expressions to words expressions, we need to handle every variant. This has been done \footnote{Code available here: \url{https://github.com/kth-step/HolBA/commit/2fcca54dcb04a20716e7697f64b5a4578f8a8af9}} using an exhaustive \texttt{if-then-else} statement\footnotemark. The code is mostly destructuring HOL4 terms and creating new \textit{wordsTheory} terms. In order to obtain an easily reviewable code, a balance between expressivity and conciseness has to be carefully decided. Table \ref{bir_exp_to_words_variants_loc} shows that the length of each variant is relatively small in terms of lines of codes, from 1 line for constants to 51 for memory store expressions. This achieves the first point of the previous list.
+
+\footnotetext{Pattern matching would have been optimal, but isn't possible because of how HOL4 is embedded in SML.}
+
+Testing of \texttt{bir\_exp\_to\_words} has been done using a set of $(bir\_exp,expected)$ couples with increasing complexity, where \texttt{bir\_exp\_to\_words} is used to translate each $bir\_exp$ and the result is compared to $expected$. Then, BIR expression being defined as an algebraic data type, nesting of BIR expressions follow naturally. This achieves the second point of the previous list.
+
+\begin{lstlisting}[
+    label=bir_exp_t_def,caption=bir\_exp\_t definition,
+    frame=tb,basicstyle=\footnotesize\ttfamily]
+Datatype `bir_exp_t =
+    BExp_Const      bir_imm_t
+  | BExp_MemConst   bir_immtype_t bir_immtype_t (num |-> num)
+  | BExp_Den        bir_var_t
+
+  | BExp_Cast       bir_cast_t bir_exp_t bir_immtype_t
+
+  | BExp_UnaryExp   bir_unary_exp_t bir_exp_t
+  | BExp_BinExp     bir_bin_exp_t bir_exp_t bir_exp_t
+  | BExp_BinPred    bir_bin_pred_t bir_exp_t bir_exp_t
+  | BExp_MemEq      bir_exp_t bir_exp_t
+
+  | BExp_IfThenElse bir_exp_t bir_exp_t bir_exp_t
+
+  | BExp_Load       bir_exp_t bir_exp_t bir_endian_t bir_immtype_t
+  | BExp_Store      bir_exp_t bir_exp_t bir_endian_t bir_exp_t`
+\end{lstlisting}
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{ | l | c | }
+        \hline
+        \texttt{bir\_exp\_t} variant & Lines of code\\
+        \hline
+        BExp\_Const & 1\\
+        BExp\_MemConst & not implemented\\
+        BExp\_Den & 21\\
+        BExp\_Cast & not implemented\\
+        BExp\_UnaryExp & 8\\
+        BExp\_BinExp & 9\\
+        BExp\_BinPred & 10\\
+        BExp\_MemEq & 10\\
+        BExp\_IfThenElse & 9\\
+        BExp\_Load & 48\\
+        BExp\_Store & 51\\
+        \hline
+    \end{tabular}
+    \caption{Length of each \texttt{bir\_exp\_t} variant in the implementation of \texttt{bir\_exp\_to\_words}.}
+    \label{bir_exp_to_words_variants_loc}
+\end{table}
 
 \subsection{Pretty-printing to visualize huge BIR expressions}
 
+When working with complex constructs, the need of visualization techniques often arise. Generated weakest preconditions grow quickly with the number of statements in a program, linearly or exponentially depending on the type of statements---control flow statements produce exponential growth. While clever techniques can be implemented to keep their size reasonable \cite{lindner_trabin:_2019}, we often need to read and analyze them.
+
+Printing of BIR terms in general is very verbose. For example, the expression \ref{pp_ex_math_exp} with a 64-bit $x$ integer defined using the BSL code in Listing \ref{pp_ex_bsl_code} yields Listing \ref{pp_ex_default_printing} using HOL4's default printing capabilities.
+
+\begin{equation}
+    \text{if}~~(x \leq 100) \lor (y + 1 > 10) \lor (x + y \leq 20)~~\text{then}~~2 \times x~~\text{else}~~3 \times y + 1
+    \label{pp_ex_math_exp}
+\end{equation}
+
+\begin{lstlisting}[
+    language=Caml,
+    backgroundcolor=\color{codebackcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    stringstyle=\color{codepurple},
+    label=pp_ex_bsl_code,caption=BSL code,
+    frame=tb,basicstyle=\footnotesize\ttfamily]
+bite (
+  borl [
+    ble ((bden o bvarimm64) "x", bconst64 100),
+    bnot (ble (bplus ((bden o bvarimm64) "y",
+                      bconst64 1),
+               bconst64 10)),
+    ble (bplus ((bden o bvarimm64) "x",
+                (bden o bvarimm64) "y"),
+         bconst64 20)
+  ],
+  bmult ((bden o bvarimm64) "x", bconst64 2),
+  bplus (bmult ((bden o bvarimm64) "x", bconst64 3),
+         bconst64 1))
+\end{lstlisting}
+
+\begin{lstlisting}[%
+    label=pp_ex_default_printing,caption=Default HOL4 printing,%
+    frame=tb,basicstyle=\footnotesize\ttfamily]
+BExp_IfThenElse
+  (BExp_BinExp BIExp_Or
+     (BExp_BinExp BIExp_Or
+        (BExp_BinPred BIExp_LessOrEqual
+           (BExp_Den (BVar "x" (BType_Imm Bit64)))
+           (BExp_Const (Imm64 100w)))
+        (BExp_UnaryExp BIExp_Not
+           (BExp_BinPred BIExp_LessOrEqual
+              (BExp_BinExp BIExp_Plus
+                 (BExp_Den (BVar "y" (BType_Imm Bit64)))
+                 (BExp_Const (Imm64 1w)))
+              (BExp_Const (Imm64 10w)))))
+     (BExp_BinPred BIExp_LessOrEqual
+        (BExp_BinExp BIExp_Plus
+           (BExp_Den (BVar "x" (BType_Imm Bit64)))
+           (BExp_Den (BVar "y" (BType_Imm Bit64))))
+        (BExp_Const (Imm64 20w))))
+  (BExp_BinExp BIExp_Mult
+     (BExp_Den (BVar "x" (BType_Imm Bit64)))
+     (BExp_Const (Imm64 2w)))
+  (BExp_BinExp BIExp_Plus
+     (BExp_BinExp BIExp_Mult
+        (BExp_Den (BVar "x" (BType_Imm Bit64)))
+        (BExp_Const (Imm64 3w))) (BExp_Const (Imm64 1w)))
+\end{lstlisting}
+
+This expression is relatively small and yet the printed term is 15 lines long\footnotemark. Compared to the BSL expression that is 8 lines long, that is almost a two time increase in size. Moreover, lines are long and verbose: for example, a ``less-than'' binary expression is written as ``\texttt{BExp\_BinPred BIExp\_LessOrEqual e1 e2}''. Comparatively, the math expression ``$e1 \leq e2$'' and BSL expression ``\texttt{ble e1 e2}'' are shorter and arguably more readable.
+
+\footnotetext{The numbers given here correspond to code written for lines up to 100 characters, which require less lines. This is to represent statistics in real code where lines are frequently limited to 100 characters instead of 60 used in this report.}
+
+To answer to these kind of issues, HOL4 provides the ability to implement ``pretty-printers'', which are custom printing functions for a given type. 4 pretty-printers have been implemented to shorten the verbosity of the printed representation and to add colors to the output.
+
+\begin{lstlisting}[%
+    label=pp_ex_default_printing,caption=Default HOL4 printing,%
+    frame=tb,basicstyle=\footnotesize\ttfamily]
+BExp_If
+  (BExp_Or
+     (BExp_LessOrEqual
+        (BExp_Den (BVar "x" (BType_Imm Bit64)))
+        (BExp_Const (Imm64 100w)))
+     (BExp_Not
+        (BExp_LessOrEqual
+           (BExp_Plus
+              (BExp_Den (BVar "y" (BType_Imm Bit64)))
+              (BExp_Const (Imm64 1w)))
+           (BExp_Const (Imm64 10w))))
+     (BExp_LessOrEqual
+        (BExp_Plus
+           (BExp_Den (BVar "x" (BType_Imm Bit64)))
+           (BExp_Den (BVar "y" (BType_Imm Bit64))))
+        (BExp_Const (Imm64 20w))))
+BExp_Then
+  (BExp_Mult
+     (BExp_Den (BVar "x" (BType_Imm Bit64)))
+     (BExp_Const (Imm64 2w)))
+BExp_Else
+  (BExp_Plus
+     (BExp_Mult
+        (BExp_Den (BVar "x" (BType_Imm Bit64)))
+        (BExp_Const (Imm64 3w)))
+     (BExp_Const (Imm64 1w)))
+\end{lstlisting}
+
+
++ less verbose
++ colors (including rainbow parenthesis)
++ give a feature table
+- not parsable yet
+- no infix operators
+
+\subsection{Implementing a convenient interface}
+
+- One button solution (+ use BSL)
+- Nice error when it fails
+
 \subsection{Testing the library}
 
-\section{Simple automatized proofs on the NIC model}
-\section{Trustful analysis on the NIC model}
+\subsection{Simple automatized proofs on the NIC model}
+
+\section{Trustful analysis on the NIC model} \label{trustful-nic-analysis}
 
 \chapter{Conclusions}
 \section{Results}
