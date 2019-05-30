@@ -203,14 +203,14 @@ d) Simple interface for CFG lib;%
 % * Introduction des WP
 %   - Rappels sur le WP existant dans HolBA
 % * Explication de l'utilisation de SMT solver
-%???   - Ajout des arrays dans l'export existant
-%???   - Experiments with SMT (before and after array): without and with BIR
+%   - Ajout des arrays dans l'export existant
+%   - Experiments with SMT (before and after array): without and with BIR
 %   --- With BIR needed BIR EXP -> Words (why?)
-%!!!   ----- Non proof-producing + explain why (mention that PP has been done in the proof)
+%   ----- Non proof-producing + explain why (mention that PP has been done in the proof)
 % * Non proof-producing WP lib
-%!!!   + easy
-%!!!   - proof-producing would have been feasible
-%!!!     -> but would have took more time, that's not the aim of the thesis
+%   + easy
+%   - proof-producing would have been feasible
+%     -> but would have took more time, that's not the aim of the thesis
 % * BIR PP because huge WP BIR expressions
 % * WP tests
 %   - simple
@@ -427,12 +427,12 @@ Assuming well-typedness and initialization, after rewriting the definition of $b
 
 In Equation \ref{eval_pre_imp_eval_wp} we can recognize Equation \ref{p_imp_wp} that we discussed how to prove using \gls{SMT} solvers in Section \ref{using-smt-to-prove-contracts}. However, the expressions are expressed as BIR expressions. We then have to find a way to use an SMT solver. This is the focus of the following of this thesis. Section \ref{impl-non-pp-wp-lib} will use a non proof-producing method for translating those BIR expressions into an equivalent formula that SMT solvers can work on, then focus on automating the whole verification process. Section \ref{trustful-nic-analysis} will complete this proof and use it to lift properties that have been proved on the BIR implementation to the \gls{NIC} model. The following Section \ref{bir-memories-with-smt-solvers} will discuss how to make proofs about BIR memories using \gls{SMT} solvers.
 
-\subsection{Reason about BIR memories with SMT solvers} \label{bir-memories-with-smt-solvers}
+\subsection{BIR memories and SMT solvers} \label{bir-memories-with-smt-solvers}
 
 % Mention SMT-LIB logics?
 % Mention proof reconstruction?
 
-HOL4 features a library for interfacing \gls{SMT} solvers and HOL4, called \textit{HolSmtLib}. This library supports Yices 1 and Z3 as external provers. Yices 1 being an abandoned project that doesn't support SMT-LIB 2.0, we will focus on Z3 and the standard format SMT-LIB 2.0. While \textit{HolSmtLib} supports export for some SMT-LIB 2.0 theories, it doesn't support the ``Array'' theory and doesn't know about BIR. In Section \ref{contract-verif-holba}, we discussed the translation from BIR expressions to \textit{wordsTheory}. However, this theory doesn't contain anything about memories or arrays in general. Therefore, some modifications are needed.
+HOL4 features a library for interfacing \gls{SMT} solvers and HOL4, called \textit{HolSmtLib}. This library supports Yices 1 and Z3 as external provers. Yices 1 being an abandoned project that doesn't support SMT-LIB 2.0, we will focus on Z3 and the standard format SMT-LIB 2.0. While \textit{HolSmtLib} supports export for some SMT-LIB 2.0 theories, it doesn't support the \textit{ArraysEx} theory and doesn't know about BIR. In Section \ref{contract-verif-holba}, we discussed the translation from BIR expressions to \textit{wordsTheory}. However, this theory doesn't contain anything about memories or arrays in general. Therefore, some modifications are needed.
 
 \todo{Cite SMT-LIB 2.0}
 
@@ -442,12 +442,61 @@ There exist five types of BIR expressions operating directly on memories (cf. Li
 
 \begin{itemize}
     \item \texttt{BExp\_Den}: this operation enables reading values from the environment. It is analogous to reading registers or the memory in assembly programs. This operation semantically equivalent to free variables that \textit{HolSmtLib} already support.
-    \item \texttt{BExp\_MemEq}: this operation is the equality binary operation on BIR memories. This operation is semantically equivalent to equality between its operands. \textit{HolSmtLib} already support this operation.
-    \item \texttt{BExp\_Load}: this operation is used to read from memories. 
-    BIR memories are semantically defined as functions from addresses to values. 
-    \item \texttt{BExp\_Store}: this operation is the dual of \texttt{BExp\_Load} used to represent memory writes.
+    \item \texttt{BExp\_MemEq}: this operation is the equality binary operation on BIR memories. This operation is semantically equivalent to equality between its operands. \textit{HolSmtLib} already supports this operation.
+    \item \texttt{BExp\_Store}: this operation is used to represent memory writes. It is semantically defined as successive function updates of consecutive segments of the word being stored, because the length of the memory value-type can be less or equal than the length of values stored in the memory. A function update in \textit{combinTheory} is defined with Definition \ref{combin_UPDATE_def}. \textit{HolSmtLib} cannot currently export function update operations.
+    \item \texttt{BExp\_Load}: this operation is used to read from memories. BIR memories are semantically defined as functions from addresses to values. A function application in \textit{combinTheory} is defined with Definition \ref{combin_APP_def}. Then, a memory load operation is the concatenation of multiple function application of consecutive addresses. \textit{HolSmtLib} supports function application of uninterpreted functions only.
 \end{itemize}
 
+\begin{equation}
+    \vdash \forall a~b.~a~\text{=+}~b = (\lambda f~c.~\text{if}~a = c~\text{then}~b~\text{else}~f~c)
+    \label{combin_UPDATE_def}
+\end{equation}
+
+\begin{equation}
+    \vdash \forall x~f.~x~\text{:>}~f = f~x
+    \label{combin_APP_def}
+\end{equation}
+
+We saw in the previous list that we need to implement the support for \textit{combinTheory} function update and application in the \textit{HolSmtLib} SMT-LIB 2.0 exporter. Since we only need two operations on the memory, load and store, the \textit{ArraysEx} theory is a good fit.
+
+SMT-LIB 2.0 \cite{smtlib} defines the \textit{ArraysEx} theory using the three following axioms:
+
+\begin{lstlisting}[
+    language=Lisp,
+    backgroundcolor=\color{codebackcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    stringstyle=\color{codepurple},
+    label=smtlib_arrayex_axioms,caption=SMT-LIB 2.0 axioms of the \textit{ArrayEx} theory.,
+    frame=tb,basicstyle=\footnotesize\ttfamily]
+(forall ((a (Array s1 s2)) (i s1) (e s2))
+  (= (select (store a i e) i) e)) 
+
+(forall ((a (Array s1 s2)) (i s1) (j s1) (e s2))
+  (=> (distinct i j)
+      (= (select (store a i e) j) (select a j))))
+
+(forall ((a (Array s1 s2)) (b (Array s1 s2)))
+  (=> (forall ((i s1)) (= (select a i) (select b i)))
+      (= a b)))
+\end{lstlisting}
+
+If those axioms hold in \textit{combinTheory} then the translation is sound. \textit{combinTheory}'s \textit{UPDATE\_APPLY} theorem in Equation \ref{combin_UPDATE_APPLY} is equivalent to the first two theorems, the first and the second conjunct corresponding respectively to the first and the second axiom. The third axiom can be proved using both \textit{combinTheory}'s \textit{APP\_def} theorem (Theorem \ref{combin_APP_def}) and \textit{boolTheory}'s \textit{EQ\_EXT} theorem (Theorem \ref{bool_EQ_EXT})
+
+\begin{equation}
+    \begin{split}
+        \vdash &  ~~~~ \forall a~x~f.~(a~\text{=+}~x)~f~a = x\\
+               & \land \forall a~b~x~f.~a \neq b \implies ((a~\text{=+}~x)~f~b = f~b)
+    \end{split}
+    \label{combin_UPDATE_APPLY}
+\end{equation}
+
+\begin{equation}
+    \vdash \forall f~g.~(\forall x.~f~x = g~x) \implies (f = g)
+    \label{bool_EQ_EXT}
+\end{equation}
+
+Since this translation is sound, it has been added in \textit{HolSmtLib}. The translation is direct: from \texttt{:>} and \texttt{=+} to respectively \texttt{select} and \texttt{store}. Section \ref{addreq_test} presents a test using BIR memories.
 
 
 \section{Implementation of a non proof-producing automatic contract verification library} \label{impl-non-pp-wp-lib}
@@ -456,7 +505,7 @@ In the previous section, we learned about contract verification and the current 
 
 \subsection{Exporting BIR expressions to SMT solvers} \label{exporting-bir-to-smt}
 
-As an intermediate language for formal verification, \gls{BIR} possesses a precise semantic. The semantic of BIR expressions is expressed as a set of definitions \todo{axioms?} describing what are the equivalent operations using \textit{wordsTheory}. This theory contains definitions and theorems about ``words'', i.e. bounded $N$-bit integers that are used to reason about integer types in programming languages and hardware memory in general. For example, the semantic of binary operators in BIR is defined with the following theorems\footnotemark:
+As an intermediate language for formal verification, \gls{BIR} possesses a precise semantic. The semantic of BIR expressions is expressed as a set of definitions \todo{axioms?} describing what are the equivalent operations using \textit{wordsTheory} and \textit{combinTheory}. These theories contains definitions and theorems about ``words'', i.e. bounded $N$-bit integers that are used to reason about integer types in programming languages and hardware memory in general, and function application and update used for BIR memories as already discussed in Section \ref{bir-memories-with-smt-solvers}. For example, the semantic of binary operators in BIR is defined with the following theorems\footnotemark:
 
 \footnotetext{Theorems \ref{bir_bin_exp_GET_OPER_def} and \ref{bir_bin_exp_def} have been reduced to only two operators and well-typed 64-bit expressions.}
 
@@ -487,7 +536,7 @@ For this reason---i.e. writing proof-producing code is costly---, I decided to w
     \item write a comprehensive suite of tests.
 \end{itemize}
 
-BIR expressions are defined as a HOL4 algebraic data type in Listing \ref{bir_exp_t_def}. Hence, in order to translate BIR expressions to words expressions, we need to handle every variant. This has been done \footnote{Code available here: \url{https://github.com/kth-step/HolBA/commit/2fcca54dcb04a20716e7697f64b5a4578f8a8af9}} using an exhaustive \texttt{if-then-else} statement\footnotemark. The code is mostly destructuring HOL4 terms and creating new \textit{wordsTheory} terms. In order to obtain an easily reviewable code, a balance between expressivity and conciseness has to be carefully decided. Table \ref{bir_exp_to_words_variants_loc} shows that the length of each variant is relatively small in terms of lines of codes, from 1 line for constants to 51 for memory store expressions. This achieves the first point of the previous list.
+BIR expressions are defined as a HOL4 algebraic data type in Listing \ref{bir_exp_t_def}. Hence, in order to translate BIR expressions to words expressions, we need to handle every variant. This has been done \footnote{Code available here: \url{https://github.com/kth-step/HolBA/commit/2fcca54dcb04a20716e7697f64b5a4578f8a8af9}} using an exhaustive \texttt{if-then-else} statement\footnotemark. The code is mostly destructuring HOL4 terms and creating new \textit{wordsTheory} and \textit{combinTheory} terms. In order to obtain an easily reviewable code, a balance between expressivity and conciseness has to be carefully decided. Table \ref{bir_exp_to_words_variants_loc} shows that the length of each variant is relatively small in terms of lines of codes, from 1 line for constants to 51 for memory store expressions. This achieves the first point of the previous list.
 
 \footnotetext{Pattern matching would have been optimal, but isn't possible because of how HOL4 is embedded in SML.}
 
@@ -630,7 +679,7 @@ fun prove_contract contract_name prog_def
     (postcond_lbl_list, postcond_bir_exp)
 \end{lstlisting}
 
-Listing \ref{ideal_interface_prove_contract} leverages the general idea of how the weakest precondition generation procedure works: it starts from end labels, setting the weakest precondition there to the postcondition, then propagate the weakest precondition of each node of the \gls{CFG} to the previous nodes, and stops when it meets the entry label. Then, it is in theory possible to provide different postconditions to each end label, hence the last parameter being a list of $(end\_label, postcond\_exp)$ pairs. However, the current tool only supports using the same postcondition for the multiple end labels, therefore the interface has been constrained\footnotemark.
+Interface in Listing \ref{ideal_interface_prove_contract} leverages the general idea of how the weakest precondition generation procedure works: it starts from end labels, setting the weakest precondition there to the postcondition, then propagate the weakest precondition of each node of the \gls{CFG} to the previous nodes, and stops when it meets the entry label. Then, it is in theory possible to provide different postconditions to each end label, hence the last parameter being a list of $(end\_label, postcond\_exp)$ pairs. However, the current tool only supports using the same postcondition for the multiple end labels, therefore the interface has been constrained\footnotemark.
 
 \footnotetext{A proposal is being discussed at the time of writing this report about making the weakest precondition generation and the Hoare triple definition more general, and possibly allowing this feature.}
 
@@ -644,7 +693,7 @@ Performing simple proofs is needed in order to test that the proof procedure wor
 
 \footnotetext{The test on conditional jumps has been introduced in order to fix a bug in the weakest precondition simplification library.}
 
-\subsubsection{Conditional jump}
+\subsubsection{Conditional jump} \label{cjmp_test}
 
 Here we are interested in testing the \texttt{prove\_contract} function in the presence of a conditional jump with its condition being just an equality test. Feature-wise, this test contains only jump, conditional jump and assignment statements. Listing \ref{cjmp_test_pseudocode} gives a pseudocode representation of this test program, the conditional jump being represented with the \texttt{goto-if-then-else} construct.
 
@@ -705,9 +754,9 @@ Figure \ref{test_cjmp_bir} shows the auto-generated BIR $P \implies \WP$ express
     \label{test_cjmp_words}
 \end{equation}
 
-\subsubsection{Load and store test}
+\subsubsection{Load and store test} \label{addreq_test}
 
-The \gls{NIC} manipulating a buffer descriptor queue, represented in BIR using memories, we need to ensure that \texttt{prove\_contract} works with programs containing memories. In this test, we will store a number $N$ in memory at address \textit{A}, then load a number into $x$ from address \textbf{B}. We want to check the following Hoare Triple: \htriple{A=B}{prog}{x=N}. Listing \ref{test_addreq_pseudocode} shows the equivalent pseudocode of the test program, Figure \ref{test_addreq_bir} the auto-generated $P \implies \WP$ expression and Figure \ref{test_addreq_words} the same expression translated in \textit{wordsTheory}.
+The \gls{NIC} manipulating a buffer descriptor queue, represented in BIR using memories, we need to ensure that \texttt{prove\_contract} works with programs containing memories. In this test, we will store a number $N$ in memory at address \textit{A}, then load a number into $x$ from address \textbf{B}. We want to check the following Hoare Triple: \htriple{A=B}{prog}{x=N}. Listing \ref{test_addreq_pseudocode} shows the equivalent pseudocode of the test program, Figure \ref{test_addreq_bir} the auto-generated $P \implies \WP$ expression, Figure \ref{test_addreq_words} the same expression translated in \textit{wordsTheory} and Listing \ref{test_addreq_smtlib} the auto-generated SMT-LIB 2.0 instance featuring \texttt{select} and \texttt{store} operations.
 
 \begin{lstlisting}[
     language=C,
@@ -735,20 +784,76 @@ x = load(MEM, ADDR2)
 	\label{test_addreq_words}
 \end{figure}
 
+\begin{lstlisting}[
+    language={},
+    backgroundcolor=\color{codebackcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    stringstyle=\color{codepurple},
+    label=test_addreq_smtlib,caption=Autogenerated SMT instance for the \textit{load and store} test,
+    frame=tb,basicstyle=\footnotesize\ttfamily,
+    float,floatplacement=H,
+    breaklines=true,postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}]
+(set-info :source |Automatically generated from HOL4 by SmtLib.goal_to_SmtLib.
+Copyright (c) 2011 Tjark Weber. All rights reserved.|)
+(set-info :smt-lib-version 2.0)
+(declare-fun v0_ADDR1 () (_ BitVec 32))
+(declare-fun v1_ADDR2 () (_ BitVec 32))
+(declare-fun v2_MEM_wp_0 ()
+  (Array (_ BitVec 32) (_ BitVec 8)))
+(declare-fun v3_MEM ()
+  (Array (_ BitVec 32) (_ BitVec 8)))
+(assert
+ (not
+  (=
+   (bvor
+    (bvnot (ite (= v0_ADDR1 v1_ADDR2)
+                (_ bv1 1) (_ bv0 1)))
+    (bvor
+     (bvnot
+      (ite
+       (= v2_MEM_wp_0
+        (store
+         (store
+          v3_MEM
+          (bvadd v0_ADDR1 (_ bv1 32))
+          ((_ zero_extend 0) ((_ extract 15 8) (_ bv42 16))))
+         (bvadd v0_ADDR1 (_ bv0 32))
+         ((_ zero_extend 0) ((_ extract 7 0) (_ bv42 16)))))
+       (_ bv1 1)
+       (_ bv0 1)))
+     (ite
+      (=
+       (concat
+        (select v2_MEM_wp_0 (bvadd v1_ADDR2 (_ bv1 32)))
+        (select v2_MEM_wp_0 (bvadd v1_ADDR2 (_ bv0 32))))
+       (_ bv42 16))
+      (_ bv1 1)
+      (_ bv0 1))))
+   (_ bv1 1))))
+(check-sat)
+(exit)
+\end{lstlisting}
+
 This expression is harder to prove manually. However, SMT solvers can report very efficiently that the negated expression is unsatisfiable, proving the contract. Therefore, we see that contracts involving BIR memories can be proved, thanks to the work of Section \ref{bir-memories-with-smt-solvers}.
 
-Other preconditions have been tested to verify that \texttt{prove\_contract} doesn't prove false contracts and succeeds to prove true ones. With the current program, the precondition $load(MEM,B=N) \land B=A+2$ can establish the postcondition. The second conjunct is important because $N$ is stored in two consecutive 8-bit memory locations. Interestingly, the contract $\bot$ works for all contracts, because $\forall x.~\bot \implies x$, and it works in this particular case.
+Other preconditions have been tested to verify that \texttt{prove\_contract} doesn't prove false contracts and succeeds to prove true ones. With the current program, the precondition $load(MEM,B=N) \land B=A+2$ can establish the postcondition. The second conjunct is important because $N$ is stored in two consecutive 8-bit memory locations. Interestingly, the precondition $\bot$ works for all contracts, because $\forall x.~\bot \implies x$, and it works in this particular case.
 
 % TODO? \subsubsection{Gauss}
 % If yes, change "two" to "three" in the subsection intro
 
 \subsection{Simple automatized proofs on the NIC model}
 
-In Chapter \ref{nic-model} we implemented parts of the NIC model using BIR. - Prove invariants
+In Chapter \ref{nic-model} we implemented parts of the NIC model using BIR.
++ Prove invariants
++ say that we cannot prove everything that we need
++ conclude on this section
 
 \section{Trustful analysis on the NIC model} \label{trustful-nic-analysis}
 
-bisimulation and lifting are recurring ideas in trustful binary verification.
+%bisimulation and lifting are recurring ideas in trustful binary verification.
+
+In the previous section, we implemented an automated non proof-producing contract verification library, the non proof-producing part being the translation from BIR expressions to the equivalent \textit{wordsTheory} and \textit{combinTheory} expression. Moreover, this verification library can only produce contracts on BIR programs. In order to perform trustworthy verification on the \gls{NIC} model, we need to make proofs directly on the \gls{NIC} model. In this section, we will perform a proof on a BIR program and then lift it to the \gls{NIC} model.
 
 \chapter{Conclusions}
 \section{Results}
@@ -771,6 +876,13 @@ One-button proofs:
 \end{itemize}
 
 Mention the "future" meeting that we had on the 29/05/2019.
+
+Sound satisfiability solver for bitvectors to check if the precondition entails the weakest precondition -> same for arrays:
+
+\begin{itemize}
+    \item B ohme,  S.,  Fox,  A.C.,  Sewell,  T.,  Weber,  T.:  Reconstruction  of  Z3's  Bit-VectorProofs in HOL4 and Isabelle/HOL. In: Certified Programs and Proofs: First Inter-national Conference. pp. 183--198. Springer (2011)
+    \item https://arxiv.org/pdf/1807.10664.pdf
+\end{itemize}
 
 \section{Future work}
 
