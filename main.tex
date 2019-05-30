@@ -853,7 +853,121 @@ In Chapter \ref{nic-model} we implemented parts of the NIC model using BIR.
 
 %bisimulation and lifting are recurring ideas in trustful binary verification.
 
-In the previous section, we implemented an automated non proof-producing contract verification library, the non proof-producing part being the translation from BIR expressions to the equivalent \textit{wordsTheory} and \textit{combinTheory} expression. Moreover, this verification library can only produce contracts on BIR programs. In order to perform trustworthy verification on the \gls{NIC} model, we need to make proofs directly on the \gls{NIC} model. In this section, we will perform a proof on a BIR program and then lift it to the \gls{NIC} model.
+In the previous section, we implemented an automated non proof-producing contract verification library, the non proof-producing part being the translation from BIR expressions to the equivalent \textit{wordsTheory} and \textit{combinTheory} expression. Moreover, this verification library can only produce contracts on BIR programs. In order to perform trustworthy verification on the \gls{NIC} model, we need to make proofs directly on the \gls{NIC} state. In this section, we will perform a proof on a BIR program and then lift it to the \gls{NIC} model.
+
+In order to prove the feasibility of this approach, we will prove a simple property. Listing \ref{proof_nic_state} contains the NIC state on which we want to prove a property, Equation \ref{proof_goal} presents the property that we want to prove, and Listing \ref{proof_prog} contains a pseudocode representation of the BIR program on which we will perform the verification. Figure \ref{proof_schema} represents visually the structure of the verification and the steps that we will take during the proof. 
+
+\begin{lstlisting}[
+    language={},
+    backgroundcolor=\color{codebackcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    stringstyle=\color{codepurple},
+    label=proof_nic_state,caption=NIC state used in this proof,
+    frame=tb,basicstyle=\footnotesize\ttfamily]
+Datatype `nic_state = <|
+  dead : bool;
+  x : word32
+|>`
+\end{lstlisting}
+
+\begin{small}
+\begin{equation}
+\begin{split}
+    \vdash \forall nic~nic'.~&(\neg nic.dead \land nic.x = 0 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \text{\{P\}}\\
+                             &~~~~\land nic' = holprog~nic) ~~~~~~~~~~~~~~~~~~~~~~~~~~ \text{prog}\\
+                          &\implies \neg nic'.dead \land nic'.x = nic.x + 1 ~~~~ \text{\{Q\}}
+\end{split}
+\label{proof_goal}
+\end{equation}
+\end{small}
+
+\begin{lstlisting}[
+    language=C,
+    backgroundcolor=\color{codebackcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    stringstyle=\color{codepurple},
+    label=proof_prog,caption=Pseudocode of the program used in this proof,
+    frame=tb,basicstyle=\footnotesize\ttfamily]
+nic.x := nic.x + 1
+if nic.x > 10:
+    nic.dead := true
+\end{lstlisting}
+
+\begin{figure}[!h]
+	\includegraphics[height=5cm]{figures/proof_schema.png}
+	\centering
+	\caption{Visual structure of the proof}
+	\label{proof_schema}
+\end{figure}
+
+We recognize in Equation \ref{proof_goal} the equation of a Hoare Triple:
+
+\htriple{P(nic)}{bir\_prog}{Q(nic,nic')}.
+
+As already discussed \todo{make sure it is} in Section \ref{nic-model}, this structure is very common in the base lemmas of the existing proof on the \gls{NIC} model.
+%However, the particularity of this Hoare Triple is that the postcondition is a function of both the initial and the final state. With the library of the previous section, postconditions involving both states are possible but involve the introduction of ghost variables.
+
+\subsubsection{Proof of Equation \ref{proof_goal}}
+
+\textit{\textbf{Note}: The proof has been simplified in order to focus on its global structure.}
+
+All we should have to know is the NIC state definition and some equivalence theorem saying that ``NIC' = prog NIC`` (a) is equivalent to executing the BIR program from a state \textit{bir\_state} to a state \textit{bir\_state'} (c), where NIC is somehow equivalent to \textit{bir\_state} (b) and NIC' somehow equivalent to \textit{bir\_state'} (d).
+
+To express the equivalence between HOL4 states ("NIC") and BIR states, we introduce a relation $R$. The relation $R~nic~bir\_state$ is defined as a simple mapping between the BIR state and the NIC state, as shown in Listing \ref{R_def}.
+
+\begin{lstlisting}[
+    language=C,
+    backgroundcolor=\color{codebackcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    stringstyle=\color{codepurple},
+    label=R_def,caption=Definition of the relation $R$,
+    frame=tb,basicstyle=\footnotesize\ttfamily]
+val R_def = Define `
+  R (nic: nic_state) (bir_state: bir_state_t) <=>
+    /\ (bir_env_lookup "nic_dead" bir_state.bst_environ
+          = SOME (BType_Bool,
+                  SOME (bool2bval nic.dead)))
+    /\ (bir_env_lookup "nic_x" bir_state.bst_environ
+          = SOME (BType_Imm Bit32,
+                  SOME (w2bval32 nic.x))))`
+\end{lstlisting}
+
+We also need an equivalence theorem between the HOL4 definition (a) and the BIR program (c). In real proofs, this can be produced either by a lifter which generates the BIR program from a given input program and gives a ``certificate'', i.e. a theorem stating the equivalence, this can be a definition which would then mean that we trust that the BIR program is equivalent to the HOL4 definition. For this proof, we decide to use a definition:
+
+\begin{small}
+\begin{equation}
+\begin{split}
+  \vdash \forall nic~nic'. & (exec\_prog~nic~bir\_prog~nic') ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \text{(a)}\\
+    \Leftrightarrow~&\forall bir\_state~bir\_state'.\\
+          & ~~~~~~ (R~nic~bir\_state ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \text{(b)}\\
+          & ~~~~~~ \land bir\_state' = BIR\_exec~prog~bir\_state) ~~~~~ \text{(c)}\\
+          & ~~~~~~ \implies R~nic'~bir\_state' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \text{(d)}
+\end{split}
+\label{eq_thm}
+\end{equation}
+\end{small}
+                                                                        
+
+
+
+
+
+
+In step (a) of our proof, we will need a theorem about the injectivity of the relation $R$:
+
+\begin{equation}
+\begin{split}
+    \vdash \forall nic.~\exists bir\_state.~R~nic~bir\_state
+\end{split}
+\label{R_inj_thm}
+\end{equation}
+
+
+
+
 
 \chapter{Conclusions}
 \section{Results}
@@ -883,6 +997,8 @@ Sound satisfiability solver for bitvectors to check if the precondition entails 
     \item B ohme,  S.,  Fox,  A.C.,  Sewell,  T.,  Weber,  T.:  Reconstruction  of  Z3's  Bit-VectorProofs in HOL4 and Isabelle/HOL. In: Certified Programs and Proofs: First Inter-national Conference. pp. 183--198. Springer (2011)
     \item https://arxiv.org/pdf/1807.10664.pdf
 \end{itemize}
+
+Proof: automate
 
 \section{Future work}
 
