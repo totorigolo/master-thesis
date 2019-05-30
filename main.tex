@@ -13,6 +13,7 @@
 \usepackage{parskip} % empty line between paragraphs
 \usepackage[textwidth=2cm]{todonotes}
 \usepackage{listings}
+\usepackage{float}
 \usepackage{pmboxdraw}
 
 % hyperref setup
@@ -82,10 +83,15 @@
     name={BIR},
     description={\acrshort{holba}'s machine-independent binary intermediate language}
 }
+\newglossaryentry{BSL} {
+    name={BSL},
+    description={BIR Simple Language. It is also a word play with DSL which means Domain Specific Language}
+}
 \newacronym{isa}{ISA}{Instruction Set Architecture}
 \newacronym{SMT}{SMT}{Satisfiability Modulo Theories}
 \newacronym{SAT}{SAT}{Boolean SATisfiability Problem}
 \newacronym{NIC}{NIC}{Network Interface Controller}
+\newacronym{CFG}{CFG}{Control Flow Graph}
 
 %% End of Glossary
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -148,8 +154,9 @@
 \listoftodos
 \todo{Include:%
 a) Git workflow for a team;%
-b) LogLib (and tracing in general);%
+b) LogLib (and tracing in general); -> annex%
 c) CI to track regressions + static analysis;%
+d) Simple interface for CFG lib;%
 }
 
 \tableofcontents
@@ -195,21 +202,21 @@ c) CI to track regressions + static analysis;%
 % * Introduction des WP
 %   - Rappels sur le WP existant dans HolBA
 % * Explication de l'utilisation de SMT solver
-%   - Ajout des arrays dans l'export existant
-%   - Experiments with SMT (before and after array): without and with BIR
+%???   - Ajout des arrays dans l'export existant
+%???   - Experiments with SMT (before and after array): without and with BIR
 %   --- With BIR needed BIR EXP -> Words (why?)
-%   ----- Non proof-producing + explain why (mention that PP has been done in the proof)
+%!!!   ----- Non proof-producing + explain why (mention that PP has been done in the proof)
 % * Non proof-producing WP lib
-%   + easy
-%   - proof-producing would have been feasible
-%     -> but would have took more time, that's not the aim of the thesis
+%!!!   + easy
+%!!!   - proof-producing would have been feasible
+%!!!     -> but would have took more time, that's not the aim of the thesis
 % * BIR PP because huge WP BIR expressions
 % * WP tests
 %   - simple
 %   - Gauss analysis (how to handle loop, mult problem with SMT)
 %   - memories
 %   - cjmp bug?
-%   - explain the simp (ie. the subst theory) + the exponential growth issue
+%   - explain the simp (ie. the subst theory) + the exponential growth issue ? should I explain it ?
 % * Using the WP tool on simple properties on the BIR NIC model
 %   - Remind about the impossibility to express certain properties using contracts
 % * Explain the PP proof
@@ -237,6 +244,8 @@ In order to perform the verification, the Hoare logic introduces a set of axioms
   \htriple{P[f/x]}{x:=f}{P}
   \label{axiom_assignment_def}
 \end{equation}
+
+\todo{Introduce labels? \htriple{l1:P}{l1->\{l2,l3\}}{l2:Q,l3:Q'}}
 
 \subsection{Weakest precondition derivation}
 
@@ -338,13 +347,13 @@ This tool doesn't provide a simple interface to compute weakest preconditions fo
 Assuming well-typedness and initialization, after rewriting the definition of $bir\_exec\_to\_labels\_triple$, we have to show $bir\_eval\_exp~\mathbf{wp}~s.bst\_environ~=~bir\_val\_true$ in order to prove our goal using the \textit{modus ponens} with Theorem \ref{triple_wp_thm}. This correspond to proving the following implication:
 
 \begin{small}
-\begin{equation}
-\begin{split}
-    &bir\_eval\_exp~\mathbf{pre}~s.bst\_environ~=~bir\_val\_true\\
-    &\implies bir\_eval\_exp~\mathbf{wp}~s.bst\_environ~=~bir\_val\_true
-\end{split}
-\label{eval_pre_imp_eval_wp}
-\end{equation}
+    \begin{equation}
+        \begin{split}
+            &bir\_eval\_exp~\mathbf{pre}~s.bst\_environ~=~bir\_val\_true\\
+            &\implies bir\_eval\_exp~\mathbf{wp}~s.bst\_environ~=~bir\_val\_true
+        \end{split}
+        \label{eval_pre_imp_eval_wp}
+    \end{equation}
 \end{small}
 
 In Equation \ref{eval_pre_imp_eval_wp} we can recognize Equation \ref{p_imp_wp} that we discussed how to prove using \gls{SMT} solvers in Section \ref{using-smt-to-prove-contracts}. However, the expressions are expressed as BIR expressions. We then have to find a way to use an SMT solver. This is the focus of the following of this thesis. Section \ref{impl-non-pp-wp-lib} will use a non proof-producing method for translating those BIR expressions into an equivalent formula that SMT solvers can work on, then focus on automating the whole verification process. Section \ref{trustful-nic-analysis} will complete this proof and use it to lift properties that have been proved on the BIR implementation to the \gls{NIC} model.
@@ -413,7 +422,7 @@ Datatype `bir_exp_t =
   | BExp_Store      bir_exp_t bir_exp_t bir_endian_t bir_exp_t`
 \end{lstlisting}
 
-\begin{table}[h!]
+\begin{table}[ht!]
     \centering
     \begin{tabular}{ | l | c | }
         \hline
@@ -440,7 +449,7 @@ Datatype `bir_exp_t =
 
 When working with complex constructs, the need of visualization techniques often arise. Generated weakest preconditions grow quickly with the number of statements in a program, linearly or exponentially depending on the type of statements---control flow statements produce exponential growth. While clever techniques can be implemented to keep their size reasonable \cite{lindner_trabin:_2019}, we often need to read and analyze them.
 
-Printing of BIR terms in general is very verbose. For example, the expression \ref{pp_ex_math_exp} with a 64-bit $x$ integer defined using the BSL code in Listing \ref{pp_ex_bsl_code} yields Listing \ref{pp_ex_default_printing} using HOL4's default printing capabilities.
+Printing of BIR terms in general is very verbose. For example, the expression \ref{pp_ex_math_exp} with a 64-bit $x$ integer defined using the BSL code in Listing \ref{pp_ex_bsl_code} yields the printing in Figure \ref{pp_ex_default_printing} using HOL4's default printing capabilities.
 
 \begin{equation}
     \text{if}~~(x \leq 100) \lor (y + 1 > 10) \lor (x + y \leq 20)~~\text{then}~~2 \times x~~\text{else}~~3 \times y + 1
@@ -449,12 +458,13 @@ Printing of BIR terms in general is very verbose. For example, the expression \r
 
 \begin{lstlisting}[
     language=Caml,
-    backgroundcolor=\color{codebackcolour},   
+    backgroundcolor=\color{codebackcolour},
     commentstyle=\color{codegreen},
     keywordstyle=\color{magenta},
     stringstyle=\color{codepurple},
     label=pp_ex_bsl_code,caption=BSL code,
-    frame=tb,basicstyle=\footnotesize\ttfamily]
+    frame=tb,basicstyle=\footnotesize\ttfamily,
+    float,floatplacement=H]
 bite (
   borl [
     ble ((bden o bvarimm64) "x", bconst64 100),
@@ -470,100 +480,211 @@ bite (
          bconst64 1))
 \end{lstlisting}
 
-\begin{lstlisting}[%
-    label=pp_ex_default_printing,caption=Default HOL4 printing,%
-    frame=tb,basicstyle=\footnotesize\ttfamily]
-BExp_IfThenElse
-  (BExp_BinExp BIExp_Or
-     (BExp_BinExp BIExp_Or
-        (BExp_BinPred BIExp_LessOrEqual
-           (BExp_Den (BVar "x" (BType_Imm Bit64)))
-           (BExp_Const (Imm64 100w)))
-        (BExp_UnaryExp BIExp_Not
-           (BExp_BinPred BIExp_LessOrEqual
-              (BExp_BinExp BIExp_Plus
-                 (BExp_Den (BVar "y" (BType_Imm Bit64)))
-                 (BExp_Const (Imm64 1w)))
-              (BExp_Const (Imm64 10w)))))
-     (BExp_BinPred BIExp_LessOrEqual
-        (BExp_BinExp BIExp_Plus
-           (BExp_Den (BVar "x" (BType_Imm Bit64)))
-           (BExp_Den (BVar "y" (BType_Imm Bit64))))
-        (BExp_Const (Imm64 20w))))
-  (BExp_BinExp BIExp_Mult
-     (BExp_Den (BVar "x" (BType_Imm Bit64)))
-     (BExp_Const (Imm64 2w)))
-  (BExp_BinExp BIExp_Plus
-     (BExp_BinExp BIExp_Mult
-        (BExp_Den (BVar "x" (BType_Imm Bit64)))
-        (BExp_Const (Imm64 3w))) (BExp_Const (Imm64 1w)))
+\begin{figure}[!h]
+	\includegraphics[width=\textwidth]{figures/pp_ex_default_printing.png}
+	\centering
+	\caption{Default HOL4 printing}
+	\label{pp_ex_default_printing}
+\end{figure}
+
+This expression is relatively small and yet the printed term is 17 lines long. Compared to the BSL expression that is 8 lines long\footnotemark, that is a two time increase in size. Moreover, lines are long and verbose: for example, a ``less-than'' binary expression is written as ``\texttt{BExp\_BinPred BIExp\_LessOrEqual e1 e2}''. Comparatively, the math expression ``$e1 \leq e2$'' and BSL expression ``\texttt{ble e1 e2}'' are shorter and arguably more readable.
+
+\footnotetext{8 lines correspond to the length in documents where line length is limited to 100 characters, instead of the 60 in the report.}
+
+To answer to these kinds of issues, HOL4 provides the ability to implement ``pretty-printers'', which are custom printing functions for a given type. Four pretty-printers have been implemented to shorten the verbosity of the printed representation and to add colors to the output. Figure \ref{pp_ex_pretty_printing} shows the same expression printed with the pretty-printers enabled.
+
+\begin{figure}[!h]
+	\includegraphics[width=\textwidth]{figures/pp_ex_pretty_printing.png}
+	\centering
+	\caption{Same expression printed with the pretty-printer enabled}
+	\label{pp_ex_pretty_printing}
+\end{figure}
+
+The pretty-printers introduce a set of features:
+
+\begin{itemize}
+    \item Simplification of verbose constructs as discussed before (e.g. \texttt{BExp\_BinExp BIExp\_Or} is written as \texttt{BExp\_Or}).
+    \item Different representation of ``if-then-else'' statements, simplifying reading the expression when either the condition or the ``then'' expression are very long.
+    \item Consistent breaking---new lines---of long expressions, because the default printer isn't aware of the structure of printed expressions. In Figure \ref{pp_ex_default_printing}, we can see inconsistent breaking in addition and multiplication binary operations.
+    \item Highlighting of types, facilitating debugging when the expression isn't well-typed.
+    \item Highlighting of all strings, facilitating reading labels and variable names.
+    \item Gathering of nested binary expressions of the same type on the same level. We can see this feature in Figure \ref{pp_ex_pretty_printing} with the two nested ``or'' binary operators, where the three operands are printed on the same level.
+    \item Rainbow parenthesis, i.e. matching pairs of parenthesis are printed in the same color. This feature is really useful when reading long expression in order to quickly identify where a sub-expression ends.
+\end{itemize}
+
+\subsection{Implementing a convenient interface} \label{impl_convenient_ht_interface}
+
+In order to perform a high number of proofs on the \gls{NIC} model, we want to hide as much as possible the implementation details of the contract verification procedure. Ideally, we want a function ``\texttt{prove\_contract}'' taking a program fragment, a pre- and a post-condition as parameters, and producing a proof about the Hoare triple if the contract holds or a comprehensive and useful error message if it doesn't. Listing \ref{ideal_interface_prove_contract} shows the ideal interface that we would want, and Listing \ref{interface_prove_contract} shows the actual interface that have been implemented.
+
+\begin{lstlisting}[
+    language=Caml,
+    backgroundcolor=\color{codebackcolour},
+    keywordstyle=\color{magenta},
+    label=ideal_interface_prove_contract,caption=Ideal interface for ``\texttt{prove\_contract}'',
+    frame=tb,basicstyle=\footnotesize\ttfamily,
+    float,floatplacement=H]
+fun prove_contract contract_name prog_def
+    (precond_lbl, precond_bir_exp)
+    postcond_lbl_and_bir_exp_list
 \end{lstlisting}
 
-This expression is relatively small and yet the printed term is 15 lines long\footnotemark. Compared to the BSL expression that is 8 lines long, that is almost a two time increase in size. Moreover, lines are long and verbose: for example, a ``less-than'' binary expression is written as ``\texttt{BExp\_BinPred BIExp\_LessOrEqual e1 e2}''. Comparatively, the math expression ``$e1 \leq e2$'' and BSL expression ``\texttt{ble e1 e2}'' are shorter and arguably more readable.
-
-\footnotetext{The numbers given here correspond to code written for lines up to 100 characters, which require less lines. This is to represent statistics in real code where lines are frequently limited to 100 characters instead of 60 used in this report.}
-
-To answer to these kind of issues, HOL4 provides the ability to implement ``pretty-printers'', which are custom printing functions for a given type. 4 pretty-printers have been implemented to shorten the verbosity of the printed representation and to add colors to the output.
-
-\begin{lstlisting}[%
-    label=pp_ex_default_printing,caption=Default HOL4 printing,%
-    frame=tb,basicstyle=\footnotesize\ttfamily]
-BExp_If
-  (BExp_Or
-     (BExp_LessOrEqual
-        (BExp_Den (BVar "x" (BType_Imm Bit64)))
-        (BExp_Const (Imm64 100w)))
-     (BExp_Not
-        (BExp_LessOrEqual
-           (BExp_Plus
-              (BExp_Den (BVar "y" (BType_Imm Bit64)))
-              (BExp_Const (Imm64 1w)))
-           (BExp_Const (Imm64 10w))))
-     (BExp_LessOrEqual
-        (BExp_Plus
-           (BExp_Den (BVar "x" (BType_Imm Bit64)))
-           (BExp_Den (BVar "y" (BType_Imm Bit64))))
-        (BExp_Const (Imm64 20w))))
-BExp_Then
-  (BExp_Mult
-     (BExp_Den (BVar "x" (BType_Imm Bit64)))
-     (BExp_Const (Imm64 2w)))
-BExp_Else
-  (BExp_Plus
-     (BExp_Mult
-        (BExp_Den (BVar "x" (BType_Imm Bit64)))
-        (BExp_Const (Imm64 3w)))
-     (BExp_Const (Imm64 1w)))
+\begin{lstlisting}[
+    language=Caml,
+    backgroundcolor=\color{codebackcolour},
+    keywordstyle=\color{magenta},
+    label=interface_prove_contract,caption=Actual interface for ``\texttt{prove\_contract}'',
+    frame=tb,basicstyle=\footnotesize\ttfamily,
+    float,floatplacement=H]
+fun prove_contract contract_name prog_def
+    (precond_lbl, precond_bir_exp)
+    (postcond_lbl_list, postcond_bir_exp)
 \end{lstlisting}
 
+Listing \ref{ideal_interface_prove_contract} leverages the general idea of how the weakest precondition generation procedure works: it starts from end labels, setting the weakest precondition there to the postcondition, then propagate the weakest precondition of each node of the \gls{CFG} to the previous nodes, and stops when it meets the entry label. Then, it is in theory possible to provide different postconditions to each end label, hence the last parameter being a list of $(end\_label, postcond\_exp)$ pairs. However, the current tool only supports using the same postcondition for the multiple end labels, therefore the interface has been constrained\footnotemark.
 
-+ less verbose
-+ colors (including rainbow parenthesis)
-+ give a feature table
-- not parsable yet
-- no infix operators
+\footnotetext{A proposal is being discussed at the time of writing this report about making the weakest precondition generation and the Hoare triple definition more general, and possibly allowing this feature.}
 
-\subsection{Implementing a convenient interface}
+When implementing this function, high attention has been paid to provide useful and comprehensive feedback in the case of failure. To that end, extensive use of exception wrapping has been made in order to give precise context to exceptions, and a logging library has been implemented (cf. Annex \ref{annex_loglib}).
 
-- One button solution (+ use BSL)
-- Nice error when it fails
+When using \gls{BSL} to express pre- and post-conditions, this function provides an automatic solution to prove contracts. In the following sections, we will then see usage of this function, first to test it and then to perform proofs on the NIC model.
 
-\subsection{Testing the library}
+\subsection{Testing the automatic proof procedure}
+
+Performing simple proofs is needed in order to test that the proof procedure works. The following examples introduce three of the tests that have been implemented, focusing on the critical parts of each of them. To this end, some liberties have been taken in order to reduce the complexity for the reader. Moreover, even if the test on conditional jumps has been the last one introduced in chronological order\footnotemark, it will be presented first because of its relative simplicity.
+
+\footnotetext{The test on conditional jumps has been introduced in order to fix a bug in the weakest precondition simplification library.}
+
+\subsubsection{Conditional jumps}
+
+Here we are interested in testing the \texttt{prove\_contract} function in the presence of a conditional jump with its condition being just an equality test. Feature-wise, this test contains only jump, conditional jump and assignment statements. Listing \ref{cjmp_test_pseudocode} gives a pseudocode representation of this test program, the conditional jump being represented with the \texttt{goto-if-then-else} construct.
+
+\begin{lstlisting}[
+    language=C,
+    backgroundcolor=\color{codebackcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    stringstyle=\color{codepurple},
+    label=cjmp_test_pseudocode,caption=Equivalent pseudocode of the \textit{cjmp} test,
+    frame=tb,basicstyle=\footnotesize\ttfamily,
+    float,floatplacement=H]
+entry:
+  x = 1;
+  goto (if x=1 then assign_y_100 else assign_y_200)
+assign_y_100:
+  y = 100;
+  goto end
+assign_y_200:
+  y = 200;
+  goto end
+end:
+\end{lstlisting}
+
+In this test, we want to check that the triple \htriple{\top}{prog}{y = 100} holds. Intuitively, this contract means ``for every possible initial state $S$, executing the program will result in a state $S'$ with $y=100$''. It is interesting to note that the precondition $\top$ means ``for every initial state'', analogous to the universal quantifier $\forall$ in logic. This comes from the fact that $\top$ is the weakest precondition possible: $\forall x.~x \implies \top$. Thus, for this Hoare Triple to hold, the generated weakest precondition must be $\top$. Listing \ref{cjmp_test_prove_contract_call} shows the invocation of \texttt{prove\_contract}.
+
+\begin{lstlisting}[
+    language=Caml,
+    backgroundcolor=\color{codebackcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    stringstyle=\color{codepurple},
+    label=cjmp_test_prove_contract_call,
+    caption=Invocation of \texttt{prove\_contract} for the \textit{cjmp} test,
+    frame=tb,basicstyle=\footnotesize\ttfamily,
+    float,floatplacement=H]
+val thm = prove_contract "cjmp"
+  cjmp_prog_def
+  (* Precondition *) (blabel_str "entry", btrue)
+  (* Postcondition *) (
+    [blabel_str "end"],
+    beq ((bden o bvarimm32) "y", bconst32 100)
+  )
+\end{lstlisting}
+
+Figure \ref{test_cjmp_bir} shows the auto-generated BIR $P \implies \WP$ expression, and Equation \ref{test_cjmp_words} shows the same expression after translation to a \textit{wordsTheory} expression. This expression can be trivially simplified to $\top$, which SMT solvers can very efficiently do. Hence, this invocation to \texttt{prove\_contract} succeeds.
+
+\begin{figure}[!h]
+	\includegraphics[width=\textwidth]{figures/test_cjmp_bir.png}
+	\centering
+	\caption{Auto-generated $P \implies \WP$ BIR expression for the \textit{cjmp} test}
+	\label{test_cjmp_bir}
+\end{figure}
+
+\begin{equation}
+    \top \lor
+    (\neg(x = 1w) \lor ((\neg(x = 1w) \lor 100w = 100w) \land (x = 1w \lor 200w = 100w)))
+    \label{test_cjmp_words}
+\end{equation}
+
+\subsubsection{Load and store test}
+
+The \gls{NIC} manipulating a buffer descriptor queue, represented in BIR using memories, we need to ensure that \texttt{prove\_contract} works with programs containing memories. In this test, we will store a number $N$ in memory at address \textit{A}, then load a number into $x$ from address \textbf{B}. We want to check the following Hoare Triple: \htriple{A=B}{prog}{x=N}. Listing \ref{test_addreq_pseudocode} shows the equivalent pseudocode of the test program, Figure \ref{test_addreq_bir} the auto-generated $P \implies \WP$ expression and Figure \ref{test_addreq_words} the same expression translated in \textit{wordsTheory}.
+
+\begin{lstlisting}[
+    language=C,
+    backgroundcolor=\color{codebackcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    stringstyle=\color{codepurple},
+    label=test_addreq_pseudocode,caption=Equivalent pseudocode of the \textit{load and store} test,
+    frame=tb,basicstyle=\footnotesize\ttfamily,
+    float,floatplacement=H]
+MEM = store(MEM, ADDR1, 42)
+x = load(MEM, ADDR2)
+\end{lstlisting}
+
+\begin{figure}[!h]
+	\includegraphics[width=\textwidth]{figures/test_addreq_bir.png}
+	\centering
+	\caption{Auto-generated $P \implies \WP$ BIR expression for the \textit{load and store} test}
+	\label{test_addreq_bir}
+\end{figure}
+
+\begin{figure}[!h]
+	\includegraphics[width=\textwidth]{figures/test_addreq_words.png}
+	\centering
+	\caption{$P \implies \WP$ expression translated in \textit{wordsTheory} for the \textit{load and store} test. \texttt{><} is the bitw}
+e extraction operation, \texttt{@@} the word concatenation operation, \texttt{|+} the memory update operation and \texttt{'} the memory load operation.	is\label{test_addreq_words}
+\end{figure}
+
+\subsubsection{Gauss}
 
 \subsection{Simple automatized proofs on the NIC model}
 
 \section{Trustful analysis on the NIC model} \label{trustful-nic-analysis}
 
+bisimulation and lifting are recurring ideas in trustful binary verification.
+
 \chapter{Conclusions}
 \section{Results}
 \section{Discussion}
+
+Pretty-printer, some work left:
+
+\begin{itemize}
+    \item not parsable yet
+    \item no infix operators
+    \item should change color of types (blue = free vars)
+\end{itemize}
+
+One-button proofs:
+
+\begin{itemize}
+    \item in binary verification, we work with ASM instead of clean C code. Therefore, pre-postconditions are harder to define. Hence, this one-button solution would need more support to easily define those expressions.
+    \item prove\_contract should take definitions instead of terms for P and Q
+    \item gives access to lower level functions (generate wp and simp), so it is still possible to get some control either when the proof doesn't work or if we need to use them for other tasks and compose them differently
+\end{itemize}
+
 \section{Future work}
 
 \printbibliography[heading=bibintoc]
 
 \appendix
 
-\chapter{Something Extra}
+\chapter{LogLib} \label{annex_loglib}
+
+Reference in Section \ref{impl_convenient_ht_interface}, but the need arised in general when debugging HOL4 code for tracing code (we can leave trace functions using LogLib and define different levels of verbosity).
+
+Introduce tracing in HOL4 in general
 
 \tailmatter % back cover page
 
