@@ -15,6 +15,7 @@
 \usepackage{listings}
 \usepackage{float}
 \usepackage{pmboxdraw}
+\usepackage{textcomp} % for the apostrophe
 
 % hyperref setup
 \definecolor{darkgreen}{RGB}{0,180,0}
@@ -291,7 +292,7 @@ A predicate $P$ holds if it evaluates to true for all possible values of its var
 
 Another way of thinking about how to prove logical formulas with \gls{SMT} solvers is by using De Morgan's Laws: we know that $\neg (P \implies \WP) \equiv (P \land \neg \WP)$. Therefore, proving that $\neg (P \implies \WP)$ is ``unsatisfiable'' using an \gls{SMT} solver can be seen as proving that there exist no model where $P$ holds and $\WP$ doesn't.
 
-\subsubsection{Reason about BIR memories with SMT solvers}
+\subsection{Reason about BIR memories with SMT solvers} \label{bir-memories-with-smt-solvers}
 
 \textbf{TODO}: About adding support for BIR memories
 
@@ -564,7 +565,7 @@ Here we are interested in testing the \texttt{prove\_contract} function in the p
     commentstyle=\color{codegreen},
     keywordstyle=\color{magenta},
     stringstyle=\color{codepurple},
-    label=cjmp_test_pseudocode,caption=Equivalent pseudocode of the \textit{cjmp} test,
+    label=cjmp_test_pseudocode,caption=Equivalent pseudocode of the \textit{cjmp} test.,
     frame=tb,basicstyle=\footnotesize\ttfamily,
     float,floatplacement=H]
 entry:
@@ -588,7 +589,7 @@ In this test, we want to check that the triple \htriple{\top}{prog}{y = 100} hol
     keywordstyle=\color{magenta},
     stringstyle=\color{codepurple},
     label=cjmp_test_prove_contract_call,
-    caption=Invocation of \texttt{prove\_contract} for the \textit{cjmp} test,
+    caption=Invocation of \texttt{prove\_contract} for the \textit{cjmp} test.,
     frame=tb,basicstyle=\footnotesize\ttfamily,
     float,floatplacement=H]
 val thm = prove_contract "cjmp"
@@ -605,7 +606,7 @@ Figure \ref{test_cjmp_bir} shows the auto-generated BIR $P \implies \WP$ express
 \begin{figure}[!h]
 	\includegraphics[width=\textwidth]{figures/test_cjmp_bir.png}
 	\centering
-	\caption{Auto-generated $P \implies \WP$ BIR expression for the \textit{cjmp} test}
+	\caption{Auto-generated $P \implies \WP$ BIR expression for the \textit{cjmp} test.}
 	\label{test_cjmp_bir}
 \end{figure}
 
@@ -635,16 +636,20 @@ x = load(MEM, ADDR2)
 \begin{figure}[!h]
 	\includegraphics[width=\textwidth]{figures/test_addreq_bir.png}
 	\centering
-	\caption{Auto-generated $P \implies \WP$ BIR expression for the \textit{load and store} test}
+	\caption{Auto-generated $P \implies \WP$ BIR expression for the \textit{load and store} test.}
 	\label{test_addreq_bir}
 \end{figure}
 
 \begin{figure}[!h]
 	\includegraphics[width=\textwidth]{figures/test_addreq_words.png}
 	\centering
-	\caption{$P \implies \WP$ expression translated in \textit{wordsTheory} for the \textit{load and store} test. \texttt{><} is the bitw}
-e extraction operation, \texttt{@@} the word concatenation operation, \texttt{|+} the memory update operation and \texttt{'} the memory load operation.	is\label{test_addreq_words}
+	\caption{$P \implies \WP$ expression translated in \textit{wordsTheory} for the \textit{load and store} test. \texttt{><} is the bitwise extraction operation, \texttt{@@} the word concatenation operation, \texttt{|+} the memory update operation and \texttt{\textquotesingle} the memory load operation. Bit extraction and concatenation is needed because we are working with 16-bit words in a 8-bit memory.}
+	\label{test_addreq_words}
 \end{figure}
+
+This expression is harder to manually prove. However, SMT solvers very efficiently report the negated expression to be unsatisfiable, proving the contract. Therefore, we see that contracts involving BIR memories can be proved, following the work of Subsection \ref{bir-memories-with-smt-solvers}.
+
+Other preconditions have been tested to verify that \texttt{prove\_contract} doesn't prove false contracts and succeeds to prove true ones. With the current program, the precondition $load(MEM,B=N) \land B=A+2$ can establish the postcondition. The second conjunct is important because $N$ is stored in two consecutive 8-bit memory locations. Interestingly, the contract $\bot$ works for all contracts, because $\forall x.~\bot \implies x$, and works in this particular case.
 
 \subsubsection{Gauss}
 
@@ -673,6 +678,8 @@ One-button proofs:
     \item prove\_contract should take definitions instead of terms for P and Q
     \item gives access to lower level functions (generate wp and simp), so it is still possible to get some control either when the proof doesn't work or if we need to use them for other tasks and compose them differently
 \end{itemize}
+
+Mention the "future" meeting that we had on the 29/05/2019.
 
 \section{Future work}
 
