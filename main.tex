@@ -107,6 +107,8 @@
 \newcommand{\notimplies}{%
   \mathrel{{\ooalign{\hidewidth$\not\phantom{=}$\hidewidth\cr$\implies$}}}}
 
+\newcommand{\eqdef}{\stackrel{def}{=}}
+
 
 %% Listing settings
 
@@ -855,7 +857,7 @@ In Chapter \ref{nic-model} we implemented parts of the NIC model using BIR.
 
 In the previous section, we implemented an automated non proof-producing contract verification library, the non proof-producing part being the translation from BIR expressions to the equivalent \textit{wordsTheory} and \textit{combinTheory} expression. Moreover, this verification library can only produce contracts on BIR programs. In order to perform trustworthy verification on the \gls{NIC} model, we need to make proofs directly on the \gls{NIC} state. In this section, we will perform a proof on a BIR program and then lift it to the \gls{NIC} model.
 
-In order to prove the feasibility of this approach, we will prove a simple property. Listing \ref{proof_nic_state} contains the NIC state on which we want to prove a property, Equation \ref{proof_goal} presents the property that we want to prove, and Listing \ref{proof_prog} contains a pseudocode representation of the BIR program on which we will perform the verification. Figure \ref{proof_schema} represents visually the structure of the verification and the steps that we will take during the proof. 
+In order to prove the feasibility of this approach, we will prove a simple property. Listing \ref{proof_nic_state} contains the NIC state on which we want to prove a property, Equations \ref{proof_nic_P_def}, \ref{proof_nic_Q_def} and \ref{proof_goal} present the property that we want to prove, and Listing \ref{proof_prog} contains a pseudocode representation of the BIR program on which we will perform the verification. Figure \ref{proof_schema} represents visually the structure of the verification and the steps that we will take during the proof. 
 
 \begin{lstlisting}[
     language={},
@@ -872,14 +874,16 @@ Datatype `nic_state = <|
 \end{lstlisting}
 
 \begin{small}
-\begin{equation}
-\begin{split}
-    \vdash \forall nic~nic'.~&(\neg nic.dead \land nic.x = 0 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \text{\{P\}}\\
-                             &~~~~\land nic' = holprog~nic) ~~~~~~~~~~~~~~~~~~~~~~~~~~ \text{prog}\\
-                          &\implies \neg nic'.dead \land nic'.x = nic.x + 1 ~~~~ \text{\{Q\}}
-\end{split}
+\begin{align}
+\label{proof_nic_P_def}
+\vdash~&\forall nic.~P_{NIC}~nic \eqdef \neg nic.dead \land nic.x = 0w\\
+%
+\label{proof_nic_Q_def}
+\vdash~&\forall nic~nic'.~Q_{NIC}~nic~nic' \eqdef \neg nic'.dead \land nic'.x = nic.x + 1w\\
+%
 \label{proof_goal}
-\end{equation}
+\vdash~&\forall nic~nic'.~P_{NIC}~nic~\land~exec\_prog~nic~bir\_prog~nic'~\implies~Q_{NIC}~nic~nic'
+\end{align}
 \end{small}
 
 \begin{lstlisting}[
@@ -898,24 +902,37 @@ if nic.x > 10:
 \begin{figure}[!h]
 	\includegraphics[height=5cm]{figures/proof_schema.png}
 	\centering
-	\caption{Visual structure of the proof}
+	\caption{Visual structure of the proof. References like (a) to the arrows of this Figure are used throughout the proof to refer to a particular step.}
 	\label{proof_schema}
 \end{figure}
 
-We recognize in Equation \ref{proof_goal} the equation of a Hoare Triple:
-
-\htriple{P(nic)}{bir\_prog}{Q(nic,nic')}.
-
-As already discussed \todo{make sure it is} in Section \ref{nic-model}, this structure is very common in the base lemmas of the existing proof on the \gls{NIC} model.
+%We recognize in Equation \ref{proof_goal} the equation of a Hoare Triple:
+%\htriple{P(nic)}{bir\_prog}{Q(nic,nic')}.
+%As already discussed \todo{make sure it is} in Section \ref{nic-model}, this structure is very common in the base lemmas of the existing proof on the \gls{NIC} model.
 %However, the particularity of this Hoare Triple is that the postcondition is a function of both the initial and the final state. With the library of the previous section, postconditions involving both states are possible but involve the introduction of ghost variables.
 
-\subsubsection{Proof of Equation \ref{proof_goal}}
+Equation \ref{proof_goal} uses a relation $exec\_prog$ that we shall define now. As we want to make a proof on an undefined HOL4 definition (a), we must establish an equivalence between the HOL4 definition (a) and the BIR program (c). In real proofs, this can either be produced by a lifter which generates the BIR program from a given input program and gives a ``certificate'', i.e. a theorem stating the equivalence, or be a definition which would then mean that we trust that the BIR program is equivalent to the HOL4 definition. In this proof, we will to use a definition\footnote{Definition \ref{proof_eq_thm} has been annotated to visualize how it is connected to the structure of the proof on Figure \ref{proof_schema}.}. All we should have to know is the NIC state definition and some equivalence theorem saying that ``NIC' = prog NIC`` (a) is equivalent to executing the BIR program from a state \textit{bir\_state} to a state \textit{bir\_state'} (c), where NIC is somehow equivalent to \textit{bir\_state} (b) and NIC' somehow equivalent to \textit{bir\_state'} (d).
 
-\textit{\textbf{Note}: The proof has been simplified in order to focus on its global structure.}
+\begin{small}
+\begin{equation}
+\begin{split}
+  \vdash \forall nic~nic'. &~exec\_prog~nic~bir\_prog~nic' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \text{(a)}\\
+    \eqdef~&\forall bir\_state~bir\_state'.\\
+          & ~~~~~~ (R~nic~bir\_state ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \text{(b)}\\
+          & ~~~~~~ \land bir\_state' = BIR\_exec~prog~bir\_state) ~~~~~ \text{(c)}\\
+          & ~~~~~~ \implies R~nic'~bir\_state' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \text{(d)}
+\end{split}
+\label{proof_eq_thm}
+\end{equation}
+\end{small}
 
-All we should have to know is the NIC state definition and some equivalence theorem saying that ``NIC' = prog NIC`` (a) is equivalent to executing the BIR program from a state \textit{bir\_state} to a state \textit{bir\_state'} (c), where NIC is somehow equivalent to \textit{bir\_state} (b) and NIC' somehow equivalent to \textit{bir\_state'} (d).
+\textit{\textbf{Proof} of Equation \ref{proof_goal}:}
 
-To express the equivalence between HOL4 states ("NIC") and BIR states, we introduce a relation $R$. The relation $R~nic~bir\_state$ is defined as a simple mapping between the BIR state and the NIC state, as shown in Listing \ref{R_def}.
+%\textit{\textbf{Note}: The proof has been simplified in order to focus on its global structure.}
+
+
+
+To express an equivalence between HOL4 states ("NIC") and BIR states, we introduce a relation $R$. The relation $R~nic~bir\_state$ is defined as a simple mapping between the BIR state and the NIC state, as shown in Listing \ref{R_def}.
 
 \begin{lstlisting}[
     language=C,
@@ -927,36 +944,15 @@ To express the equivalence between HOL4 states ("NIC") and BIR states, we introd
     frame=tb,basicstyle=\footnotesize\ttfamily]
 val R_def = Define `
   R (nic: nic_state) (bir_state: bir_state_t) <=>
-    /\ (bir_env_lookup "nic_dead" bir_state.bst_environ
+       (bir_env_lookup "nic_dead" bir_state.bst_environ
           = SOME (BType_Bool,
-                  SOME (bool2bval nic.dead)))
+                  SOME (BVal_Imm (Imm1 nic.dead))))
     /\ (bir_env_lookup "nic_x" bir_state.bst_environ
           = SOME (BType_Imm Bit32,
-                  SOME (w2bval32 nic.x))))`
+                  SOME (BVal_Imm (Imm32 nic.x))))`
 \end{lstlisting}
 
-We also need an equivalence theorem between the HOL4 definition (a) and the BIR program (c). In real proofs, this can be produced either by a lifter which generates the BIR program from a given input program and gives a ``certificate'', i.e. a theorem stating the equivalence, this can be a definition which would then mean that we trust that the BIR program is equivalent to the HOL4 definition. For this proof, we decide to use a definition:
-
-\begin{small}
-\begin{equation}
-\begin{split}
-  \vdash \forall nic~nic'. & (exec\_prog~nic~bir\_prog~nic') ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \text{(a)}\\
-    \Leftrightarrow~&\forall bir\_state~bir\_state'.\\
-          & ~~~~~~ (R~nic~bir\_state ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \text{(b)}\\
-          & ~~~~~~ \land bir\_state' = BIR\_exec~prog~bir\_state) ~~~~~ \text{(c)}\\
-          & ~~~~~~ \implies R~nic'~bir\_state' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \text{(d)}
-\end{split}
-\label{eq_thm}
-\end{equation}
-\end{small}
-                                                                        
-
-
-
-
-
-
-In step (a) of our proof, we will need a theorem about the injectivity of the relation $R$:
+In order to use the \textit{modus ponens} on Equation \ref{proof_eq_thm}, we need a theorem about the injectivity of the relation $R$:
 
 \begin{equation}
 \begin{split}
