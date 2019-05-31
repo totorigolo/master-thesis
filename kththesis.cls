@@ -4,6 +4,7 @@
 \newif\ifinswedish
 \DeclareOption{english}{}
 \DeclareOption{swedish}{\inswedishtrue}
+\DeclareOption{french}{\infrenchtrue}
 
 \newif\ifgfivepaper
 \DeclareOption{a4paper}{}
@@ -38,13 +39,16 @@
   \ifinswedish
     \setmainlanguage{swedish}
     \setotherlanguage{english}
+  \elifinfrench
+    \setmainlanguage{french}
+    \setotherlanguage{english}
   \else
     \setmainlanguage{english}
-    \setotherlanguage{swedish}
+    \setotherlanguage{french}
   \fi
 \else
   \RequirePackage[utf8]{inputenc}
-  \RequirePackage[swedish,english,french]{babel}
+  \RequirePackage[swedish,french,english]{babel}
 \fi
 
 \ifgfivepaper

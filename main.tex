@@ -2,6 +2,7 @@
 \usepackage[utf8]{inputenc}
 %\usepackage[pdftex]{graphicx}
 \usepackage{amsmath}
+\usepackage{amsthm}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage[hyphens]{url}
@@ -106,9 +107,20 @@
 \newcommand{\WP}{\ensuremath{\mathit{WP}}}
 \newcommand{\notimplies}{%
   \mathrel{{\ooalign{\hidewidth$\not\phantom{=}$\hidewidth\cr$\implies$}}}}
-
 \newcommand{\eqdef}{\stackrel{def}{=}}
+\newcommand{\eqeval}{\stackrel{eval}{=}}
 
+%\newtheorem{eq_theorem}{Theorem}[section]
+%\numberwithin{equation}{eq_theorem}
+%
+%\newtheorem{eq_lemma}{Lemma}[section]
+%\numberwithin{equation}{eq_lemma}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{remark}{Remark}
+\newtheorem*{remark*}{Remark}
 
 %% Listing settings
 
@@ -911,28 +923,13 @@ if nic.x > 10:
 %As already discussed \todo{make sure it is} in Section \ref{nic-model}, this structure is very common in the base lemmas of the existing proof on the \gls{NIC} model.
 %However, the particularity of this Hoare Triple is that the postcondition is a function of both the initial and the final state. With the library of the previous section, postconditions involving both states are possible but involve the introduction of ghost variables.
 
-Equation \ref{proof_goal} uses a relation $exec\_prog$ that we shall define now. As we want to make a proof on an undefined HOL4 definition (a), we must establish an equivalence between the HOL4 definition (a) and the BIR program (c). In real proofs, this can either be produced by a lifter which generates the BIR program from a given input program and gives a ``certificate'', i.e. a theorem stating the equivalence, or be a definition which would then mean that we trust that the BIR program is equivalent to the HOL4 definition. In this proof, we will to use a definition\footnote{Definition \ref{proof_eq_thm} has been annotated to visualize how it is connected to the structure of the proof on Figure \ref{proof_schema}.}. All we should have to know is the NIC state definition and some equivalence theorem saying that ``NIC' = prog NIC`` (a) is equivalent to executing the BIR program from a state \textit{bir\_state} to a state \textit{bir\_state'} (c), where NIC is somehow equivalent to \textit{bir\_state} (b) and NIC' somehow equivalent to \textit{bir\_state'} (d).
+\begin{remark} \label{remark_Q_nic_intial_final}
+$Q_{NIC}~nic~nic'$ is defined on both initial and final states, in order to be able to reason about the initial state in the postcondition. This allows us to write $nic'.x = nic.x + 1w$ instead of $nic'.x = 1w$ for example.
+\end{remark}
 
-\begin{small}
-\begin{equation}
-\begin{split}
-  \vdash \forall nic~nic'. &~exec\_prog~nic~bir\_prog~nic' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \text{(a)}\\
-    \eqdef~&\forall bir\_state~bir\_state'.\\
-          & ~~~~~~ (R~nic~bir\_state ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \text{(b)}\\
-          & ~~~~~~ \land bir\_state' = BIR\_exec~prog~bir\_state) ~~~~~ \text{(c)}\\
-          & ~~~~~~ \implies R~nic'~bir\_state' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \text{(d)}
-\end{split}
-\label{proof_eq_thm}
-\end{equation}
-\end{small}
+Equation \ref{proof_goal} uses a relation $exec\_prog$ that we shall define now. As we want to make a proof on an undefined HOL4 definition (a), we must establish an equivalence between the HOL4 definition (a) and the BIR program (c). In real proofs, this can either be produced by a lifter which generates the BIR program from a given input program and gives a ``certificate'', i.e. a theorem stating the equivalence, or be a definition which would then mean that we trust that the BIR program is equivalent to the HOL4 definition. In this proof, we will to use a definition. This definition shall state that $exec\_prog~nic~bir\_prog~nic'$ (a) is equivalent to executing the BIR program from a state $bir\_state$ to a state $bir\_state'$ (c), where $nic$ is somehow equivalent to $bir\_state$ (b) and $nic'$ somehow equivalent to $bir\_state'$ (d). To express an equivalence between HOL4 states ("NIC") and BIR states, we introduce a relation $R$. The relation $R~nic~bir\_state$ is defined as a simple mapping between the BIR state and the NIC state, as shown in Listing \ref{proof_R_def}. Then, we define the relation $exec\_prog$ as shown in Equation \ref{proof_eq_thm}\footnotemark.
 
-\textit{\textbf{Proof} of Equation \ref{proof_goal}:}
-
-%\textit{\textbf{Note}: The proof has been simplified in order to focus on its global structure.}
-
-
-
-To express an equivalence between HOL4 states ("NIC") and BIR states, we introduce a relation $R$. The relation $R~nic~bir\_state$ is defined as a simple mapping between the BIR state and the NIC state, as shown in Listing \ref{R_def}.
+\footnotetext{Definition \ref{proof_eq_thm} has been annotated to visualize how it is connected to the structure of the proof on Figure \ref{proof_schema}. In addition, the $BIR\_exec$ relation is used as a shorthand for $bir\_exec\_to\_labels$ in order to simplify the proof.}
 
 \begin{lstlisting}[
     language=C,
@@ -940,7 +937,7 @@ To express an equivalence between HOL4 states ("NIC") and BIR states, we introdu
     commentstyle=\color{codegreen},
     keywordstyle=\color{magenta},
     stringstyle=\color{codepurple},
-    label=R_def,caption=Definition of the relation $R$,
+    label=proof_R_def,caption=Definition of the relation $R$,
     frame=tb,basicstyle=\footnotesize\ttfamily]
 val R_def = Define `
   R (nic: nic_state) (bir_state: bir_state_t) <=>
@@ -952,18 +949,161 @@ val R_def = Define `
                   SOME (BVal_Imm (Imm32 nic.x))))`
 \end{lstlisting}
 
-In order to use the \textit{modus ponens} on Equation \ref{proof_eq_thm}, we need a theorem about the injectivity of the relation $R$:
-
+\begin{small}
 \begin{equation}
 \begin{split}
-    \vdash \forall nic.~\exists bir\_state.~R~nic~bir\_state
+  \vdash \forall nic~nic'. &~exec\_prog~nic~bir\_prog~nic' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \text{(a)}\\
+    \eqdef~&\forall bir\_state~bir\_state'.\\
+          & ~~~~~~ (R~nic~bir\_state ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \text{(b)}\\
+          & ~~~~~~ \land bir\_state' = BIR\_exec~prog~bir\_state) ~~~~~ \text{(c)}\\
+          & ~~~~~~ \implies R~nic'~bir\_state' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \text{(d)}
 \end{split}
-\label{R_inj_thm}
+\label{proof_eq_thm}
+\end{equation}
+\end{small}
+
+\begin{proof}[Proof of Equation \ref{proof_goal}]
+
+\numberwithin{equation}{theorem} % Change numbering of equations inside theorems
+
+%\textit{\textbf{Note}: The proof has been simplified in order to focus on its global structure.}
+
+In order to begin the proof, as the goal \ref{proof_goal} is defined over $nic$ states, we need a theorem about the injectivity of the relation $R$, stating that for all $nic$ exists a $bir\_state$ such that $R~nic~bir\_state$ (b). Additionally, the $BIR\_exec$ relation will also need some properties on $bir\_state$, that we shall add in this injectivity theorem now.
+
+\begin{theorem} \label{proof_R_inj_thm}
+Injectivity theorem of $R$
+\begin{equation*} \label{proof_R_inj_thm_eq}
+\begin{split}
+    \vdash~\forall nic.&~\exists bir\_state.\\
+    		&~~~~~R~nic~bir\_state\\
+		&\land~bir\_state.bst\_pc.bpc\_index = 0\\
+		&\land~bir\_state.bst\_pc.bpc\_label = entry\_label\\
+		&\land~bir\_state.bst\_status = BST\_Running
+\end{split}
+\end{equation*}
+\end{theorem}
+
+\begin{proof}
+After rewriting the relation $R$, we prove theorem \ref{proof_R_inj_thm} by exhibiting a satisfying $bir\_state$.
+\end{proof}
+
+In possession of a $bir\_state$ in relation with a $nic$, we now need to lift the precondition $P_{NIC} nic$ on this $bir\_state$. First, we need to introduce equivalent pre- ---and post- ---conditions on the BIR states, then we shall prove that the precondition lifts.
+
+\begin{lstlisting}[
+    language=C,
+    backgroundcolor=\color{codebackcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    stringstyle=\color{codepurple},
+    label=proof_bir_conditions,caption=Equivalent pre- and postconditions on BIR states,
+    frame=tb,basicstyle=\footnotesize\ttfamily]
+val BIR_P_exp_def = Define `BIR_P_exp = ^(bandl [
+  beq ((bden o bvarimm1) "nic_dead", bfalse),
+  beq ((bden o bvarimm32) "nic_x", bconst32 0)
+])`
+val BIR_Q_exp_def = Define `BIR_Q_exp = ^(bandl [
+  beq ((bden o bvarimm1) "nic_dead", bfalse),
+  beq ((bden o bvarimm32) "nic_x", bconst32 1)
+])`
+val BIR_P_def = Define `BIR_P bstate =
+  bir_eval_bool_exp BIR_P_exp bstate.bst_environ`
+val BIR_Q_def = Define `BIR_Q bstate =
+  bir_eval_bool_exp BIR_Q_exp bstate.bst_environ`
+\end{lstlisting}
+
+\paragraph{Limitation} $Q_{BIR}$ is a function of the end state only. Hence, in order to reason about the initial state in the we need in general to introduce ghost variables postcondition. In this proof, since the contract that we are proving is simple, using the actual value of $nic.x$ is enough. However, as we will discuss later on \todo{Make sure this is discussed}, this may pose a problem if we want to generalize the proof.
+
+\paragraph{Notation} $P_{BIR}~bir\_state$ and $Q_{BIR}~bir\_state$ are defined using $bir\_eval\_bool\_exp$, which evaluates respectivelly the expressions $P^{exp}_{BIR}$ and $Q^{exp}_{BIR}$ in a given BIR state. In order to simplify the proof, let's define a new operator $\eqeval$ that is used to evaluate given variables, e.g. $bir\_state.x \eqeval 0w$.
+\bigskip
+
+\begin{theorem} \label{proof_b_thm}
+Lifting of $P_{NIC}~nic$ to $bir\_state$
+\begin{equation*} \label{proof_b_thm_eq}
+\begin{split}
+\vdash~\forall bir\_state~(\exists nic.~R~nic~bir\_state~\land~P_{NIC}~nic) \implies P_{BIR}~bir\_state
+%⊢ ∀bir_state. (∃nic. R nic bir_state ∧ NIC_P nic) ⇒ BIR_P bir_state
+\end{split}
+\end{equation*}
+\end{theorem}
+
+\begin{proof}
+Let's do this proof in a backward way. By discharging the antecedent of the implication and using the existancial elimination inference rule, we get as assumptions $P_{NIC}~nic$ and $R~nic~bir\_state$. From this, we can deduce that $bir\_state.x \eqeval 1w$ and $bir\_state.dead \eqeval \bot$. Then, we can substitute those values in the goal, which proves it.
+\end{proof}
+
+Assuming that we have a Hoare Triple theorem between initial and final BIR states, we can use Definition \ref{proof_eq_thm} in order to establish that $R~nic'~bir\_state'$. Then, in order to prove $Q_{NIC}~nic$ (d), we have to transfer the postcondition back from $bir\_state$ to $nic$.
+
+\begin{theorem} \label{proof_d_thm}
+Lowering $Q_{BIR}~bir\_state$ to $nic$.
+\begin{equation*} \label{proof_d_thm_eq}
+\begin{split}
+\vdash~\forall~&bir\_state'.~Q_{BIR}~bir\_state' \implies\\
+	&(\forall nic~nic'~bir\_state.~P_{BIR}~bir\_state\\
+	&~~~~~~\land~R~nic~bir\_state~\land~R~nic'~bir\_state'\\
+	&~~~\implies Q_{NIC}~nic~nic')
+\end{split}
+\end{equation*}
+We introduce $bir\_state$ and $P_{BIR}$ in this theorem for the reason explained in Remark \ref{remark_Q_nic_intial_final}, i.e. reason about both the initial and final state in the postcondition.
+\end{theorem}
+
+\begin{proof}
+This proof has been done in HOL4. The reasoning is quite similar to the proof of Theorem \ref{proof_b_thm}, as the backward proof mainly involves rewriting and simplification. We will omit this proof here and redirect the reader to the HOL4 proof available in our source repository \cite{lacroix_trustful_2019}.
+\end{proof}
+
+We will now prove that the Hoare Triple holds on the BIR program.
+\bigskip
+
+\begin{theorem} \label{proof_ht_thm}
+\htriple{P^{exp}_{BIR}}{bir\_prog}{Q^{exp}_{BIR}}
+\end{theorem}
+
+\begin{proof}
+To prove this Hoare Triple, we used the proof-producing procedure implemented in \gls{holba} in order to generate the weakest precondition. The automatically derived weakest precondition is shown in Figure \ref{proof_wp_exp}. Section \ref{contract-verif-holba} already discussed how to perform this proof: we have to prove Equation \ref{eval_pre_imp_eval_wp} with $\mathbf{wp}$ being the expression in Figure \ref{proof_wp_exp} and $\mathbf{pre}$ being $P^{exp}_{BIR}$. Because we want to use a \gls{SMT} solver, we need to turn the goal of the backward proof into a \textit{wordsTheory} expression. \textit{combinTheory} isn't needed in this case since BIR memories are not used. Equation \ref{eval_pre_imp_eval_wp} uses $bir\_eval\_exp$ which evaluates an expression in the given BIR state. Therefore, to translate the goal into a \textit{wordsTheory} expression, we need to use BIR's semantic. The semantic needs well-typedness and initialization of the variables. At the time of writing, HolBA offers no support for automatic rewriting with the semantic definitions, so multiple lemmas about initialization, well-typedness and type equality must be manually proved for every variable. Those are not shown here because they consist of simple rewriting and simplification.
+
+\begin{figure}[!h]
+	\includegraphics[scale=.65]{figures/proof_wp_exp.png}
+	\centering
+	\caption{Autogenerated weakest precondition for proof of Theorem \ref{proof_ht_thm}.}
+	\label{proof_wp_exp}
+\end{figure}
+
+Then, the proof consist of consecutivelly rewriting following the definition of $bir\_eval\_exp$ and the definition it uses until the goal only contains $$bir\_env\_read~(BVar~``nic\_x"~(BType\_Imm~Bit32))~bir\_state.bst\_environ$$ and similarly for $nic.dead$. Let's call those expressions $x\_val$ and $dead\_val$ respectivelly. For expressions, BIR semantic is defined over immutable and constant values. Therefore, we need to establish an equivalence between the values that we currently have.
+
+\begin{lemma}
+	\begin{equation*}
+		\exists x\_imm.~x\_val = BVal\_Imm~x\_imm
+	\end{equation*}
+	\label{proof_exists_x_imm}
+\end{lemma}
+\begin{proof}
+Assuming well-typedness and initialization, this theorem immediately results from the BIR semantic.
+\end{proof}
+
+\begin{lemma}
+	\begin{equation*}
+		\exists x\_word.~x\_imm = Imm32~x\_word
+	\end{equation*}
+	\label{proof_exists_x_word}
+\end{lemma}
+\begin{proof}
+This lemma is part of the BIR semantic, as one of the six conjuncts of the \texttt{bir\_imm\_t\_nchotomy} theorem, which establishes this existence theorem for every BIR immutable types.
+\end{proof}
+
+Now, using Lemma \ref{proof_exists_x_imm}, we are able to substitute all occurences of $x\_val$ into $BVal\_Imm~(Imm32~x\_word)$, and similarly for $dead\_val$. Finally, rewriting the goal using the full set of BIR semantic theorems and some rewriting rules, the goal reduces to an expression free of BIR terms:
+
+\begin{equation} \label{proof_wp_word_goal}
+\begin{split}
+&(dead\_w = 0w) \land (x\_w = 0w) \implies\\
+&\Big(\neg(10w <_{+} x\_w + 1w) \lor \big((1w = 0w) \land (x\_w + 1w = 1w)\big)\Big)~\land\\
+&\Big((10w <_{+} x\_w + 1w) \lor \big((dead\_w = 0w) \land (x\_w + 1w = 1w)\big)\Big)
+\end{split}
 \end{equation}
 
+An \gls{SMT} solver is able to prove this goal. Interrestingly, HOL4 simplification procedure are also able to prove it. However, they won't be able to prove it for more complicated ones, or will be less effective than SMT solvers.
+\end{proof} % End of Hoare Triple proof
 
-
-
+Finally, using the deduction rule with Theorems \ref{proof_R_inj_thm}, \ref{proof_b_thm}, \ref{proof_R_def}, \ref{proof_ht_thm}, \ref{proof_eq_thm} and \ref{proof_d_thm}, in that order, concludes this proof.
+\renewcommand\qedsymbol{$\blacksquare$}
+\end{proof}
 
 \chapter{Conclusions}
 \section{Results}
@@ -994,7 +1134,7 @@ Sound satisfiability solver for bitvectors to check if the precondition entails 
     \item https://arxiv.org/pdf/1807.10664.pdf
 \end{itemize}
 
-Proof: automate
+Proof: automate (???; semantic rewriting (i.e. automatically add all the lemmas) (il faut d'abord tester à la main avant d'implémenter des procédures automatiques))
 
 \section{Future work}
 
