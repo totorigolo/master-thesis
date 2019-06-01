@@ -43,7 +43,7 @@
 \email{thomas.lacroix@insa-lyon.fr}
 \supervisor{Mads Dam}
 \examiner{TODO}
-\hostcompany{Department of Theoretical Computer Science - KTH}
+\hostcompany{Division of Theoretical Computer Science - KTH}
 \programme{Master in Computer Science}
 \school{Computer Science department - INSA Lyon}
 \date{\today}
@@ -64,32 +64,36 @@
 
 \newglossaryentry{FreeRTOS} {
     name={FreeRTOS},
-    description={FreeRTOS is a free and open-source market leading real time operating system for microcontrollers and small microprocessors. Website: \url{https://freertos.org/}}
+    description={FreeRTOS is a free and open-source market leading real time operating system for microcontrollers and small microprocessors. Website: \url{https://freertos.org/}.}
 }
 \newglossaryentry{iot} {
     name={IoT},
-    description={Internet Of Things. This is the idea of connecting every devices---such that temperature sensors, lamps, video cameras or wearable devices---to the Internet}
+    description={Internet Of Things. This is the idea of connecting every devices---such that temperature sensors, lamps, video cameras or wearable devices---to the Internet.}
 }
 \newacronym{prosper}{PROSPER}{Provably Secure Execution Platforms for Embedded Systems}
 \newglossaryentry{transpilation} {
     name={transpilation},
-    description={Process carried-out by a \gls{transpiler}}
+    description={Process carried-out by a \gls{transpiler}.}
 }
 \newglossaryentry{transpiler} {
     name={transpiler},
-    description={A transpiler, or source-to-source compiler, is a compiler that takes source code written in a programming language A, and producing an equivalent source code in a programming language B. A and B can be different languages or the same. They differ from traditional compilers in that compilers generally produce machine code}
+    description={A transpiler, or source-to-source compiler, is a compiler that takes source code written in a programming language A, and producing an equivalent source code in a programming language B. A and B can be different languages or the same. They differ from traditional compilers in that compilers generally produce machine code.}
+}
+\newglossaryentry{proof-producing} {
+    name={proof-producing},
+    description={A proof-producing analysis or procedure is a procedure that yields its result in the form of a formal proof. Therefore, those procedures represent the highest degree possible of trustworthiness. However, great care must be taken to ensure that the definitions used to phrase the proof are sound and actually represent the properties to be proved. Moreover, implementing proof-producing code is costly and thus should be used with discernment.}
 }
 \newacronym{holba}{HolBA}{HOL4 Binary Analysis Platform}
 \newacronym{bap}{CMU BAP}{Carnegie Mellon University Binary Analysis Platform}
 \newglossaryentry{BIR} {
     name={BIR},
-    description={\acrshort{holba}'s machine-independent binary intermediate language}
+    description={\acrshort{holba}'s machine-independent binary intermediate language.}
 }
 \newglossaryentry{BSL} {
     name={BSL},
-    description={BIR Simple Language. It is also a word play with DSL which means Domain Specific Language}
+    description={BIR Simple Language. It is also a word play with DSL which means Domain Specific Language.}
 }
-\newacronym{isa}{ISA}{Instruction Set Architecture}
+\newacronym{ISA}{ISA}{Instruction Set Architecture}
 \newacronym{SMT}{SMT}{Satisfiability Modulo Theories}
 \newacronym{SAT}{SAT}{Boolean SATisfiability Problem}
 \newacronym{NIC}{NIC}{Network Interface Controller}
@@ -158,9 +162,9 @@
   \begin{abstract}
     Avec la démocratisation de la virtualisation, de plus en plus d'efforts sont consacrés à la vérification des hyperviseurs. S'agissant de logiciels de bas niveau, une telle vérification devrait de préférence être effectuée au niveau binaire. Des plates-formes d'analyse binaire sont en cours de développement pour aider à réaliser ces preuves, mais une grande partie du travail doit encore être effectuée manuellement.
 
-    Dans cette thèse, nous nous concentrons sur la vérification formelle d'un Contrôleur d'Interface Réseau (NIC), plus spécifiquement sur la manière d'automatiser et de réduire le travial d'une preuve existante. Nous nous basons sur la plate-forme HolBA, son langage de représentation intermédiaire indépendant du matériel, BIR et ses outils de support, et nous nous intéressons à la manière de réaliser cette preuve en utilisant des outils existants.
+    Dans cette thèse, nous nous concentrons sur la vérification formelle d'un Contrôleur d'Interface Réseau (NIC), plus spécifiquement sur la manière d'automatiser et de réduire le travail répétitif d'une preuve existante. Nous nous basons sur la plate-forme HolBA, son langage de représentation intermédiaire indépendant du matériel, BIR et ses outils de support, et nous nous intéressons à la manière de réaliser cette preuve en utilisant des outils existants.
 
-    Nous avons d'abord remplacé le modèle NIC existant écrit en HOL4 par un modèle équivalent écrit en BIR, permettant ainsi l'utilisation des outils de HolBA. Deuxièmement, nous avons développé des outils de visualisation pour vous aider à naviguer et à mieux comprendre la preuve existante et sa structure. Troisièmement, nous avons expérimenté l'utilisation des triplets de Hoare en conjonction avec un solveur SMT pour effectuer une vérification par contrat. Enfin, nous avons prouvé un contrat simple écrit en termes du modèle formel du NIC sur l'implémentation de ce modèle en BIR, ouvrant la voie à la réalisation de preuves plus complexes avec la plate-forme HolBA.
+    Nous avons d'abord remplacé le modèle NIC existant écrit en HOL4 par un modèle équivalent écrit en BIR, permettant ainsi l'utilisation des outils de HolBA. Deuxièmement, nous avons développé des outils de visualisation pour nous aider à naviguer et à mieux comprendre la preuve existante et sa structure. Troisièmement, nous avons expérimenté l'utilisation des triplets de Hoare en conjonction avec un solveur SMT pour effectuer une vérification par contrat. Enfin, nous avons prouvé un contrat simple écrit en termes du modèle formel du NIC sur l'implémentation de ce modèle en BIR, ouvrant la voie à la réalisation de preuves plus complexes avec la plate-forme HolBA.
 
     \textit{Mot-clés} : binary analysis, formal verification, proof producing analysis, theorem proving
   \end{abstract}
@@ -181,38 +185,115 @@ d) Simple interface for CFG lib;%
 \mainmatter % Thesis content
 
 \chapter{Introduction}
+\vspace{-1cm}
 \textit{This chapter serves as an introduction to the degree project and presents the background of the work along with this thesis objective. Delimitations to the project and the choice of methodology are also discussed.}
 
 \section{Background}
 
+Embedded systems are becoming more and more common with the current advent of \Gls{iot} and mobile computing platforms such as smartphones. Those systems are fully-fledged computers with powerful hardware, complete operating systems and access to Internet. Such systems can run security-critical services, such as a building security system or automatic toll gates, or carry valuable information as it is the case for personal smartphones. Therefore, these two characteristics make them targets of choice for attackers.
+
+The \gls{prosper} project \cite{noauthor_prosper:_nodate} aims to develop a secure and formally verified hypervisor for embedded systems. Hypervisors are thin layers running directly on top of hardware providing the ability to run virtualized applications, such that operating systems or realtime control systems. Those virtualized applications then don't have privileged access to the hardware and have to go through the hypervisor. This allows different applications to share the same hardware while providing strong isolation between them, thus ensuring confidentiality and security. Moreover, security not only means protection from external attacks, but also resilience to bugs. If multiple critical systems are running on the same hardware, bugs or crashes in some systems shouldn't affect the others from behaving correctly. Figure \ref{figure-hypervisor-simple} shows a system running two isolated Linux on top of a hypervisor.
+
+\begin{figure}[h]
+	\includegraphics[height=4cm]{figures/figure-hypervisor-simple.png}
+	\centering
+	\caption{Two Linux on top of an hypervisor. They run isolated from each other and from the hypervisor.}
+	\label{figure-hypervisor-simple}
+\end{figure}
+
+Previous work in the \acrshort{prosper} project achieved \cite{noauthor_prosper:_nodate-1} to formally verify a simple separation kernel \cite{dam_formal_2013}, which later resulted into an implementation of a working hypervisor. Then, they achieved to run both Linux and \gls{FreeRTOS} on top of it. Finally, they formally verified memory isolation for virtualized applications \cite{nemati_trustworthy_2015}. Now, among other projects, the PROSPER team is working on device virtualization, allowing to give access to hardware devices to virtualized applications. An interesting example are \gls{NIC} devices, which enable network communication and give the ability to communicate through the Internet.
+
+A formal model of a \gls{NIC} device has already been produced, on which some security theorems have been proved \cite{haglund_formal_2016}. These high-level proofs relying on a layer of lower-level lemmas. This layer provides an abstraction over the raw formal model. This is illustrated in the left-hand side of Figure \ref{hol-v-bir-nic-model-simple}.
+
+\begin{figure}[h]
+	\includegraphics[height=6cm]{figures/hol-v-bir-nic-model-simple.png}
+	\centering
+	\caption{HOL4 v. BIR NIC models. The left hand side already exists. This project would consist in the dashed elements. The dotted lines represent the work to be done during this project.}
+	\label{hol-v-bir-nic-model-simple}
+\end{figure}
+
+The team is now developing a new framework for performing binary analysis in HOL4, an interactive theorem prover, named \gls{holba} \cite{noauthor_holba_2019}. This framework is based on two papers written in the team. The first one introduces sound \gls{transpilation} from binary to machine-independent code \footnotemark \cite{metere_sound_2017}. The second paper, ``TrABin: Trustworthy Analyses of Binaries'' \cite{lindner_trabin:_2019}, lays the foundations of the \gls{holba} platform: it formally models \gls{BIR}, introduces various supporting tools, implements two \gls{proof-producing} \glspl{transpiler} (ARMv8 and CortexM0) and a proof-producing weakest precondition generator for loop-free programs.
+
+\footnotetext{The machine-independent language used in the work is an implementation of \gls{bap}'s BIL \cite{noauthor_binary_2019}. This implementation will evolve later in the TrABin paper into BIR that HolBA uses.}
+
+While this kind of \glspl{transpiler} and \gls{proof-producing} weakest precondition tools already exist \footnote{See related discussion in \cite{lindner_trabin:_2019}.}, the novelty in this work is that the transpiler is proof-producing, i.e. it produces a formal proof that both binary representations are equivalent, under the simulation theory, with respect to the \gls{ISA} model. With this method, you no longer need to trust the transpiler. Figure \ref{holba-overview} gives an overview of the TrABin framework\footnote{TrABin works with both ARMv8 and CortexM0 binary programs. Only ARMv8 is showed in Figure \ref{trabin-overview} to save some space.}.
+
+\begin{figure}[h]
+	\includegraphics[height=5cm]{figures/holba-overview.png}
+	\centering
+	\caption{The HolBA framework. The lifter generates a BIR program and an equivalence proof from an ARMv8 program. The equivalence proof establishes a simulation property between the ARMv8 binary program and the generated BIR binary program, showing that they have the same behaviour with respect to the ARMv8 \gls{ISA} specification and the BIR specification. HolBA also support the Cortex-M0 ISA.}
+	\label{holba-overview}
+\end{figure}
+
+The idea of this work is to translate the formal \gls{NIC} model of \cite{haglund_formal_2016} using \gls{BIR}, then use HolBA's proof-producing weakest precondition tool to prove the same lower-level lemmas than the formal model. With all the lemmas proved, the security properties are implied. Figure \ref{hol-v-bir-nic-model-simple} gives an overview of this idea: using the proof-producing weakest precondition tool to bind together a newly written BIR NIC model and the work done on the formal model.
+
 \section{Intended readers}
+
+In this thesis, formal verification is the central topic. The thesis presents how model a hardware device using a binary analysis platform and presents some formal verification techniques. A reader interested in this topic may find the results presented useful for further work. A casual reader will be presented with a light introduction to the underlying theories and learn some useful ideas for performing software verification. The reader is expected to have a background in Computer Science in general, and knowledge in formal verification will make the thesis easier to digest.
 
 \section{Thesis objective}
 
+The primary goal of this thesis project is to explore verification techniques in order to automate parts, if not all, of the verification process of hardware devices using the HolBA platform. The formal \gls{NIC} model of \cite{haglund_formal_2016} is used as working example.
+
+The ultimate goal would be to obtain a fully automatic pipeline for performing such verifications. However, it is evident that goal isn't reachable in such a small amount of time, or even at all. Thus, this thesis focuses instead on exploring what toolkit is needed in order to facilitate this work.
+
 \section{Delimitations}
+\textbf{TODO}: Is that section needed?
 
 \section{Choice of methodology}
 
-\chapter{Definitions and relevant theory}
-\textit{This chapter intends to lay the concepts and theory that are essential to the reader in order to understand the problem that this degree project aims to explore.  This includes an overview of virtualization and hypervisors, a presentation of Interactive Theorem Proving and formal proofs, relevant theory about Hoare Triple and Weakest Precondition analysis, and an introduction of the \gls{holba} framework.}
+This work has been carried out step-by-step toward an ideal goal, i.e. re-establishing all the security properties. On the road, needs have been identified and tools have been implemented in order to tackle them. This approach made sense in this particular work because the needs weren't known in advance, and therefore needed to be identified. This thesis presents the steps taken during this work, the motivations of each tool that have been implemented, and discusses their limitations and future work in the conclusion.
 
-\textbf{TODO}: Define "proof-producing"
+
+\chapter{Definitions and relevant theory}
+\vspace{-1cm}
+\textit{This chapter intends to lay the concepts and theory that are essential to the reader in order to understand the problem that this degree project aims to explore. This includes an overview of the formal \gls{NIC} model of \cite{haglund_formal_2016}, a presentation of Interactive Theorem Proving and formal proofs in HOL4, and an introduction to the \gls{holba} framework.}
+
+% * NIC
+% * HOL4
+% * HolBA
+%   - BIR
+%     -> Mention about BDeclare here instead?
 
 \chapter{NIC model} \label{nic-model}
+\vspace{-1cm}
+\textit{This chapter intends to \textbf{TODO}}
+
 % * Présentation du modèle HOL4 du NIC (+ DepGraph)
-% * Expérimentation avec Alice et Bob (+ CFG (+ interface))
-% * Modèle BSL (-> prez de BSL)
 %
 % * Liberté de la méthode et question sur comment traduire le modèle
 %
-% * Présentation de BIR
+% * Expérimentation en C et avec Alice et Bob (+ CFG (+ interface))
+% * Modèle BSL (-> prez de BSL)
 %
 % * Impossibilité de tout représenter avec BIR (pourquoi?)
 %   -> identification (> DepGraph) et fragmentation
 %   -> transition vers la preuve
 
+\section{Overview of the formal NIC model}
+\subsection{TODO1}
+\subsection{TODO2}
+\subsection{DepGraph}
+% NIC model + HolBA
+
+\section{Attempts of translation of the NIC model to HolBA's intermediate language}
+% + shema showing multiple ways of implementing the NIC model in BIR
+\subsection{C model}
+\subsection{HolBA's Binary Intermediate Representation}
+\subsection{A story of Alice and Bob}
+% BIR toy model
+\subsection{Implementing the real model}
+% BSL and helpers: not-complete model (focus on key parts)
+\subsubsection{BSL}
+\subsubsection{Helpers}
+\subsubsection{The model}
+
+\section{BIR limitations}
+
 
 \chapter{Proving properties}
+\vspace{-1cm}
+\textit{This chapter will discuss about experiments carried out in order to perform formal verification on the \gls{NIC} model written in \gls{BIR}. It will first introduce contract based verification, its current status in the \gls{holba} platform, and the non \gls{proof-producing} contract based library that has been implemented in this work. It will then present some contract based verifications that has been performed, first in a non proof-producing fashion on example programs and on the NIC model of the previous section, then in a proof on a simplified formal NIC model and the BIR program of previous section.}
 
 % * Introduction des WP
 %   - Rappels sur le WP existant dans HolBA
@@ -308,7 +389,7 @@ Another way of thinking about how to prove logical formulas with \gls{SMT} solve
 
 \subsubsection{Getting started with the BitVectors theory}
 
-To reason about fixed-size integers, \gls{SMT} solvers often implement a ``BitVector'', or ``FixedSizeBitVectors'', theory. In order to understand its particularities, we can try to prove Equation \ref{bv_eq1}. Hereafter, we will use Z3, a popular and efficient \gls{SMT} solver implemented by Microsoft Research\footnote{Z3 is available on GitHub at \url{https://github.com/Z3Prover/z3/}.}, and SMT-LIB 2.0, which is a standard format for \gls{SMT} solvers. Listing \ref{bv_eq1_smtlib} shows the SMT-LIB 2.0 representation of this proof attempt.
+To reason about fixed-size integers, \gls{SMT} solvers often implement a ``BitVector'', or ``FixedSizeBitVectors'', theory. In order to understand its particularities, we can try to prove Equation \ref{bv_eq1}. Hereafter, we will use Z3, a popular and efficient \gls{SMT} solver implemented by Microsoft Research\footnote{Z3 is available on GitHub at \url{https://github.com/Z3Prover/z3/}.}, and SMT-LIB 2.0, which is a standard format for \gls{SMT} solvers \cite{barrett_satisfiability_2016}. Listing \ref{bv_eq1_smtlib} shows the SMT-LIB 2.0 representation of this proof attempt.
 
 \begin{equation}
     \forall x.~ x + 1 > x, \text{with $x$ an unsigned 32-bit integer}
@@ -381,7 +462,7 @@ unsat
 
 \subsection{Contract based verification in HolBA} \label{contract-verif-holba}
 
-\gls{holba} provides a proof-producing tool for automatically deriving weakest preconditions on loop-free \gls{BIR} programs whose control flow can be statically identified \cite{lindner_trabin:_2019}. This tool is proof-producing in that it proves Theorem \ref{triple_wp_thm} which is the instantiation of Definition \ref{holba_wp_ht_thm}, with $(p,~entry\_l,~end\_ls)$ defining the program, $wp$ the derived weakest precondition, $post$ the given postcondition.
+\gls{holba} provides a \gls{proof-producing} tool for automatically deriving weakest preconditions on loop-free \gls{BIR} programs whose control flow can be statically identified \cite{lindner_trabin:_2019}. This tool is proof-producing in that it proves Theorem \ref{triple_wp_thm} which is the instantiation of Definition \ref{holba_wp_ht_thm}, with $(p,~entry\_l,~end\_ls)$ defining the program, $wp$ the derived weakest precondition, $post$ the given postcondition.
 
 \begin{equation}
     bir\_exec\_to\_labels\_triple~prog~entry\_l~end\_ls~\mathbf{wp}~post
@@ -439,16 +520,14 @@ Assuming well-typedness and initialization, after rewriting the definition of $b
     \end{equation}
 \end{small}
 
-In Equation \ref{eval_pre_imp_eval_wp} we can recognize Equation \ref{p_imp_wp} that we discussed how to prove using \gls{SMT} solvers in Section \ref{using-smt-to-prove-contracts}. However, the expressions are expressed as BIR expressions. We then have to find a way to use an SMT solver. This is the focus of the following of this thesis. Section \ref{impl-non-pp-wp-lib} will use a non proof-producing method for translating those BIR expressions into an equivalent formula that SMT solvers can work on, then focus on automating the whole verification process. Section \ref{trustful-nic-analysis} will complete this proof and use it to lift properties that have been proved on the BIR implementation to the \gls{NIC} model. The following Section \ref{bir-memories-with-smt-solvers} will discuss how to make proofs about BIR memories using \gls{SMT} solvers.
+In Equation \ref{eval_pre_imp_eval_wp} we can recognize Equation \ref{p_imp_wp} that we discussed how to prove using \gls{SMT} solvers in Section \ref{using-smt-to-prove-contracts}. However, the expressions are expressed as BIR expressions. We then have to find a way to use an SMT solver. This is the focus of the following of this thesis. Section \ref{impl-non-pp-wp-lib} will use a non \gls{proof-producing} method for translating those BIR expressions into an equivalent formula that SMT solvers can work on, then focus on automating the whole verification process. Section \ref{trustful-nic-analysis} will complete this proof and use it to lift properties that have been proved on the BIR implementation to the \gls{NIC} model. The following Section \ref{bir-memories-with-smt-solvers} will discuss how to make proofs about BIR memories using \gls{SMT} solvers.
 
 \subsection{BIR memories and SMT solvers} \label{bir-memories-with-smt-solvers}
 
 % Mention SMT-LIB logics?
 % Mention proof reconstruction?
 
-HOL4 features a library for interfacing \gls{SMT} solvers and HOL4, called \textit{HolSmtLib}. This library supports Yices 1 and Z3 as external provers. Yices 1 being an abandoned project that doesn't support SMT-LIB 2.0, we will focus on Z3 and the standard format SMT-LIB 2.0. While \textit{HolSmtLib} supports export for some SMT-LIB 2.0 theories, it doesn't support the \textit{ArraysEx} theory and doesn't know about BIR. In Section \ref{contract-verif-holba}, we discussed the translation from BIR expressions to \textit{wordsTheory}. However, this theory doesn't contain anything about memories or arrays in general. Therefore, some modifications are needed.
-
-\todo{Cite SMT-LIB 2.0}
+HOL4 features a library for interfacing \gls{SMT} solvers and HOL4, called \textit{HolSmtLib}. This library supports Yices 1 and Z3 as external provers. Yices 1 being an abandoned project that doesn't support SMT-LIB 2.0, we will focus on Z3 and the standard format SMT-LIB 2.0 \cite{barrett_satisfiability_2016}. While \textit{HolSmtLib} supports export for some SMT-LIB 2.0 theories, it doesn't support the \textit{ArraysEx} theory and doesn't know about BIR. In Section \ref{contract-verif-holba}, we discussed the translation from BIR expressions to \textit{wordsTheory}. However, this theory doesn't contain anything about memories or arrays in general. Therefore, some modifications are needed.
 
 BIR memories are semantically defined as functions from addresses to values. 
 
@@ -543,7 +622,7 @@ As an intermediate language for formal verification, \gls{BIR} possesses a preci
 
 Similarly, a set of definitions and theorems describe the semantic of operations on BIR memories. However, correct handling of endianness, alignment and genericity over the size of memories cells and addresses, these definitions and theorems are pretty complicated to work with. The same is true for the semantic of operations on BIR variables, because of well-typedness and initialization.
 
-For this reason---i.e. writing proof-producing code is costly---, I decided to write a non-proof producing function \texttt{bir\_exp\_to\_words} that translates BIR expressions to the equivalent words expression. The obvious downside of such a function is that we now have to trust the translation to be sound, because we no longer get any guarantee from the theorem prover. However, development time is dramatically decreased and offers more time for experimenting. Moreover, this function can later be implemented in a proof-producing way for more trustful verification. Then, in order to have a high confidence of correctness, software engineering practices apply:
+For this reason---i.e. writing \gls{proof-producing} code is costly---, I decided to write a non-proof producing function \texttt{bir\_exp\_to\_words} that translates BIR expressions to the equivalent words expression. The obvious downside of such a function is that we now have to trust the translation to be sound, because we no longer get any guarantee from the theorem prover. However, development time is dramatically decreased and offers more time for experimenting. Moreover, this function can later be implemented in a proof-producing way for more trustful verification. Then, in order to have a high confidence of correctness, software engineering practices apply:
 
 \begin{itemize}
     \item write small and understandable pieces of code and compose them, and
@@ -858,7 +937,7 @@ Other preconditions have been tested to verify that \texttt{prove\_contract} doe
 
 \subsection{Simple automatized proofs on the NIC model}
 
-In Chapter \ref{nic-model} we implemented parts of the NIC model using BIR.
+\textbf{TODO}: In Chapter \ref{nic-model} we implemented parts of the NIC model using BIR.
 + Prove invariants
 + say that we cannot prove everything that we need
 + conclude on this section
@@ -867,7 +946,7 @@ In Chapter \ref{nic-model} we implemented parts of the NIC model using BIR.
 
 %bisimulation and lifting are recurring ideas in trustful binary verification.
 
-In the previous section, we implemented an automated non proof-producing contract verification library, the non proof-producing part being the translation from BIR expressions to the equivalent \textit{wordsTheory} and \textit{combinTheory} expression. Moreover, this verification library can only produce contracts on BIR programs. In order to perform trustworthy verification on the \gls{NIC} model, we need to make proofs directly on the \gls{NIC} state. In this section, we will perform a proof on a BIR program and then lift it to the \gls{NIC} model.
+In the previous section, we implemented an automated non \gls{proof-producing} contract verification library, the non proof-producing part being the translation from BIR expressions to the equivalent \textit{wordsTheory} and \textit{combinTheory} expression. Moreover, this verification library can only produce contracts on BIR programs. In order to perform trustworthy verification on the \gls{NIC} model, we need to make proofs directly on the \gls{NIC} state. In this section, we will perform a proof on a BIR program and then lift it to the \gls{NIC} model.
 
 In order to prove the feasibility of this approach, we will prove a simple property. Listing \ref{proof_nic_state} contains the NIC state on which we want to prove a property, Equations \ref{proof_nic_P_def}, \ref{proof_nic_Q_def} and \ref{proof_goal} present the property that we want to prove, and Listing \ref{proof_prog} contains a pseudocode representation of the BIR program on which we will perform the verification. Figure \ref{proof_schema} represents visually the structure of the verification and the steps that we will take during the proof. 
 
@@ -1107,6 +1186,9 @@ Finally, using the deduction rule with Theorems \ref{proof_R_inj_thm}, \ref{proo
 
 \chapter{Conclusions}
 \section{Results}
+
+% How to evaluate the work?
+
 \section{Discussion}
 
 Pretty-printer, some work left:
@@ -1123,6 +1205,7 @@ One-button proofs:
     \item in binary verification, we work with ASM instead of clean C code. Therefore, pre-postconditions are harder to define. Hence, this one-button solution would need more support to easily define those expressions.
     \item prove\_contract should take definitions instead of terms for P and Q
     \item gives access to lower level functions (generate wp and simp), so it is still possible to get some control either when the proof doesn't work or if we need to use them for other tasks and compose them differently
+    \item current limitations of the non pp lib: only simple linear programs; non pp; non composition;
 \end{itemize}
 
 Mention the "future" meeting that we had on the 29/05/2019.
