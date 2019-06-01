@@ -351,7 +351,7 @@ Multiple approaches of translation of the formal NIC model to an equivalent BIR 
 \end{itemize}
 
 
-\subsection{Using flowcharts as device intermediate representation} \label{flowchart-attempt}
+\subsection{Using flowcharts as Intermediate Representation} \label{flowchart-attempt}
 % essayé flowcharts, simple mais taille grossit très vite, complexe, tedious
 
 As already discussed in the previous Section, the structure of the formal model looks like a tree. Therefore, using flowcharts can be a convenient way to represent such structures. An attempt has been made to design a flowchart representation. Figures \ref{flowchart-scheduler}, \ref{flowchart-tx} and \ref{flowchart-tx_fetch_next_bd} show respectively a preview of the scheduler, transmission automaton and particular transition of this automaton.
@@ -387,11 +387,12 @@ While this visual representation was useful to get to know the formal NIC model,
 
 For those reasons, it has been decided to not go further with this visual representation, and to focus instead of existing tools of the HolBA platform.
 
-\subsection{C model} \label{c-model}
+\subsection{Writing the model in C} \label{c-model}
 % Problem: we don't want to reason with the stack
 
-One to one translation of the formal model has been realized in C. 
+One-to-one translation of the transmission automaton, scheduler, state and \textit{CPPI\_RAM} related definitions of the formal model has been realized in C. This translation has been quite easy to perform and has been completed in around four hours. No difficulty arisen during this translation. Regarding the NIC state, C has all types needed to represent it. An array has been used to represent the function type of \textit{CPPI\_RAM}. Enumerations have been used in order to represent HOL4 enumerations. While not optimal is conventional usage of C because of their non restricted usage allowed by the C language (they can be freely modified as integers without checking their validity in C, while HOL4 and functional languages in general are restrictive and force to use correct values), enumerations are enough if used correctly and aware of those shortcomings. However, when studying the compiled assembly code and lifted BIR program, we noticed that all the convenient naming that we can use in the formal or the C model is lost and replaced with abundant usage of the stack. While this is completely normal behaviour for a C compiler, this is not convenient when performing later proofs on the model: we would first need to rename them in the proof using some definitions, and this process would be lengthy and cumbersome (if not automated), resulting in more code than if the model had been directly written in BIR in the first place. This experiment made us realize that writing the model is a rapid operation and that we should rather focus on making the verification step as smooth as possible, because it is the most difficult to carry out.
 
+For those reasons, it has been decided to try using BIR directly to write the NIC model. First, Section \ref{alice-bob-toy} presents a first prototype that has been realized in order to visualize the shape of a BIR program representing the NIC model, and identify the tools that would be needed in order to reduce the boilerplate of such implementation in BIR.
 
 
 \subsection{A story of Alice and Bob} \label{alice-bob-toy}
@@ -399,15 +400,16 @@ One to one translation of the formal model has been realized in C.
 
 
 
+\subsection{Visualizing the CFG} \label{visualizing-cfg}
+
+
 \subsection{BSL: BIR Simple Language} \label{bsl}
 
+\subsection{Device model specific BIR helpers}
 
 \subsection{Implementing the real model} \label{impl-real-model}
-% BSL and helpers: not-complete model (focus on key parts)
+% model not-complete model (focus on key parts)
 
-\subsubsection{Helpers}
-\subsubsection{The model}
-\subsubsection{Visualizing the CFG} \label{visualizing-cfg}
 
 \section{Overview of the formal proof on the NIC model}
 
