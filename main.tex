@@ -259,7 +259,7 @@ interactive fashion, i.e. a human can step through the proof interactively while
 
 HOL4 \cite{noauthor_hol_nodate} stands for Higher-Order Logic. It is a programming environment deeply embedded into the \gls{SML} programming language enabling to prove theorems and write \gls{proof-producing} programs. Since its first version in 1988, HOL has been focused on hardware verification, and has been successfully used in this domain, as shows its \texttt{examples/} directory \cite{noauthor_canonical_nodate}.
 
-HOL4 is built around a very small kernel: 3 axioms, 10 inference rules, two predefined constants and two types \cite{tuerk_interactive_nodate}\footnote{This is true for the Hol Light Kernel, because the HOL4 kernel has slightly deviated from this simplicity for historical and performance reasons.}. A theorem can only be built using this core, every other higher-level theory must be built from lower-level ones. Furthermore, the kernel is consist of very few lines of code, leaving less space for bugs. Hence, for this reason, the trust needed is far inferior to standard systems.
+HOL4 is built around a very small kernel: 3 axioms, 10 inference rules, two predefined constants and two types \cite{tuerk_interactive_nodate}\footnote{This is true for the Hol Light Kernel, however the HOL4 kernel has slightly deviated from this simplicity for historical and performance reasons.}. A theorem can only be built using this core, every other higher-level theory must be built from lower-level ones. Furthermore, the kernel is consist of very few lines of code, leaving less space for bugs. Hence, for this reason, the trust needed is far inferior to standard systems.
 
 Several models of different ARM \gls{ISA} have been realized, such as ARMv3, ARMv4, ARMv7 \cite{noauthor_canonical_2019, hutchison_trustworthy_2010} and very recently ARMv8 \cite{armstrong_isa_2019}. These models enable making proofs directly at the ISA level, avoiding the necessity to trust the compiler and enabling to formally verify program behaviours according to the CPU specification. However, this process is tedious and cannot actually be perform by hand. To respond to this problem, \cite{metere_sound_2017} introduced a proof-producing lifter that moves the verification from raw assembly code to an higher-level intermediate representation, and introduced later some supporting tools \cite{lindner_trabin:_2019} in order to automate some of the work. This constitutes the foundation of HolBA.
 
@@ -287,6 +287,8 @@ This representation allows to produce proofs more easily that with classical bin
 
 BIR is implemented as a set of HOL4 \textit{datatypes}, and possesses a completely defined semantic. Section \ref{bir-memories-with-smt-solvers} contains a more thorough discussion of the BIR semantic. Section \ref{alice-bob-toy} shows a toy BIR program using the concrete BIR syntax.
 
+Among its supporting tools, HolBA features a tool to visualize the \gls{CFG} of BIR programs.
+
 
 \chapter{The BIR NIC model} \label{nic-model}
 \vspace{-1cm}
@@ -302,19 +304,17 @@ BIR is implemented as a set of HOL4 \textit{datatypes}, and possesses a complete
 %   -> identification (> DepGraph) et fragmentation
 %   -> transition vers la preuve
 
-The first step of this work is to 
-
 \section{Overview of the formal NIC model}
 
 The formal NIC model of \cite{haglund_formal_2016} has been designed from reading the hardware specification of the device, because no model nor device driver is freely available.
 
 The NIC model is designed as a transition system with four types of transitions: register read, register write, autonomous, and memory read request reply transitions. They are described by four functions which constitute its public interface: \texttt{read\_nic\_register}, \texttt{write\_nic\_register}, \texttt{nic\_transition\_autonomous} and \texttt{memory\_read\_reply}. Each of these functions update the given initial NIC state, simulating the real behaviour of the NIC. To make the model sound, the state is marked \textit{dead} if the model is asked to describe any transition or operation that is not described by the specification. Dead states represent undefined states and cannot be left with further transitions.
 
-The model is composed of five finite state automata describing the inner transitions of the whole system, each automata describing a part of the NIC. The automata are: initialisation, transmission, transmission teardown, reception and reception teardown. The function \texttt{nic\_execute} performs one autonomous step of one of the five automata. The automaton that takes a step is decided by a scheduler, depending on the NIC inner state. If more that one automata are in a ready state, their order is not deterministic. Each finite state automata is defined as a set of transitions working on NIC states. Each transition takes a NIC state and returns an update one, possibly dead.
+The model is composed of five finite state automata describing the inner transitions of the whole system, each automata describing a part of the NIC. The automata are: initialisation, transmission, transmission teardown, reception and reception teardown. The function \texttt{nic\_execute} performs one autonomous step of one of the five automata. The automaton that takes a step is decided by a scheduler, depending on the NIC inner state. If more that one automata are in a ready state, their order is not deterministic \footnote{To reason about non determinism, the notion of oracles has been introduced in \cite{haglund_formal_2016}. To put it simply, an oracle can be seen as a list of steps to perform, but where each element of the list is undefined. As we will not directly reason about the oracle, we will not explain how this works in more details. The reader can read a thorough explanation in \cite{haglund_formal_2016}.}. Each finite state automata is defined as a set of transitions working on NIC states. Each transition takes a NIC state and returns an update one, possibly dead.
 
 Being designed as a transition system, each of the four functions described earlier are loop-free, aspect that is crucial in order to apply contract based verification as described in Section \ref{contract-based-verif}. Each of the transition is implemented as a HOL4 function using exclusively \textbf{if-then-else} and state modification statements. There are no recursive definition. Hence, every function can be seen as some kind of decision tree in which some of the nodes ``mutate'' the state. This idea will be refined later on in Section \ref{visualizing-cfg}.
 
-The five automata are of different complexity, as shown in Table \ref{stats_complexity_formal_nic_model}, with the initialization automaton having only 4 transitions of which only one is autonomous, and the reception automaton being the most complex with 20 transitions. Calling the \texttt{nic\_transition\_autonomous} function makes one of the automata take an autonomous step.
+The five automata are of different complexity, as shown in Table \ref{stats_complexity_formal_nic_model}, with the initialization automaton having only 4 transitions of which only one is autonomous, and the reception automaton being the most complex with 20 transitions. Calling the \texttt{nic\_transition\_autonomous} function makes one of the automata take an autonomous step. Non autonomous transitions are performed by the three other functions.
 
 \begin{table}[ht!]
     \centering
@@ -345,7 +345,7 @@ The structure of the implementation of \texttt{read\_nic\_register} and \texttt{
 Multiple approaches of translation of the formal NIC model to an equivalent BIR program have been considered:
 
 \begin{itemize}
-    \item \textbf{handwritten BIR program}: The most straightforward way would be to directly write the BIR program by hand by looking at the actual formal model and directly converting it to BIR. This is easily feasible because of the limited set of statement used in the implementation of the NIC model which are all representable in the BIR syntax. However, this does not seem optimal if more than one such translation need to be performed. One remedy of this problem would be to implement a set of tools that facilitate the implementation of device models and reduce the boiler plate. This idea is explored in the following Sections \ref{alice-bob-toy} and \ref{impl-real-model}.
+    \item \textbf{handwritten BIR program}: The most straightforward way would be to directly write the BIR program by hand by looking at the actual formal model and directly converting it to BIR. This is easily feasible because of the limited set of statement used in the implementation of the NIC model which are all representable in the BIR syntax. However, this does not seem optimal if more than one such translation need to be performed. One remedy of this problem would be to implement a set of tools that facilitate the implementation of device models and reduce the boiler plate. This idea is explored in the following Sections \ref{alice-bob-toy} to \ref{impl-real-model}.
     \item \textbf{lifted C program}: An alternative would be to implement the NIC model in a more convenient higher-level programming language, compile it to assembly code and leverage the existing lifter to generate a BIR program. One advantage of this method is the possibility to use existing frameworks and tools that already exist in other languages, in which the ease of development is higher. However, the gained ease of development is maybe not worth the complexity introduced by those steps. The following Section \ref{c-model} experiments this idea.
     \item \textbf{device model specific \gls{IR}}: This idea rejoins the previous one in the sense that it uses an additional intermediate representation (C in the previous idea) to implement the model, then uses some compiler to generate the BIR program (standard C compiler and HolBA's lifter). This idea would have the advantage that it introduces a new higher-level IR that would be common to possible later other device modelisations. Tools could also be developed for this IR. However, this approach would require to develop a new IR and, if we later want to develop a \gls{proof-producing} lifter (compiler) the implementation would be costly, especially since this language would be more complex. The following Section \ref{flowchart-attempt} tries to use visual flowchart language as IR. %This idea has not been explored in this work, where we decided to experiment using existing tools: the lifter, BIR and its supporting tools.
 \end{itemize}
@@ -382,10 +382,10 @@ While this visual representation was useful to get to know the formal NIC model,
 \begin{itemize}
     \item Flowcharts of each transition rapidly grew in size with the complexity of its formal counterpart. Possible orkarounds include the use of nested diagrams, as it is the case of Figure \ref{flowchart-tx_fetch_next_bd} representing one node of Figure \ref{flowchart-tx}, namely \texttt{fetch\_next\_bd}, or usage of shorter ways of representing common patterns, as it is the case for representing dead transitions on Figure \ref{flowchart-tx_fetch_next_bd}.
     \item It is hard to define a coherent visual language able to represent the full set of features needed in order to realize device models. Additionally, this language must be compatible or easily translatable to BIR.
-    \item It is hard to design a textual representation of this visual language other than conventional programming languages, so using such representation would require a consequent implementation effort in order to implement all the tools needed to use it.
+    \item It is hard to design a textual representation of this visual language other than conventional programming languages, so using such representation would require a substantial implementation effort in order to implement all the tools needed to use it. Developing visualization tools for a conventional language appears to be a more reasonable approach than developing a visual language.
 \end{itemize}
 
-For those reasons, it has been decided to not go further with this visual representation, and to focus instead of existing tools of the HolBA platform.
+For those reasons, it has been decided to not go further with this visual representation, and to focus instead of existing tools of the HolBA platform. However, as we shall see in the rest of this thesis, we will explore other visualization tools, and flowcharts will be used as a visual help while designing the model using other methods.
 
 \subsection{Writing the model in C} \label{c-model}
 % Problem: we don't want to reason with the stack
@@ -394,18 +394,85 @@ One-to-one translation of the transmission automaton, scheduler, state and \text
 
 For those reasons, it has been decided to try using BIR directly to write the NIC model. First, Section \ref{alice-bob-toy} presents a first prototype that has been realized in order to visualize the shape of a BIR program representing the NIC model, and identify the tools that would be needed in order to reduce the boilerplate of such implementation in BIR.
 
-
-\subsection{A story of Alice and Bob} \label{alice-bob-toy}
+\subsection{Implementing a toy BIR model} \label{alice-bob-toy}
 % BIR toy model
 
+Before writing the whole NIC model by hand, we shall identify the structure of the model and develop tools that facilitate its implementation. Using well-designed tools can reduce the boilerplate work of the implementation, helping to focus only on the meaningful content of the implementation, and can also reduce the chance of introducing bugs as the code is factored and mechanically shorter.
 
+It has been decided to implement a transition system similar to the one of the NIC model, with two inner independent automata: Alice and Bob. The two automata feature a simple linear transition system, and each of them have a non-autonomous transition, that are performed by two external functions \texttt{bus\_arrived} and \texttt{taxi\_arrived} that represent memory accesses from the CPU in the NIC model. The function \texttt{autonomous\_step} performs one autonomous transition via the scheduler. Figure \ref{alice-bob-automata-overview} gives an overview of the two automata, Figure \ref{alice-bob-entrypoints} shows the role of the three functions and Figure \ref{alice-bob-alice_autonomous_transitions} describes in details Alice's automaton. (Flowcharts from the previous Section \ref{flowchart-attempt} have been used in this section in order to facilitate designing the toy model. However, no effort has been made to come up with a coherent and formalized language.)
 
-\subsection{Visualizing the CFG} \label{visualizing-cfg}
+\begin{figure}[p]
+	\includegraphics[height=10cm]{figures/alice-bob-automata-overview.png}
+	\centering
+	\caption{Overview of the two independent automata. The green arrow represent the autonomous transitions and the red ones the non-autonomous. As in Section \ref{flowchart-attempt}, the green nodes represent conditional statements depending on the scheduler's oracle, as shown in Figure \ref{alice-bob-sheduler-oracle}.}
+	\label{alice-bob-automata-overview}
+\end{figure}
 
+\begin{figure}[p]
+	\includegraphics[height=5cm]{figures/alice-bob-sheduler-oracle.png}
+	\centering
+	\caption{Scheduler of the toy BIR model. We can see how the oracle decides which automaton takes a step. If an automaton is in a state whose transition isn't autonomous, the automaton state is returned unchanged.}
+	\label{alice-bob-sheduler-oracle}
+\end{figure}
+
+\begin{figure}[p]
+	\includegraphics[height=6cm]{figures/alice-bob-entrypoints.png}
+	\centering
+	\caption{The three entrypoints of the toy program: \texttt{autonomous\_step}, \texttt{bus\_arrived} and \texttt{taxi\_arrived}.}
+	\label{alice-bob-entrypoints}
+\end{figure}
+
+\begin{figure}[p]
+	\includegraphics[width=\textwidth]{figures/alice-bob-alice_autonomous_transitions.png}
+	\centering
+	\caption{The six transitions of Alice's automaton. Each transition only updates the state. Conditional statements hasn't been added in this toy model because it already features conditional statements in the scheduler. The third transition is a non-autonomous transition; \texttt{bus\_arrived} is in charge of updating Alice's state from \textit{WaitingBus} to \textit{Working}.}
+	\label{alice-bob-alice_autonomous_transitions}
+\end{figure}
+
+From the design presented in Figures \ref{alice-bob-automata-overview}, \ref{alice-bob-entrypoints} and \ref{alice-bob-alice_autonomous_transitions}, writing the BIR program is a repetitive but straightforward step. The resulting BIR program is 450 lines of code long. The following issues have been identified:
+
+\begin{itemize}
+    \item BIR, as a HOL4 embedded language, is very verbose. Simple operations like additions or assignments require long constructions, as shown in Listing \ref{alice-bob-bir-verbose}. Section \ref{bsl} presents BSL, a less verbose way of writing BIR programs.
+\begin{lstlisting}[
+    language=Caml,
+    backgroundcolor=\color{codebackcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    stringstyle=\color{codepurple},
+    label=alice-bob-bir-verbose,caption=BIR ,
+    frame=tb,basicstyle=\tiny\ttfamily]
+(* A1. Eating *)                                                                                                                     
+<|bb_label := BL_Label "alice_automaton.step.1";                                                                                     
+  bb_statements := [                                                                                                                 
+    (* state.alice.hunger -= 20 *)                                                                                                   
+    BStmt_Assign (BVar "state.alice.hunger" (BType_Imm Bit32))                                                                       
+      (BExp_BinExp BIExp_Minus                                                                                                       
+        (BExp_Den (BVar "state.alice.hunger" (BType_Imm Bit32)))                                                                   
+        (BExp_Const (Imm32 20w)));                                                                                                 
+    (* state.alice.step := 2 *)                                                                                                      
+    BStmt_Assign (BVar "state.alice.step" (BType_Imm Bit32))                                                                         
+      (BExp_Const (Imm32 2w))                                                                                                        
+  ];                                                                                                                                 
+  bb_last_statement := BStmt_Jmp (BLE_Label (BL_Label "alice_automaton.end"))                                                        
+|>;                                                                                                                                  
+\end{lstlisting}
+    \item BIR features only one conditional statement controlling the control flow of a program: conditional jumps. Hence, BIR is not convenient for representing \textbf{if-then-else} statements with more than two branches. Section \ref{device-bir-helpers} presents some helper functions that have been implemented in order to be able to abstract the raw BIR code and work at a higher-level.
+\end{itemize}
+
+%\subsection{Visualizing the CFG} \label{visualizing-cfg}
+% Moved to the introduction
 
 \subsection{BSL: BIR Simple Language} \label{bsl}
 
-\subsection{Device model specific BIR helpers}
+Because of its extreme verbosity, BIR is not a language convenient to manually use. Its primary use has been as an output from the \gls{proof-producing} lifter and as a machine-independent intermediate represent with a very limited feature-set convenient to reason about. A less verbose and more convenient method for producing BIR code is needed in order to open this language to other uses. Therefore, a library has been written that offers the same expressiveness than BIR but with shorter constructs. This library has been kept simple and will serve as the base layer of possible later abstractions. As such, it has been decided that no feature other than pure syntactic construct, such that type inference, would be included. This library has been named BIR Simple Language (BSL) and is implemented in the file \textit{bslSyntax.sml} \footnote{This file has been named in order to follow the HOL4 conventions: \textit{*Syntax.sml} files contain functions that create, destruct and check HOL4 terms. \textit{bslSyntax.sml} is a library for creating only BIR terms, and should therefore follow this convention.}.
+
+BSL is composed of a set of functions with short names and a coherent interface. Since this library will be directly included in every \gls{SML} script file in order to avoid usage of the lengthy \texttt{bslSyntax.function\_name} SML construction, we decided to prefix every function with the letter \texttt{b}. As BSL doesn't feature type inference, types must be explicitly given when necessary. For every such function, such as \texttt{bconst}, implementations for every possible types have been added, in addition to a general functions taking the size as argument. Thanks to partial function application in SML, composing functions is easy and scripts can create the set of functions that they need. However, in practice, a BIR program uses a very limited set of types and it is often enough in scripts to statically define the needed set of sized functions. Finally, BSL has been designed to be fully interoperable with HOL4 terms; it exists for every BIR operation a related BSL function taking a HOL4 term as parameter, and every BSL function return a HOL4 term. Scripts can therefore not be limited by the restricted feature-set of BSL.
+
+
+\subsection{Device model specific BIR helpers} \label{device-bir-helpers}
+% not general enough to be part of BSL, but can be seen as an extension
+
+
 
 \subsection{Implementing the real model} \label{impl-real-model}
 % model not-complete model (focus on key parts)
@@ -649,6 +716,8 @@ Assuming well-typedness and initialization, after rewriting the definition of $b
 
 In Equation \ref{eval_pre_imp_eval_wp} we can recognize Equation \ref{p_imp_wp} that we discussed how to prove using \gls{SMT} solvers in Section \ref{using-smt-to-prove-contracts}. However, the expressions are expressed as BIR expressions. We then have to find a way to use an SMT solver. This is the focus of the following of this thesis. Section \ref{impl-non-pp-wp-lib} will use a non \gls{proof-producing} method for translating those BIR expressions into an equivalent formula that SMT solvers can work on, then focus on automating the whole verification process. Chapter \ref{trustful-nic-analysis} will complete this proof and use it to lift properties that have been proved on the BIR implementation to the \gls{NIC} model. The following Section \ref{bir-memories-with-smt-solvers} will discuss how to make proofs about BIR memories using \gls{SMT} solvers.
 
+% TODO: Explain why "EVAL ``bir_eval_exp exp``" doesn't work
+
 \section{BIR memories and SMT solvers} \label{bir-memories-with-smt-solvers}
 
 % Mention SMT-LIB logics?
@@ -856,7 +925,7 @@ To answer to these kinds of issues, HOL4 provides the ability to implement ``pre
 \begin{figure}[!h]
 	\includegraphics[width=\textwidth]{figures/pp_ex_pretty_printing.png}
 	\centering
-	\caption{Same expression printed with the pretty-printer enabled}
+	\caption{Same expression printed with the pretty-printers enabled}
 	\label{pp_ex_pretty_printing}
 \end{figure}
 
@@ -871,6 +940,8 @@ The pretty-printers introduce a set of features:
     \item Gathering of nested binary expressions of the same type on the same level. We can see this feature in Figure \ref{pp_ex_pretty_printing} with the two nested ``or'' binary operators, where the three operands are printed on the same level.
     \item Rainbow parenthesis, i.e. matching pairs of parenthesis are printed in the same color. This feature is really useful when reading long expression in order to quickly identify where a sub-expression ends.
 \end{itemize}
+
+% TODO: Mention the Lisp printing attempt?
 
 \section{Implementing a convenient interface} \label{impl_convenient_ht_interface}
 
