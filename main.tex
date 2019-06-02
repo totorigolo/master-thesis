@@ -456,7 +456,7 @@ From the design presented in Figures \ref{alice-bob-automata-overview}, \ref{ali
   bb_last_statement := BStmt_Jmp (BLE_Label (BL_Label "alice_automaton.end"))                                                        
 |>;                                                                                                                                  
 \end{lstlisting}
-    \item BIR features only one conditional statement controlling the control flow of a program: conditional jumps. Hence, BIR is not convenient for representing \textbf{if-then-else} statements with more than two branches. Section \ref{device-bir-helpers} presents some helper functions that have been implemented in order to be able to abstract the raw BIR code and work at a higher-level.
+    \item BIR features only one conditional statement controlling the control flow of a program: conditional jumps. Hence, BIR is not convenient for representing \textbf{if-then-else} statements with more than two branches. Section \ref{impl-real-model} presents some helper functions that have been implemented in order to be able to abstract the raw BIR code and work at a higher-level.
 \end{itemize}
 
 %\subsection{Visualizing the CFG} \label{visualizing-cfg}
@@ -466,16 +466,70 @@ From the design presented in Figures \ref{alice-bob-automata-overview}, \ref{ali
 
 Because of its extreme verbosity, BIR is not a language convenient to manually use. Its primary use has been as an output from the \gls{proof-producing} lifter and as a machine-independent intermediate represent with a very limited feature-set convenient to reason about. A less verbose and more convenient method for producing BIR code is needed in order to open this language to other uses. Therefore, a library has been written that offers the same expressiveness than BIR but with shorter constructs. This library has been kept simple and will serve as the base layer of possible later abstractions. As such, it has been decided that no feature other than pure syntactic construct, such that type inference, would be included. This library has been named BIR Simple Language (BSL) and is implemented in the file \textit{bslSyntax.sml} \footnote{This file has been named in order to follow the HOL4 conventions: \textit{*Syntax.sml} files contain functions that create, destruct and check HOL4 terms. \textit{bslSyntax.sml} is a library for creating only BIR terms, and should therefore follow this convention.}.
 
-BSL is composed of a set of functions with short names and a coherent interface. Since this library will be directly included in every \gls{SML} script file in order to avoid usage of the lengthy \texttt{bslSyntax.function\_name} SML construction, we decided to prefix every function with the letter \texttt{b}. As BSL doesn't feature type inference, types must be explicitly given when necessary. For every such function, such as \texttt{bconst}, implementations for every possible types have been added, in addition to a general functions taking the size as argument. Thanks to partial function application in SML, composing functions is easy and scripts can create the set of functions that they need. However, in practice, a BIR program uses a very limited set of types and it is often enough in scripts to statically define the needed set of sized functions. Finally, BSL has been designed to be fully interoperable with HOL4 terms; it exists for every BIR operation a related BSL function taking a HOL4 term as parameter, and every BSL function return a HOL4 term. Scripts can therefore not be limited by the restricted feature-set of BSL.
+BSL is composed of a set of functions with short names and a coherent interface. Since this library will be directly included in every \gls{SML} script file in order to avoid usage of the lengthy \texttt{bslSyntax.function\_name} SML construction, we decided to prefix every function with the letter \texttt{b}. As BSL doesn't feature type inference, types must be explicitly given when necessary. For every such function, such as \texttt{bconst}, implementations for every possible types have been added, in addition to a general functions taking the size as argument. Thanks to partial function application in SML, composing functions is easy and scripts can create the set of functions that they need. However, in practice, a BIR program uses a very limited set of types and it is often enough in scripts to statically define the needed set of sized functions (as shown in Listing \ref{bsl-static-funcs}). Finally, BSL has been designed to be fully interoperable with HOL4 terms; it exists for every BIR operation a related BSL function taking a HOL4 term as parameter, and every BSL function return a HOL4 term. Scripts can therefore not be limited by the restricted feature-set of BSL.
 
+\begin{lstlisting}[
+    language=Caml,
+    backgroundcolor=\color{codebackcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    stringstyle=\color{codepurple},
+    label=bsl-static-funcs,caption=Example of prelude of a SML script that defines functions tailor-made to its use. The function \textit{o} is used for function combination.,
+    frame=tb,basicstyle=\footnotesize\ttfamily,
+    float,floatplacement=H]
+val bvarstate = bvarimm32
+val bdenstate = (bden o bvarstate)
+val bstateval = bconst32
+val bjmplabel_str = (bjmp o belabel_str)
+\end{lstlisting}
 
-\subsection{Device model specific BIR helpers} \label{device-bir-helpers}
-% not general enough to be part of BSL, but can be seen as an extension
-
-
+%\subsection{Device model specific BIR helpers} \label{device-bir-helpers}
+%% not general enough to be part of BSL, but can be seen as an extension
 
 \subsection{Implementing the real model} \label{impl-real-model}
 % model not-complete model (focus on key parts)
+
+From knowledge gained in the previous section, a set of helper functions has been implemented, mainly in order to facilitate reasoning about the state machine. Listings \ref{impl-real-tx_state} and \ref{impl-real-tx_bstate_cases} show the SML code respectively used to represent the transmission automaton and to generate the BIR blocks of the transmission ``case'' statement that jumps to the BIR block depending on the current state.
+
+\begin{lstlisting}[
+    language=Caml,
+    backgroundcolor=\color{codebackcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    stringstyle=\color{codepurple},
+    label=impl-real-tx_state,caption={Call to the \texttt{gen\_state\_helpers} function that generates a record containing the list of the states, the list of the autonomous states, a function from state name to state id, a function from state name to boolean telling if the state is autonomous and a function that generates BIR code of the state id from the state name. \texttt{gen\_state\_helpers} takes as parameters the name of the automaton and a list of its states with an id and a boolean telling if the state is autonomous.},
+    frame=tb,basicstyle=\footnotesize\ttfamily]
+val tx_state = gen_state_helpers "tx" [
+  ("tx1_idle",                          (1, false)),
+  ("tx2_fetch_next_bd",                 (2, true)),
+  ("tx3_issue_next_memory_read_request",(3, true)),
+  ("tx4_process_memory_read_reply",     (4, false)),
+  ("tx5_post_process",                  (5, true)),
+  ("tx6_clear_owner_and_hdp",           (6, true)),
+  ("tx7_write_cp",                      (7, true))
+]
+\end{lstlisting}
+
+\begin{lstlisting}[
+    language=Caml,
+    backgroundcolor=\color{codebackcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    stringstyle=\color{codepurple},
+    label=impl-real-tx_bstate_cases,caption={Autonomous transition jump table used for the transmission automaton. This table uses the names of each state and transition to generate the BIR blocks that will perform the conditional jumps depending on the value of the current transmission state. The parameters of the function are: a tuple of the name of the variable containing the current state, the label of the block to jump to when the current state isn't handled and a function that gives the state number from state name, and a list of jumps, each jump being a tuple of the label of the conditional BIR block, the value of the state that leads to this block and the name of the label to go to.},
+    frame=tb,basicstyle=\tiny\ttfamily,
+    float,floatplacement=H]
+(* Autonomous transition jump *)
+@ bstate_cases ("nic_tx_state", "tx_unknown_state", bstateval_tx) [
+  ("tx_try_s1", "tx1_idle",                           "tx_no_autonomous_step_state"),
+  ("tx_try_s2", "tx2_fetch_next_bd",                  "tx_s2_entry"),
+  ("tx_try_s3", "tx3_issue_next_memory_read_request", "tx_s3_entry"),
+  ("tx_try_s4", "tx4_process_memory_read_reply",      "tx_no_autonomous_step_state"),
+  ("tx_try_s5", "tx5_post_process",                   "tx_s5_entry"),
+  ("tx_try_s6", "tx6_clear_owner_and_hdp",            "tx_s6_entry"),
+  ("tx_try_s7", "tx7_write_cp",                       "tx_s7_entry")
+]
+\end{lstlisting}
 
 
 \section{Overview of the formal proof on the NIC model}
