@@ -42,7 +42,7 @@
 \email{thomas.lacroix@insa-lyon.fr}
 \supervisor{Mads Dam}
 \examiner{Pierre-\'Edouard Portier}
-\hostcompany{Division of Theoretical Computer Science - KTH}
+\hostorganization{Division of Theoretical Computer Science - KTH}
 \programme{Master in Computer Science}
 \school{Computer Science department - INSA Lyon}
 \date{\today}
@@ -237,7 +237,7 @@ The primary goal of this thesis project is to explore verification techniques in
 The ultimate goal would be to obtain a fully automatic pipeline for performing such verifications. However, it is evident that goal isn't reachable in such a small amount of time, or even at all. Thus, this thesis focuses instead on exploring what toolkit is needed in order to facilitate this work.
 
 \section{Delimitations}
-\textbf{TODO}: Is that section needed?
+\textbf{TODO}: Use this section to explain the time limits that have made it impossible to perform certain experiments.
 
 \section{Choice of methodology}
 
@@ -305,6 +305,8 @@ There are several other tools, platforms and frameworks, such as \gls{bap} \cite
 \chapter{Definitions and relevant theories}
 \vspace{-1cm}
 \textit{This chapter intends to introduce the concepts that are essential to the reader in order to understand the problem that this degree project aims to explore. This includes a presentation of Interactive Theorem Proving and formal proofs in HOL4, an introduction to \gls{BIR}, completing what has already been said about the \gls{holba} framework in the Introduction, and a brief overview of the formal NIC model and proof of \cite{haglund_formal_2016}.}
+
+\textbf{TODO}: The title of this chapter doesn't correspond to its content anymore.
 
 \section{Interactive Theorem Proving and HOL4}
 
@@ -384,19 +386,29 @@ It has been formally proved with HOL4 that with \gls{prosper}'s hypervisor, augm
 
 \begin{equation}
     I_{NIC} \eqdef \neg NIC.dead~\land~I_{init}~\land~I_{tx}~\land~I_{td}~\land~I_{rx}~\land~I_{rd}
+    \label{final-nic-proof-invariant}
 \end{equation}
 
-The model of the NIC consists of 1500 lines of HOL4 code, and required around three man-months of work. The NIC invariant consists of 650 lines of HOL4 code and the proof consists of approximately 55000 lines of HOL4 code, including comments. Identifying the invariant and implementing the proof in HOL4 required around one man-year of work \cite{haglund_trustworthy_2019}. % Copy-pasted from Jonas' paper :/
+Each sub-invariant is proved individually on its respective part of the NIC model, then they are composed together in order to form the final one in Equation \ref{final-nic-proof-invariant}.
 
-The proof being consequent, it is composed of a multitude of lemmas spread out in a multiple layers. The ideal objective of this work being to prove again the base lemmas on a different but equivalent BIR program, we therefore need to identify the relevant lemmas to be replaced. The proof is divided in two major parts, reception and transmission, and lemmas are scattered across a few files, each file being for a different part or abstraction level. Optimally, identifying the fringe of the dependency graph of the lemmas and theorems would give exactly the set of lemmas that all the other lemmas and theorems rely on, and therefore the smallest set of lemmas that are enough to prove in order to imply the security properties already proved in \cite{haglund_trustworthy_2019} by using the existing proofs.
+The majority of the lemmas are phrased in the same way, that we shall see in Chapter \ref{contract-based-verif} correspond to the equation of Hoare Triples:
+
+\begin{equation}
+  I~nic \land nic' = transition~nic \implies I'~nic'
+  \label{nic-typical-lemma}
+\end{equation}
 
 \subsection{Visualizing proof dependencies}
+
+The model of the NIC consists of 1500 lines of HOL4 code, and required around three man-months of work. The NIC invariant consists of 650 lines of HOL4 code and the proof consists of approximately 55000 lines of HOL4 code, including comments. Identifying the invariant and implementing the proof in HOL4 required around one man-year of work \cite{haglund_trustworthy_nodate}.
+
+The proof being consequent, it is composed of a multitude of lemmas spread out in a multiple layers. The ideal objective of this work being to prove again the base lemmas on a different but equivalent BIR program, we therefore need to identify the relevant lemmas to be replaced. The proof is divided in two major parts, reception and transmission, and lemmas are scattered across a few files, each file being for a different part or abstraction level. Optimally, identifying the fringe of the dependency graph of the lemmas and theorems would give exactly the set of lemmas that all the other lemmas and theorems rely on, and therefore the smallest set of lemmas that are enough to prove in order to imply the security properties already proved in \cite{haglund_trustworthy_nodate} by using the existing proofs.
 
 As an attempt to visualize this fringe, we developed a tool, called DepGraph \footnote{DepGraph's design is presented in Appendix \ref{annex_depgraph}.}, that can extract the dependency structure of HOL4 proofs in the form of a dependency graph. DepGraph can extract dependencies between HOL theories, i.e. compiled \gls{SML} files containing proofs of lemmas and theorems, and between definitions, theorems and lemmas. Figure \ref{depgraph-nic-tx-files} shows the dependencies between theories about the transmission part of the NIC proof, and Figure \ref{depgraph-nic-tx-thms} shows the dependencies between definitions, theorems and lemmas of the same part of the proof. However, as can be seen on Figures \ref{depgraph-nic-tx-files} and \ref{depgraph-nic-tx-thms}, this tool presents some critial shortcomings:
 
 \begin{itemize}
 	\item The theory dependencies exporter uses files generated by Holmake, HOL4 compile system, in order to get the dependencies between theories. However, those files don't really represent dependencies but the files to be loaded before this script can be loaded, in a recursive fashion. Therefore, they represent the transitive reduction of the dependency graph. Figure \ref{transitive-reduction} presents transitive reduction. Because of this fact, precious knowledge is lost and cannot be recovered by using this method: edges representing direct dependencies can be removed if the remaining edges still account for this dependency. Therefore, we are still able to tell which nodes depend on some node $n$, but we cannot identify the aforementioned fringe. In order to solve this problem, different approaches exist, such as implementing simplified a SML parser that looks only at dependencies, or injecting code inside the dependency resolution of an existing SML compiler. However, this would involve too much work that isn't the direct focus of this thesis.
-	\item The definition, theorem and lemma dependencies exporter uses word-based heuristics in order to extract dependencies, and is as such not quite reliable and cannot give any guarantee. As above, there exist similar solutions in order to get multiple levels of guarantees, such that implementing a SML parser or injecting code inside HOL4 theory and definitions handling, but this would also require too much work. Destructuring HOL4 theories doesn't work because of how HOL4 has been designed, i.e. no trace is kept on disk about how to prove a given saved theorem, except of course with the corresponding script file. Moreover, such dependency graphs become quickly big, making them unusable in practive, and some additional work would be needed in order to represent them in an convenient way. Therefore, as above, no further work has been put into this tool.
+	\item The definition, theorem and lemma dependencies exporter uses word-based heuristics in order to extract dependencies, and is as such not quite reliable and cannot give any guarantee. As above, there exist similar solutions in order to get multiple levels of guarantees, such that implementing a SML parser or injecting code inside HOL4 theory and definitions handling, but this would also require too much work. Destructuring HOL4 theories doesn't work because of how HOL4 has been designed, i.e. no trace is kept on disk about how to prove a given saved theorem, except of course with the corresponding script file. Moreover, such dependency graphs become quickly big, making them unusable in practive, and some additional work would be needed in order to represent them in an convenient way. Therefore, as above, no further work has been put into this exporter.
 \end{itemize}
 
 \begin{figure}[p]
@@ -434,18 +446,6 @@ As an attempt to visualize this fringe, we developed a tool, called DepGraph \fo
 	\caption{Dependency graph between definitions, theorems and lemmas of the transmission part of the formal NIC proof. An edge from a node $A$ to a node $B$ means that $A$ depends on $B$. Therefore, on this figure, higher-level files are on the left and lower-level ones on the right. Each node's edges are of different colors. Red nodes represent leaf nodes, i.e. theorems and definitions without dependencies. The red nodes on theleft-hand side of the Figure are nodes for which the heuristic failed to capture the dependencies.}
 	\label{depgraph-nic-tx-thms}
 \end{figure}
-
-\subsection{Invariants of the formal proof}
-
-\textbf{TODO}: explain the problem related to CPPI-RAM
-
-% * Impossibilité de tout représenter avec BIR (pourquoi?)
-%   -> identification (> DepGraph) et fragmentation
-%   -> transition vers la preuve
-
-% * the shape of lower level ones
-% * invariants
-% * Buffer descriptor: BIR incompatible
 
 \chapter{The BIR NIC model} \label{nic-model}
 \vspace{-1cm}
@@ -673,10 +673,9 @@ When visualizing the \gls{CFG} of the BIR NIC model, we notice that it has the s
 
 \chapter{Contract based verification} \label{contract-based-verif}
 \vspace{-1cm}
-%\textit{This chapter will discuss about experiments carried out in order to perform formal verification on the \gls{NIC} model written in \gls{BIR}. It will first introduce contract based verification, its current status in the \gls{holba} platform, and the non \gls{proof-producing} contract based library that has been implemented in this work. It will then present some contract based verifications that has been performed in a non proof-producing fashion on example programs and on the NIC model of the previous section.}
 \textit{This chapter will present contract based verification, explaining the underlying theory: Hoare Triples, weakest precondition derivation and the use of SMT solvers. It will also present the current status of contract based verification in HolBA, and present some of the work needed in order to reason about BIR memories with SMT solvers.}
 
-\section{Hoare triples}
+\section{Hoare triples} \label{hoare-triples}
 
 Contract based verification is a powerful approach for verifying programs. For a given program $prog$ consisting of a list of instructions and two predicates $P$ and $Q$ called respectively pre- and postcondition, a Hoare triple \htriple{P}{prog}{Q} states that when executing the program $prog$ from a state $S$ terminates in a state $S'$, if $P$ holds in $S$ then $Q$ will hold in $S'$ (Equation \ref{ht_def}). Hereafter, we assume programs and states to be well-typed.
 
@@ -1300,15 +1299,68 @@ Other preconditions have been tested to verify that \texttt{prove\_contract} doe
 
 \section{Simple automatized proofs on the NIC model} \label{simple-automated-proofs-on-nic}
 
-\textbf{TODO}: This section \ref{simple-automated-proofs-on-nic}
-
-Chapter \ref{nic-model} presented the implementation of parts of the NIC model using BIR. The previous sections of this chapter presented the non proof-producing contract verification library that have been implemented. This section will present some of the properties that have been proved on the NIC BIR model.
+Chapter \ref{nic-model} presented the implementation of parts of the NIC model using BIR. The previous sections of this chapter presented the non \gls{proof-producing} contract verification library that have been implemented. This section will present some of the properties that have been proved on the NIC BIR model. However, as we shall see, \texttt{prove\_contract} has some intrinsic limitations that prevent verifying some contracts.
 
 Section \ref{overview-nic-proof} presents an overview of the formal HOL4 proof made in \cite{haglund_formal_2016} on the formal NIC model. We saw that the properties are phrased in terms of invariants holding in each transition of the model. Such properties can be represented as Hoare Triple and therefore can be proved using this chapter's non proof-producing contract verification library as long as the pre- and post-conditions can be represented using BIR.
 
-+ Prove invariants
-+ say that we cannot prove everything that we need
-+ conclude on this chapter
+In this section, we will see that the non proof-producing function \texttt{prove\_contract} is able to verify some invariants on the NIC BIR model. We will perform the verification of the Hoare Triples shown in Equations \ref{nonpp-goal-1} and \ref{nonpp-goal-2}. Those two Hoare Triple respectively represent that, stating from a non-dead initial NIC state, performing one autonomous transition of the transmission automaton doesn't end in an undefined state (i.e. a dead state) and performing one non-autonomous transition of the initialization automaton does end in an undefined state.
+
+\begin{multline}
+	\{\neg NIC.dead \land NIC.tx.state \in \{tx2,~tx3,~tx5,~tx6,~tx7\}\}\\
+	tx\_automaton\{\neg NIC.dead\}
+    \label{nonpp-goal-1}
+\end{multline}
+
+\begin{multline}
+	\{\neg NIC.dead \land NIC.init.state \in \{it1,~it3,~it4\}\}\\
+	init\_automaton\{NIC.dead\}
+    \label{nonpp-goal-2}
+\end{multline}
+
+Listing \ref{nonpp-code-1} shows the SML code used to prove the first contract. Code for the other contract is similar. This example shows that the library implemented in the chapter fulfills its goal of being simple to use and fully automatic when given a Hoare Triple and a program. Combined with BSL and custom helper functions, it becomes easy to express the pre- and post-conditions, and it is still possible to use arbitrary SML functions or HOL4 terms.
+
+\begin{lstlisting}[
+    language=Caml,
+    backgroundcolor=\color{codebackcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    stringstyle=\color{codepurple},
+    label=nonpp-code-1,caption={SML code used to prove contract \ref{nonpp-goal-1}.},
+    frame=tb,basicstyle=\footnotesize\ttfamily]
+(* TX automaton: NIC doesn't die in autonomous transition *)
+val (_, _, p_imp_wp_word_thm) = prove_contract
+  "tx_automaton_doesnt_die"
+  nic_program_def
+  (* Precondition *) (
+    blabel_str "tx_entry",
+    bandl [
+      invariant_nic_not_dead,
+      borl (List.map
+        (fn s => beq (bdenstate "nic_tx_state",
+                      bstateval_tx s))
+        (#autonomous_step_list tx_state))
+    ])
+  (* Postcondition *) (
+    [blabel_str "tx_end"],
+    invariant_nic_not_dead
+  )
+val _ = info "Successfully proved: tx automaton doesn't die"
+val _ = if !level_log >= logLib.INFO
+  then (pprint_thm p_imp_wp_word_thm)
+  else ();
+\end{lstlisting}
+
+% TODO: Mention time constraints?
+
+
+\subsection{Limitations of this approach}
+
+While being convenient and working well for simple contracts, the contract verification library implemented in this chapter suffers from two limitations:
+
+\begin{itemize}
+	\item The first one is straighforward: this library isn't proof-producing. Using HOL4 requires a significant learning effort, and easier non-proof producing tools exist. Hence, when using HOL4, one usually wants to reason about proofs, and this library is not proof-producing and could therefore introduce subtle bugs or inconsistencies. Moreover, this library doesn't offer the possibility to compose Hoare Triples because it doesn't output any related theorem. If one wanted to do so, an oracle would have to be used in order to generate such theorems and enabling theorem compositions and further reasoning. Nevertheless, as already explained, proof-producing code is more costly is the desired level of trustworthiness should be carefully decided, and this library offers a pragmatic solution.
+	\item Secondly, this library and its approach of contract based verification is limited by the expressiveness of BIR, since the pre- and post-conditions are BIR terms. BIR doesn't have quantifiers, and it is therefore impossible to prove contracts containing existential quantifiers. The existing formal proof on the NIC of \cite{haglund_formal_2016} requires existantial quantifiers in order to reason about the buffer descriptor queue in the \textit{CPPI\_RAM} memory of the NIC, and this part of the proof can therefore not be replaced by using \texttt{prove\_contract}. Moreover, as explained in the first point of this list, composing verification produced with this library with raw HOL4 proofs is not straightforward. The following Chapter \ref{trustful-nic-analysis} explores a new proof-producing approach for performing contract based verification on the BIR model that answer to this issue.
+\end{itemize}
 
 \chapter{Trustful analysis on the NIC model} \label{trustful-nic-analysis}
 \vspace{-1cm}
@@ -1549,16 +1601,22 @@ Finally, using the deduction rule with Theorems \ref{proof_R_inj_thm}, \ref{proo
 
 \chapter{Conclusions}
 
-Include:%
-a) Git workflow for a team;%
-b) LogLib (and tracing in general); -> annex%
-c) CI to track regressions + static analysis;%
-d) Simple interface for CFG lib;%
-e) Mention the "while 1: automaton.step()";%
+\textbf{TODO}: This list shouldn't appear as it is now.
+
+Not mentioned in the thesis in order to keep its size reasonable and focus on the main topic:
+\begin{itemize}
+	\item Proof of gauss program not included because it doesn't introduce new results apart from the fact that multiplication in BitVector theory is a hard problem for SMT solvers.
+	\item Git workflow for a team > crucial in order to build such a complex platform
+	\item CI and tests to track regressions + static analysis > same than above
+	\item Simple interface for CFG lib
+	\item The formal NIC model is design with the idea that the simulation of the NIC would only consist of "while 1: model.autonomous\_step()" + 3 other function calls to represent interruptions from the CPU.
+\end{itemize}
 
 \section{Results}
 
-% How to evaluate the work?
+> How to evaluate the work? + Give answer and evaluation.
+
+> Present the novel value introduced in this thesis.
 
 \section{Discussion}
 
@@ -1567,43 +1625,73 @@ Pretty-printer, some work left:
 \begin{itemize}
     \item not parsable yet
     \item no infix operators
-    \item should change color of types (blue = free vars)
+    \item should change color of types (blue = free vars in HOL4 printer)
 \end{itemize}
 
-One-button proofs:
+One-button proofs / non proof-producing verification library:
 
 \begin{itemize}
     \item in binary verification, we work with ASM instead of clean C code. Therefore, pre-postconditions are harder to define. Hence, this one-button solution would need more support to easily define those expressions.
-    \item prove\_contract should take definitions instead of terms for P and Q
+    \item prove\_contract should take definitions instead of terms for P and Q, in order to be used in further proof or for composition.
     \item gives access to lower level functions (generate wp and simp), so it is still possible to get some control either when the proof doesn't work or if we need to use them for other tasks and compose them differently
-    \item current limitations of the non pp lib: only simple linear programs; non pp; non composition;
-    \item $Q_{BIR}$ isn't general
+    \item current limitations of the non pp lib: only simple linear programs; non pp; no composition.
+    \item $Q_{BIR}$ isn't general because it doesn't take the initial BIR state.
 \end{itemize}
 
 Mention the "future" meeting that we had on the 29/05/2019.
 
-Sound satisfiability solver for bitvectors to check if the precondition entails the weakest precondition -> same for arrays:
+Here is a paper proving sound satisfiability solver for bitvectors to check if the precondition entails the weakest precondition. We should do the same for arrays:
 
 \begin{itemize}
     \item B ohme,  S.,  Fox,  A.C.,  Sewell,  T.,  Weber,  T.:  Reconstruction  of  Z3's  Bit-VectorProofs in HOL4 and Isabelle/HOL. In: Certified Programs and Proofs: First Inter-national Conference. pp. 183--198. Springer (2011)
     \item https://arxiv.org/pdf/1807.10664.pdf
 \end{itemize}
 
-Proof: automate (???; semantic rewriting (i.e. automatically add all the lemmas) (il faut d'abord tester à la main avant d'implémenter des procédures automatiques))
+Proof:
+\begin{itemize}
+ 	\item automate (???; semantic rewriting (i.e. automatically add all the lemmas)
+ 	\item > we must do the work at least once manually before automating procedures
+ 	\item doable and desirable in short-term: automatic procedure to turn the goal into a SMT-solvable goal (i.e. proof-producing BIR to words)
+\end{itemize}
 
 \section{Future work}
+
+Some bits of the previous section.
+
+%   -> identification (> DepGraph) ~et fragmentation difficile~
 
 \printbibliography[heading=bibintoc]
 
 \appendix
 
-\chapter{LogLib's design} \label{annex_loglib}
+\chapter{Tracing and error handling in HOL4} \label{annex_loglib}
 
-Reference in Section \ref{impl_convenient_ht_interface}, but the need arised in general when debugging HOL4 code for tracing code (we can leave trace functions using LogLib and define different levels of verbosity).
+\textbf{TODO}: Is this annex relevant in this thesis?
 
-Introduce tracing in HOL4 in general
+Reference in Section \ref{impl_convenient_ht_interface}, but the need arised in general when debugging HOL4 code for tracing code. LogLib represent an higher-level implementation of HOL4 tracing system. Verbosity levels are specified and output is colored, helping to read long outputs. Also include exception wrapping.
+
+Content:
+\begin{itemize}
+	\item Present the problems specific to HOL4 that arise when debugging proofs and libs.
+	\item Introduce tracing in HOL4 in general (levels, HOL4 warnings and error \textbf{messages}).
+	\item Present logLib
+	\item Introduce exception wrapping and explain how they help to locate the location of errors and can help interactive use of HOL4 by giving more precise information about what went wrong. Analogous to backtraces.
+\end{itemize}
 
 \chapter{DepGraph's design} \label{annex_depgraph}
+
+\textbf{TODO}: Is this annex relevant in this thesis?
+
+Content:
+\begin{itemize}
+ 	\item Present the modular architecture: Frontend $\rightarrow$ [middlewares] $\rightarrow$ backend structure.
+ 	\item This tool can be used for other languages or data via new front-ends.
+ 	\item Other visualization techniques/rendering can be implemented via backends.
+ 	\item Middlewares can be any graph algorithm. Signature: \texttt{graph -> graph}.
+ 	\item Time to implement: 4 days
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \tailmatter % back cover page
 

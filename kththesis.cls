@@ -193,8 +193,8 @@
   \else
     \@programme\\
     \ifx\@date\@empty\relax\else Date: \@date\\\fi
-    Supervisor: \@supervisor\\
-    Examiner: \@examiner\\
+    Host supervisor: \@supervisor\\
+    School supervisor: \@examiner\\
     \@school\\
     \ifx\@hostcompany\@empty\relax\else Host company: \@hostcompany\\\fi
     \ifx\@hostorganization\@empty\relax\else Host organization: \@hostorganization\\\fi

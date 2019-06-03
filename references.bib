@@ -276,7 +276,7 @@
 }
 
 @inproceedings{metere_sound_2017,
-	title = {Sound Transpilation from Binary to Machine-Independent Code},
+	title = {Sound Transpilation from Binary to Machine-Independent Code},
 	isbn = {978-3-319-70848-5},
 	series = {Lecture Notes in Computer Science},
 	abstract = {In order to handle the complexity and heterogeneity of modern instruction set architectures, analysis platforms share a common design, the adoption of hardware-independent intermediate representations. The usage of these platforms to verify systems down to binary-level is appealing due to the high degree of automation they provide. However, it introduces the need for trusting the correctness of the translation from binary code to intermediate language. Achieving a high degree of trust is challenging since this transpilation must handle (i) all the side effects of the instructions, (ii) multiple instruction encoding (e.g. {ARM} Thumb), and (iii) variable instruction length (e.g. Intel). We overcome these problems by formally modeling one of such intermediate languages in the interactive theorem prover {HOL}4 and by implementing a proof-producing transpiler. This tool translates {ARMv}8 programs to the intermediate language and generates a {HOL}4 proof that demonstrates the correctness of the translation in the form of a simulation theorem. We also show how the transpiler theorems can be used to transfer properties verified on the intermediate language to the binary code.},
@@ -288,7 +288,7 @@
 	date = {2017},
 	langid = {english},
 	keywords = {Binary analysis, Formal verification, Proof producing analysis, Theorem proving},
-	file = {Springer Full Text PDF:/home/t/h/tholac/Zotero/storage/IBUJQLWY/Metere et al. - 2017 - Sound Transpilation from Binary to Machine-Indepen.pdf:application/pdf}
+	file = {Springer Full Text PDF:/home/t/h/tholac/Zotero/storage/IBUJQLWY/Metere et al. - 2017 - Sound Transpilation from Binary to Machine-Indepen.pdf:application/pdf}
 }
 
 @software{noauthor_holba_2019,
@@ -358,7 +358,16 @@
 
 @book{barrett_satisfiability_2016,
 	title = {The Satisfiability Modulo Theories Library ({SMT}-{LIB})},
+	url = {http://www.smt-lib.org},
 	author = {Barrett, Clark and Fontaine, Pascal and Tinelli, Cesare},
-	date = {2016},
-	url = {http://smt-lib.org/}
+	date = {2016}
+}
+
+@inproceedings{haglund_trustworthy_nodate,
+	location = {{KTH} Royal Institute of Technology, Stockholm, Sweden},
+	title = {Trustworthy Isolation of a Network Interface Controller},
+	abstract = {We present a mechanism to trustworthy isolate the Network
+Interface Controller ({NIC}) of an embedded system (Beaglebone Black). This mechanism ensures that the direct memory accesses ({DMA}) of the {NIC} can only address a certain memory region. We use a run-time monitor that forces {NIC} reconfigurations, built by a {NIC} device driver, to satisfy a security rule. We formalized the {NIC} in the {HOL}4 interactive theorem prover and we verified the design of the isolation mechanism, by introducing an invariant and by showing that it is preserved by all {NIC} operations and that it forbids accesses outside the allowed memory region. We demonstrate our approach by extending an existing hypervisor with the monitor. This enables isolation of a connected critical software component from an untrusted Linux and its {NIC} device driver.},
+	publisher = {To be published.},
+	author = {Haglund, Jonas and Guanciale, Roberto}
 }
