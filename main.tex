@@ -12,7 +12,6 @@
 \usepackage{geometry}
 \usepackage[toc]{glossaries} % https://www.overleaf.com/learn/latex/Glossaries
 \usepackage{parskip} % empty line between paragraphs
-\usepackage[textwidth=2cm]{todonotes}
 \usepackage{listings}
 \usepackage{float}
 \usepackage{pmboxdraw}
@@ -42,7 +41,7 @@
 \author{Thomas Lacroix}
 \email{thomas.lacroix@insa-lyon.fr}
 \supervisor{Mads Dam}
-\examiner{TODO}
+\examiner{Pierre-\'Edouard Portier}
 \hostcompany{Division of Theoretical Computer Science - KTH}
 \programme{Master in Computer Science}
 \school{Computer Science department - INSA Lyon}
@@ -68,12 +67,12 @@
 }
 \newglossaryentry{iot} {
     name={IoT},
-    description={Internet Of Things. This is the idea of connecting every devices---such that temperature sensors, lamps, video cameras or wearable devices---to the Internet}
+    description={Internet Of Things. This is the idea of connecting every devices, such that temperature sensors, lamps, video cameras or wearable devices, to the Internet}
 }
 \newacronym{prosper}{PROSPER}{Provably Secure Execution Platforms for Embedded Systems}
 \newglossaryentry{transpilation} {
     name={transpilation},
-    description={Process carried-out by a \gls{transpiler}}
+    description={Process carried out by a \gls{transpiler}}
 }
 \newglossaryentry{transpiler} {
     name={transpiler},
@@ -84,7 +83,7 @@
     description={A proof-producing analysis or procedure is a procedure that yields its result in the form of a formal proof. Therefore, those procedures represent the highest degree possible of trustworthiness. However, great care must be taken to ensure that the definitions used to phrase the proof are sound and actually represent the properties to be proved. Moreover, implementing proof-producing code is costly and thus should be used with discernment}
 }
 \newacronym{holba}{HolBA}{HOL4 Binary Analysis Platform}
-\newacronym{bap}{CMU BAP}{Carnegie Mellon University Binary Analysis Platform}
+\newacronym{bap}{CMU BAP}{Carnegie Mellon University's Binary Analysis Platform}
 \newglossaryentry{BIR} {
     name={BIR},
     description={\acrshort{holba}'s machine-independent binary intermediate representation}
@@ -172,15 +171,6 @@
   \end{abstract}
 \end{otherlanguage}
 
-\listoftodos
-\todo{Include:%
-a) Git workflow for a team;%
-b) LogLib (and tracing in general); -> annex%
-c) CI to track regressions + static analysis;%
-d) Simple interface for CFG lib;%
-e) Mention the "while 1: automaton.step()";%
-}
-
 \tableofcontents
 
 \printglossaries
@@ -215,11 +205,11 @@ A formal model of a \gls{NIC} device has already been produced, on which some se
 	\label{hol-v-bir-nic-model-simple}
 \end{figure}
 
-The team is now developing a new framework for performing binary analysis in HOL4, an interactive theorem prover, named \gls{holba} \cite{noauthor_holba_2019}. This framework is based on two papers written in the team. The first one introduces sound \gls{transpilation} from binary to machine-independent code \footnotemark \cite{metere_sound_2017}. The second paper, ``TrABin: Trustworthy Analyses of Binaries'' \cite{lindner_trabin:_2019}, lays the foundations of the \gls{holba} platform: it formally models \gls{BIR}, introduces various supporting tools, implements two \gls{proof-producing} \glspl{transpiler} (ARMv8 and CortexM0) and a proof-producing weakest precondition generator for loop-free programs.
+The team is now developing a new framework for performing binary analysis in HOL4, an interactive theorem prover, named \gls{holba} \cite{noauthor_holba_2019}. This framework is based on two papers written in the team. The first one introduces sound \gls{transpilation} from binary to machine-independent code \footnotemark \cite{metere_sound_2017}. The second paper, ``TrABin: Trustworthy Analyses of Binaries'' \cite{lindner_trabin:_2019}, lays the foundations of the \gls{holba} platform: it formally models \gls{BIR}, introduces various supporting tools, implements two \gls{proof-producing} \glspl{transpiler} (ARMv8 and Cortex-M0) and a proof-producing weakest precondition generator for loop-free programs.
 
 \footnotetext{The machine-independent language used in the work is an implementation of \gls{bap}'s BIL \cite{noauthor_binary_2019}. This implementation will evolve later in the TrABin paper into BIR that HolBA uses.}
 
-While this kind of \glspl{transpiler} and \gls{proof-producing} weakest precondition tools already exist \footnote{See related discussion in \cite{lindner_trabin:_2019}.}, the novelty in this work is that the transpiler is proof-producing, i.e. it produces a formal proof that both binary representations are equivalent, under the simulation theory, with respect to the \gls{ISA} model. With this method, you no longer need to trust the transpiler. Figure \ref{holba-overview} gives an overview of the TrABin framework\footnote{TrABin works with both ARMv8 and CortexM0 binary programs. Only ARMv8 is showed in Figure \ref{trabin-overview} to save some space.}.
+While this kind of \glspl{transpiler} and \gls{proof-producing} weakest precondition tools already exist \footnote{See related discussion in \cite{lindner_trabin:_2019}.}, the novelty in this work is that the transpiler is proof-producing, i.e. it produces a formal proof that both binary representations are equivalent, under the simulation theory, with respect to the \gls{ISA} model. With this method, you no longer need to trust the transpiler. Figure \ref{holba-overview} gives an overview of the TrABin framework\footnote{TrABin works with both ARMv8 and Cortex-M0 binary programs. Only ARMv8 is showed in Figure \ref{trabin-overview} to save some space.}.
 
 \begin{figure}[ht]
 	\includegraphics[height=5cm]{figures/holba-overview.png}
@@ -248,9 +238,9 @@ The ultimate goal would be to obtain a fully automatic pipeline for performing s
 This work has been carried out step-by-step toward an ideal goal, i.e. re-establishing all the security properties. On the road, needs have been identified and tools have been implemented in order to tackle them. This approach made sense in this particular work because the needs weren't known in advance, and therefore needed to be identified. This thesis presents the steps taken during this work, the motivations of each tool that have been implemented, and discusses their limitations and future work in the conclusion.
 
 
-\chapter{Definitions}
+\chapter{Definitions and relevant theories}
 \vspace{-1cm}
-\textit{This chapter intends to introduce the concepts that are essential to the reader in order to understand the problem that this degree project aims to explore. This includes a presentation of Interactive Theorem Proving and formal proofs in HOL4 and an introduction to \gls{BIR}, completing what has already been said about the \gls{holba} framework in the Introduction.}
+\textit{This chapter intends to introduce the concepts that are essential to the reader in order to understand the problem that this degree project aims to explore. This includes a presentation of Interactive Theorem Proving and formal proofs in HOL4, an introduction to \gls{BIR}, completing what has already been said about the \gls{holba} framework in the Introduction, and a brief overview of the formal NIC model and proof of \cite{haglund_formal_2016}.}
 
 \section{Interactive Theorem Proving and HOL4}
 
@@ -289,22 +279,7 @@ BIR is implemented as a set of HOL4 \textit{datatypes}, and possesses a complete
 
 Among its supporting tools, HolBA features a tool to visualize the \gls{CFG} of BIR programs.
 
-
-\chapter{The BIR NIC model} \label{nic-model}
-\vspace{-1cm}
-\textit{This chapter intends to discuss about the different ways of implementing an equivalent BIR model from the formal NIC model. It will first offer a brief overview of the formal model. Then, after a discussion about the different possible ways of doing this translation, two approaches will be presented. Finally, the final BIR model will be introduced along with the new tools that have been implemented in order to build it.}
-
-
-% * Liberté de la méthode et question sur comment traduire le modèle
-%
-% * Expérimentation en C et avec Alice et Bob (+ CFG (+ interface))
-% * Modèle BSL (-> prez de BSL)
-%
-% * Impossibilité de tout représenter avec BIR (pourquoi?)
-%   -> identification (> DepGraph) et fragmentation
-%   -> transition vers la preuve
-
-\section{Overview of the formal NIC model}
+\section{Overview of the formal NIC model} \label{overview-nic-model}
 
 The formal NIC model of \cite{haglund_formal_2016} has been designed from reading the hardware specification of the device, because no model nor device driver is freely available.
 
@@ -312,7 +287,7 @@ The NIC model is designed as a transition system with four types of transitions:
 
 The model is composed of five finite state automata describing the inner transitions of the whole system, each automata describing a part of the NIC. The automata are: initialisation, transmission, transmission teardown, reception and reception teardown. The function \texttt{nic\_execute} performs one autonomous step of one of the five automata. The automaton that takes a step is decided by a scheduler, depending on the NIC inner state. If more that one automata are in a ready state, their order is not deterministic \footnote{To reason about non determinism, the notion of oracles has been introduced in \cite{haglund_formal_2016}. To put it simply, an oracle can be seen as a list of steps to perform, but where each element of the list is undefined. As we will not directly reason about the oracle, we will not explain how this works in more details. The reader can read a thorough explanation in \cite{haglund_formal_2016}.}. Each finite state automata is defined as a set of transitions working on NIC states. Each transition takes a NIC state and returns an update one, possibly dead.
 
-Being designed as a transition system, each of the four functions described earlier are loop-free, aspect that is crucial in order to apply contract based verification as described in Section \ref{contract-based-verif}. Each of the transition is implemented as a HOL4 function using exclusively \textbf{if-then-else} and state modification statements. There are no recursive definition. Hence, every function can be seen as some kind of decision tree in which some of the nodes ``mutate'' the state. This idea will be refined later on in Section \ref{visualizing-cfg}.
+Being designed as a transition system, each of the four functions described earlier are loop-free, aspect that is crucial in order to apply contract based verification as described in Section \ref{contract-based-verif}. Each of the transition is implemented as a HOL4 function using exclusively \textbf{if-then-else} and state modification statements. There are no recursive definition. Hence, every function can be seen as some kind of decision tree in which some of the nodes ``mutate'' the state. % This idea will be refined later on in Section \ref{visualizing-cfg}.
 
 The five automata are of different complexity, as shown in Table \ref{stats_complexity_formal_nic_model}, with the initialization automaton having only 4 transitions of which only one is autonomous, and the reception automaton being the most complex with 20 transitions. Calling the \texttt{nic\_transition\_autonomous} function makes one of the automata take an autonomous step. Non autonomous transitions are performed by the three other functions.
 
@@ -334,15 +309,45 @@ The five automata are of different complexity, as shown in Table \ref{stats_comp
 \end{table}
 
 The NIC state is defined as a nested \textit{datatype}---a record \footnote{Records in HOL4 are analogous to structures in imperative languages.} of records of words, booleans and enumerations. However, there is one exception: the NIC works on a memory data structure, called \texttt{CPPI\_RAM}, which is represented in the formal model as a function from addresses to values.
-\todo{explain the problem related to CPPI-RAM?}
 
 The structure of the implementation of \texttt{read\_nic\_register} and \texttt{write\_nic\_register} is similar to the implementation of \texttt{nic\_transition\_autonomous} in terms of the statements they use. \texttt{memory\_read\_reply} is implemented as a non autonomous transition of the transmission automaton.
 
+\section{Overview of the formal proof of the NIC model} \label{overview-nic-proof}
 
-\section{Translation of the NIC model to HolBA's intermediate language}
-% + schema showing multiple ways of implementing the NIC model in BIR
+It has been formally proved with HOL4 that with \gls{prosper}'s hypervisor, augmented with a monitor and in the presence of a \gls{NIC}, only signed Linux code is executed. This security policy has been defined as invariant of the NIC state, then the proof consists of verifying that each transition of the NIC transition system preserves the invariant. This invariant states that the NIC isn't in an undefined state (represented by the dead state), that the transmission and reception queue are well-behaving (non overlapping, finite) and that the NIC is in a valid state (restrict the values of the NIC state variables to valid configurations). This invariant is stated as a conjunction of the invariants of each automaton plus a not-dead conjunct:
 
-Multiple approaches of translation of the formal NIC model to an equivalent BIR program have been considered:
+\begin{equation}
+    I_{NIC} \eqdef \neg NIC.dead~\land~I_{init}~\land~I_{tx}~\land~I_{td}~\land~I_{rx}~\land~I_{rd}
+\end{equation}
+
+The model of the NIC consists of 1500 lines of HOL4 code, and required around three man-months of work. The NIC invariant consists of 650 lines of HOL4 code and the proof consists of approximately 55000 lines of HOL4 code, including comments. Identifying the invariant and implementing the proof in HOL4 required around one man-year of work \cite{haglund_trustworthy_2019}. % Copy-pasted from Jonas' paper :/
+
+The proof being consequent, it is composed of a multitude of lemmas spread out in a multiple layers. The ideal objective of this work being to prove again the base lemmas on a different but equivalent BIR program, we therefore need to identify the relevant lemmas to be replaced. The proof is divided in two major parts, reception and transmission, and lemmas are scattered across a few files, each file being for a different part or abstraction level. We developed a tool, called DepGraph, to visualize the dependency structure of the proof in the form of a dependency graph. Optimally, identifying the fringe of the graph would give exactly the set of lemmas that all the other lemmas and theorems rely on, and therefore the smallest set of lemmas that are enough to prove in order to imply the security properties already proved in \cite{haglund_trustworthy_2019} by using the existing proofs. DepGraph's design is presented in Appendix \ref{annex_depgraph}. Figure \ref{depgraph-nic-files} shows the dependency 
+
+\textbf{TODO}: explain the problem related to CPPI-RAM
+
+% * Impossibilité de tout représenter avec BIR (pourquoi?)
+%   -> identification (> DepGraph) et fragmentation
+%   -> transition vers la preuve
+
+% * Multi files
+% * lemma hierarchy
+%   > DepGraph
+% * the shape of lower level ones
+% * invariants
+% * Buffer descriptor: BIR incompatible
+
+\subsection{BIR limitations}
+\subsection{DepGraph}
+
+
+
+
+\chapter{The BIR NIC model} \label{nic-model}
+\vspace{-1cm}
+\textit{This chapter intends to discuss about the different ways of implementing an equivalent BIR model from the formal NIC model. After a discussion about the different possible ways of doing this translation, two approaches will be presented. Then, the final BIR model will be introduced along with the new tools that have been implemented in order to build it.}
+
+Multiple approaches of translation of the formal NIC model described in Section \ref{overview-nic-model} to an equivalent BIR program have been considered:
 
 \begin{itemize}
     \item \textbf{handwritten BIR program}: The most straightforward way would be to directly write the BIR program by hand by looking at the actual formal model and directly converting it to BIR. This is easily feasible because of the limited set of statement used in the implementation of the NIC model which are all representable in the BIR syntax. However, this does not seem optimal if more than one such translation need to be performed. One remedy of this problem would be to implement a set of tools that facilitate the implementation of device models and reduce the boiler plate. This idea is explored in the following Sections \ref{alice-bob-toy} to \ref{impl-real-model}.
@@ -350,8 +355,7 @@ Multiple approaches of translation of the formal NIC model to an equivalent BIR 
     \item \textbf{device model specific \gls{IR}}: This idea rejoins the previous one in the sense that it uses an additional intermediate representation (C in the previous idea) to implement the model, then uses some compiler to generate the BIR program (standard C compiler and HolBA's lifter). This idea would have the advantage that it introduces a new higher-level IR that would be common to possible later other device modelisations. Tools could also be developed for this IR. However, this approach would require to develop a new IR and, if we later want to develop a \gls{proof-producing} lifter (compiler) the implementation would be costly, especially since this language would be more complex. The following Section \ref{flowchart-attempt} tries to use visual flowchart language as IR. %This idea has not been explored in this work, where we decided to experiment using existing tools: the lifter, BIR and its supporting tools.
 \end{itemize}
 
-
-\subsection{Using flowcharts as Intermediate Representation} \label{flowchart-attempt}
+\section{Using flowcharts as Intermediate Representation} \label{flowchart-attempt}
 % essayé flowcharts, simple mais taille grossit très vite, complexe, tedious
 
 As already discussed in the previous Section, the structure of the formal model looks like a tree. Therefore, using flowcharts can be a convenient way to represent such structures. An attempt has been made to design a flowchart representation. Figures \ref{flowchart-scheduler}, \ref{flowchart-tx} and \ref{flowchart-tx_fetch_next_bd} show respectively a preview of the scheduler, transmission automaton and particular transition of this automaton.
@@ -387,14 +391,14 @@ While this visual representation was useful to get to know the formal NIC model,
 
 For those reasons, it has been decided to not go further with this visual representation, and to focus instead of existing tools of the HolBA platform. However, as we shall see in the rest of this thesis, we will explore other visualization tools, and flowcharts will be used as a visual help while designing the model using other methods.
 
-\subsection{Writing the model in C} \label{c-model}
+\section{Writing the model in C} \label{c-model}
 % Problem: we don't want to reason with the stack
 
 One-to-one translation of the transmission automaton, scheduler, state and \textit{CPPI\_RAM} related definitions of the formal model has been realized in C. This translation has been quite easy to perform and has been completed in around four hours. No difficulty arisen during this translation. Regarding the NIC state, C has all types needed to represent it. An array has been used to represent the function type of \textit{CPPI\_RAM}. Enumerations have been used in order to represent HOL4 enumerations. While not optimal is conventional usage of C because of their non restricted usage allowed by the C language (they can be freely modified as integers without checking their validity in C, while HOL4 and functional languages in general are restrictive and force to use correct values), enumerations are enough if used correctly and aware of those shortcomings. However, when studying the compiled assembly code and lifted BIR program, we noticed that all the convenient naming that we can use in the formal or the C model is lost and replaced with abundant usage of the stack. While this is completely normal behaviour for a C compiler, this is not convenient when performing later proofs on the model: we would first need to rename them in the proof using some definitions, and this process would be lengthy and cumbersome (if not automated), resulting in more code than if the model had been directly written in BIR in the first place. This experiment made us realize that writing the model is a rapid operation and that we should rather focus on making the verification step as smooth as possible, because it is the most difficult to carry out.
 
 For those reasons, it has been decided to try using BIR directly to write the NIC model. First, Section \ref{alice-bob-toy} presents a first prototype that has been realized in order to visualize the shape of a BIR program representing the NIC model, and identify the tools that would be needed in order to reduce the boilerplate of such implementation in BIR.
 
-\subsection{Implementing a toy BIR model} \label{alice-bob-toy}
+\section{Implementing a toy BIR model} \label{alice-bob-toy}
 % BIR toy model
 
 Before writing the whole NIC model by hand, we shall identify the structure of the model and develop tools that facilitate its implementation. Using well-designed tools can reduce the boilerplate work of the implementation, helping to focus only on the meaningful content of the implementation, and can also reduce the chance of introducing bugs as the code is factored and mechanically shorter.
@@ -462,7 +466,7 @@ From the design presented in Figures \ref{alice-bob-automata-overview}, \ref{ali
 %\subsection{Visualizing the CFG} \label{visualizing-cfg}
 % Moved to the introduction
 
-\subsection{BSL: BIR Simple Language} \label{bsl}
+\section{BSL: BIR Simple Language} \label{bsl}
 
 Because of its extreme verbosity, BIR is not a language convenient to manually use. Its primary use has been as an output from the \gls{proof-producing} lifter and as a machine-independent intermediate represent with a very limited feature-set convenient to reason about. A less verbose and more convenient method for producing BIR code is needed in order to open this language to other uses. Therefore, a library has been written that offers the same expressiveness than BIR but with shorter constructs. This library has been kept simple and will serve as the base layer of possible later abstractions. As such, it has been decided that no feature other than pure syntactic construct, such that type inference, would be included. This library has been named BIR Simple Language (BSL) and is implemented in the file \textit{bslSyntax.sml} \footnote{This file has been named in order to follow the HOL4 conventions: \textit{*Syntax.sml} files contain functions that create, destruct and check HOL4 terms. \textit{bslSyntax.sml} is a library for creating only BIR terms, and should therefore follow this convention.}.
 
@@ -486,7 +490,7 @@ val bjmplabel_str = (bjmp o belabel_str)
 %\subsection{Device model specific BIR helpers} \label{device-bir-helpers}
 %% not general enough to be part of BSL, but can be seen as an extension
 
-\subsection{Implementing the real model} \label{impl-real-model}
+\section{Implementing the real model} \label{impl-real-model}
 % model not-complete model (focus on key parts)
 
 From knowledge gained in the previous section, a set of helper functions has been implemented, mainly in order to facilitate reasoning about the state machine. Listings \ref{impl-real-tx_state} and \ref{impl-real-tx_bstate_cases} show the SML code respectively used to represent the transmission automaton and to generate the BIR blocks of the transmission ``case'' statement that jumps to the BIR block depending on the current state.
@@ -531,12 +535,7 @@ val tx_state = gen_state_helpers "tx" [
 ]
 \end{lstlisting}
 
-
-\section{Overview of the formal proof on the NIC model}
-
-\subsection{BIR limitations}
-\subsection{DepGraph}
-
+When visualizing the \gls{CFG} of the BIR NIC model, we notice that it has the shape of a tree, rejoining the idea introduced in Section \ref{overview-nic-model}: each node of the tree is a BIR block, each edge a jump. Since every jump in the NIC model go to a static target, a jump can only have one or two destinations. Hence, nodes can only have one or two outgoing edges. In the model, each node represent either an empty jump block, possibly conditional, or a mutation of the state.
 
 
 % [Proving properties]
@@ -551,7 +550,7 @@ val tx_state = gen_state_helpers "tx" [
 % * Non proof-producing WP lib
 %   + easy
 %   - proof-producing would have been feasible
-%     -> but would have took more time, that's not the aim of the thesis
+%     -> but would have taken more time, that's not the aim of the thesis
 % * BIR PP because huge WP BIR expressions
 % * WP tests
 %   - simple
@@ -569,7 +568,8 @@ val tx_state = gen_state_helpers "tx" [
 
 \chapter{Contract based verification} \label{contract-based-verif}
 \vspace{-1cm}
-\textit{This chapter will discuss about experiments carried out in order to perform formal verification on the \gls{NIC} model written in \gls{BIR}. It will first introduce contract based verification, its current status in the \gls{holba} platform, and the non \gls{proof-producing} contract based library that has been implemented in this work. It will then present some contract based verifications that has been performed in a non proof-producing fashion on example programs and on the NIC model of the previous section.}
+%\textit{This chapter will discuss about experiments carried out in order to perform formal verification on the \gls{NIC} model written in \gls{BIR}. It will first introduce contract based verification, its current status in the \gls{holba} platform, and the non \gls{proof-producing} contract based library that has been implemented in this work. It will then present some contract based verifications that has been performed in a non proof-producing fashion on example programs and on the NIC model of the previous section.}
+\textit{This chapter will present contract based verification, explaining the underlying theory: Hoare Triples, weakest precondition derivation and the use of SMT solvers. It will also present the current status of contract based verification in HolBA, and present some of the work needed in order to reason about BIR memories with SMT solvers.}
 
 \section{Hoare triples}
 
@@ -589,7 +589,7 @@ In order to perform the verification, the Hoare logic introduces a set of axioms
   \label{axiom_assignment_def}
 \end{equation}
 
-\todo{Introduce labels? \htriple{l1:P}{l1->\{l2,l3\}}{l2:Q,l3:Q'}}
+\textbf{TODO}: Introduce labels? \htriple{l1:P}{l1->\{l2,l3\}}{l2:Q,l3:Q'}
 
 \section{Weakest precondition derivation}
 
@@ -618,7 +618,7 @@ While the triple \htriple{n=1}{n:=n+1}{even(n)} uses a sufficient precondition f
 
 More generally, for a triple \htriple{P}{prog}{Q} to hold, $P$ must be stronger than the weakest precondition, i.e. we need to prove that $P \implies \WP(prog, Q)$.
 
-\todo{Here and above, should we mention/explain termination?}
+\textbf{TODO}: Here and above, should we mention/explain termination?
 
 \begin{equation}
   (P \implies \WP(prog, Q)) \implies \htriple{P}{prog}{Q}
@@ -631,7 +631,9 @@ From Equation \ref{p_imp_wp} we see that, in order to prove that a triple \htrip
 
 \acrfull{SMT} problem is a decision problem for logical formulas with respect to combinations of background theories such as arithmetic, bit-vectors, arrays, and uninterpreted functions \cite{nikolaj_bjorner_programming_2019}. \gls{SMT} problem is a generalization of \gls{SAT} problem supporting more theories. When given a formula, a \gls{SMT} solver decides if the formula is satisfiable, i.e. if there exist a valuation of its variables where the formula evaluates to true. As a \gls{SMT} solver can fail to decide a given instance, there are three possible outputs: ``satisfiable'', ``unsatisfiable'' and ``unknown''. Another useful feature of some \gls{SMT} solvers is the ability to ask for a satisfying model, which represents a counter-example of a false predicate.
 
-A predicate $P$ holds if it evaluates to true for all possible values of its variables \todo{isn't that the definition of tautologies?}. Alternatively, the negation of a predicate $\neg P$ holds if there exist no valuation of its variables where the predicate evaluates to true, i.e. if the instance is unsatisfiable. Therefore, if a \gls{SMT} solver report that $\neg P$ is ``unsatisfiable'', then $P$ holds.
+\textbf{TODO}: isn't that the definition of tautologies? (next sentence)
+
+A predicate $P$ holds if it evaluates to true for all possible values of its variables. Alternatively, the negation of a predicate $\neg P$ holds if there exist no valuation of its variables where the predicate evaluates to true, i.e. if the instance is unsatisfiable. Therefore, if a \gls{SMT} solver report that $\neg P$ is ``unsatisfiable'', then $P$ holds.
 
 Another way of thinking about how to prove logical formulas with \gls{SMT} solvers is by using De Morgan's Laws: we know that $\neg (P \implies \WP) \equiv (P \land \neg \WP)$. Therefore, proving that $\neg (P \implies \WP)$ is ``unsatisfiable'' using an \gls{SMT} solver can be seen as proving that there exist no model where $P$ holds and $\WP$ doesn't.
 
@@ -774,8 +776,9 @@ In Equation \ref{eval_pre_imp_eval_wp} we can recognize Equation \ref{p_imp_wp} 
 
 \section{BIR memories and SMT solvers} \label{bir-memories-with-smt-solvers}
 
-% Mention SMT-LIB logics?
-% Mention proof reconstruction?
+\textbf{TODO}: Mention SMT-LIB logics?
+
+\textbf{TODO}: Mention proof reconstruction?
 
 HOL4 features a library for interfacing \gls{SMT} solvers and HOL4, called \textit{HolSmtLib}. This library supports Yices 1 and Z3 as external provers. Yices 1 being an abandoned project that doesn't support SMT-LIB 2.0, we will focus on Z3 and the standard format SMT-LIB 2.0 \cite{barrett_satisfiability_2016}. While \textit{HolSmtLib} supports export for some SMT-LIB 2.0 theories, it doesn't support the \textit{ArraysEx} theory and doesn't know about BIR. In Section \ref{contract-verif-holba}, we discussed the translation from BIR expressions to \textit{wordsTheory}. However, this theory doesn't contain anything about memories or arrays in general. Therefore, some modifications are needed.
 
@@ -843,13 +846,13 @@ Since this translation is sound, it has been added in \textit{HolSmtLib}. The tr
 
 
 
-\chapter{Implementation of a non proof-producing automatic contract verification library} \label{impl-non-pp-wp-lib}
+\chapter{Non proof-producing automatic contract verification library} \label{impl-non-pp-wp-lib}
 \vspace{-1cm}
 \textit{In the previous section, we learned about contract verification and the current status of \gls{holba}'s implementation. To perform verification on the \gls{NIC} model, we would like to automate the process as much as possible. \gls{holba} currently offers tools for automatic weakest precondition generation, therefore we need to close the gap between BIR expression and SMT solvers, as well as to implement a convenient interface on top.}
 
 \section{Exporting BIR expressions to SMT solvers} \label{exporting-bir-to-smt}
 
-As an intermediate language for formal verification, \gls{BIR} possesses a precise semantic. The semantic of BIR expressions is expressed as a set of definitions \todo{axioms?} describing what are the equivalent operations using \textit{wordsTheory} and \textit{combinTheory}. These theories contains definitions and theorems about ``words'', i.e. bounded $N$-bit integers that are used to reason about integer types in programming languages and hardware memory in general, and function application and update used for BIR memories as already discussed in Section \ref{bir-memories-with-smt-solvers}. For example, the semantic of binary operators in BIR is defined with the following theorems\footnotemark:
+As an intermediate language for formal verification, \gls{BIR} possesses a precise semantic. The semantic of BIR expressions is expressed as a set of definitions describing what are the equivalent operations using \textit{wordsTheory} and \textit{combinTheory}. These theories contains definitions and theorems about ``words'', i.e. bounded $N$-bit integers that are used to reason about integer types in programming languages and hardware memory in general, and function application and update used for BIR memories as already discussed in Section \ref{bir-memories-with-smt-solvers}. For example, the semantic of binary operators in BIR is defined with the following theorems\footnotemark:
 
 \footnotetext{Theorems \ref{bir_bin_exp_GET_OPER_def} and \ref{bir_bin_exp_def} have been reduced to only two operators and well-typed 64-bit expressions.}
 
@@ -1250,11 +1253,6 @@ if nic.x > 10:
 	\label{proof_schema}
 \end{figure}
 
-%We recognize in Equation \ref{proof_goal} the equation of a Hoare Triple:
-%\htriple{P(nic)}{bir\_prog}{Q(nic,nic')}.
-%As already discussed \todo{make sure it is} in Section \ref{nic-model}, this structure is very common in the base lemmas of the existing proof on the \gls{NIC} model.
-%However, the particularity of this Hoare Triple is that the postcondition is a function of both the initial and the final state. With the library of the previous section, postconditions involving both states are possible but involve the introduction of ghost variables.
-
 \begin{remark} \label{remark_Q_nic_intial_final}
 $Q_{NIC}~nic~nic'$ is defined on both initial and final states, in order to be able to reason about the initial state in the postcondition. This allows us to write $nic'.x = nic.x + 1w$ instead of $nic'.x = 1w$ for example.
 \end{remark}
@@ -1343,9 +1341,9 @@ val BIR_Q_def = Define `BIR_Q bstate =
   bir_eval_bool_exp BIR_Q_exp bstate.bst_environ`
 \end{lstlisting}
 
-\paragraph{Limitation} $Q_{BIR}$ is a function of the end state only. Hence, in order to reason about the initial state in the we need in general to introduce ghost variables postcondition. In this proof, since the contract that we are proving is simple, using the actual value of $nic.x$ is enough. However, as we will discuss later on \todo{Make sure this is discussed}, this may pose a problem if we want to generalize the proof.
+\paragraph{Limitation} $Q_{BIR}$ is a function of the end state only. Hence, in order to reason about the initial state in the we need in general to introduce ghost variables postcondition. In this proof, since the contract that we are proving is simple, using the actual value of $nic.x$ is enough. However, this may pose a problem if we want to generalize the proof.
 
-\paragraph{Notation} $P_{BIR}~bir\_state$ and $Q_{BIR}~bir\_state$ are defined using $bir\_eval\_bool\_exp$, which evaluates respectivelly the expressions $P^{exp}_{BIR}$ and $Q^{exp}_{BIR}$ in a given BIR state. In order to simplify the proof, let's define a new operator $\eqeval$ that is used to evaluate given variables, e.g. $bir\_state.x \eqeval 0w$.
+\paragraph{Notation} $P_{BIR}~bir\_state$ and $Q_{BIR}~bir\_state$ are defined using $bir\_eval\_bool\_exp$, which evaluates respectively the expressions $P^{exp}_{BIR}$ and $Q^{exp}_{BIR}$ in a given BIR state. In order to simplify the proof, let's define a new operator $\eqeval$ that is used to evaluate given variables, e.g. $bir\_state.x \eqeval 0w$.
 \bigskip
 
 \begin{theorem} \label{proof_b_thm}
@@ -1438,6 +1436,14 @@ Finally, using the deduction rule with Theorems \ref{proof_R_inj_thm}, \ref{proo
 \end{proof}
 
 \chapter{Conclusions}
+
+Include:%
+a) Git workflow for a team;%
+b) LogLib (and tracing in general); -> annex%
+c) CI to track regressions + static analysis;%
+d) Simple interface for CFG lib;%
+e) Mention the "while 1: automaton.step()";%
+
 \section{Results}
 
 % How to evaluate the work?
@@ -1459,6 +1465,7 @@ One-button proofs:
     \item prove\_contract should take definitions instead of terms for P and Q
     \item gives access to lower level functions (generate wp and simp), so it is still possible to get some control either when the proof doesn't work or if we need to use them for other tasks and compose them differently
     \item current limitations of the non pp lib: only simple linear programs; non pp; non composition;
+    \item $Q_{BIR}$ isn't general
 \end{itemize}
 
 Mention the "future" meeting that we had on the 29/05/2019.
