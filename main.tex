@@ -231,7 +231,7 @@ The idea of this work is to translate the formal \gls{NIC} model of \cite{haglun
 
 \section{Intended readers}
 
-In this thesis, formal verification is the central topic. The thesis presents how model a hardware device using a binary analysis platform and presents some formal verification techniques. A reader interested in this topic may find the results presented useful for further work. A casual reader will be presented with a light introduction to the underlying theories and learn some useful ideas for performing software verification. The reader is expected to have a background in Computer Science in general, and knowledge in formal verification will make the thesis easier to digest.
+In this thesis, formal verification is the central topic. The thesis presents how model a hardware device using a binary analysis platform and presents some formal verification techniques. A reader interested in this topic may find the results presented useful for further work. A casual reader will be presented with a light introduction to the concepts that are essential in order to understand the problem that this thesis aims to explore. Those concepts should also be useful in order to understand software verification in general. For a more coherent reading, the concepts are introduced throughout the document. However, the reader is expected to have a background in Computer Science in general, and knowledge in formal verification will make the thesis easier to digest.
 
 \section{Thesis objective}
 
@@ -259,57 +259,45 @@ Similarly, devices can directly access the main memory using DMA. This technique
 \begin{figure}[!t]
 	\includegraphics[height=5cm]{figures/cpu-memory-schema.png}
 	\centering
-	\caption{
-CPU schema from a memory point of view. The dashed line between the CPU and the DMA controller represent the capability of the CPU to send commands to the DMA controller through register writes. Dotted lines to the CPU represent the ability to raise interrupts.
-}
+	\caption{CPU schema from a memory point of view. The dashed line between the CPU and the DMA controller represent the capability of the CPU to send commands to the DMA controller through register writes. Dotted lines to the CPU represent the ability to raise interrupts.}
 	\label{cpu-memory-schema}
 \end{figure}
 
-\section{Necessity of secure execution platforms}
+\section{The necessity of secure execution platforms}
 
 \textbf{TODO}: Explain the ``necessity''.
 
 The \acrshort{prosper} project isn't the only project focused on high-security execution platforms. Platforms such that seL4, Microsoft Hyper-V and INTEGRITY Multivisor are examples of platforms already used in production and providing strong security properties.
 
-\paragraph{seL4} is a recent L4-based microkernel created in 2006 with the goal to produce a completely formally verified implementation of a L4 microkernel. This has been achieved in 2009 \cite{klein_sel4:_2009}. At this time, seL4 consisted of \num{8700} lines of C code and \num{600} lines of assembler. The implementation of seL4 has been formally from its abstract specification down to its C implementation. However, the correctness of compilers, assembly code and hardware has been assumed. \acrshort{prosper} differs from seL4 by removing the need to trust the compiler. (\textbf{TODO}: seL4 have been verified down to assembly level, mention this here)
+\paragraph{seL4} is a recent L4-based microkernel created in 2006 with the goal to produce a completely formally verified implementation of a L4 microkernel. This has been achieved in 2009 \cite{klein_sel4:_2009}. At this time, seL4 consisted of \num{8700} lines of C code and \num{600} lines of assembler. The implementation of seL4 has been formally proved from its abstract specification down to its C implementation. Later, the validity of the generated assembly code has been proved, removing the need of trusting the compiler \cite{noauthor_what_nodate}.
 
 \paragraph{Microsoft Hyper-V} is Microsoft's hypervisor, widely used today within the Microsoft Azure cloud platform. It has been released in 2008. Hyper-V is a huge codebase, as we can read on VCC's website \footnote{\url{https://www.microsoft.com/en-us/research/project/vcc-a-verifier-for-concurrent-c/}}: ``Hyper-V consists of about 60 thousand lines of operating system-level C and x64 assembly code, it is therefore not a trivial target''. Microsoft has put a lot of work in formal verification\footnotemark of Hyper-V down to machine code \cite{leinenbach_verifying_2009}. However, they don't appear to include device drivers in their formal verification.
 
 \footnotetext{Microsoft has several formal verification projects, many of which are freely available for non-commercial use: \url{https://github.com/Microsoft?q=verifier}}
 
-\paragraph{INTEGRITY Multivisor} is a commercial real-time operating system developed by Green Hills Software. Although not much information seems to be publicly available, Green Hills Software has done considerable formal verification work \cite{richards_modeling_2010}. Multivisor has several certifications, including, for example, ISO 26262 ASIL D automotive electronics, NSA-certified secure mobile phones or FAA DO-178B Level A-certified avionics controlling life-critical functions on passenger and military aircraft\footnotemark.
-
-\footnotetext{\url{https://ghs.com/products/rtos/integrity_virtualization.html}}
+\paragraph{INTEGRITY Multivisor} is a commercial real-time operating system developed by Green Hills Software. Although not much information seems to be publicly available, Green Hills Software has done considerable formal verification work \cite{richards_modeling_2010}. Multivisor has several certifications, including, for example, ISO 26262 ASIL D automotive electronics, NSA-certified secure mobile phones or FAA DO-178B Level A-certified avionics controlling life-critical functions on passenger and military aircraft \footnote{\url{https://ghs.com/products/rtos/integrity_virtualization.html}}.
 
 \section{Binary analysis platforms}
 
-For this project, I will use the \gls{holba} framework. However, several other binary analysis platforms has been created for various purposes, such as formal verification or static analysis. A common characteristic of these platforms is to use an \gls{IR}. IRs are designed to be simpler to use for each platforms' end purpose. As an example, the HolBA platform has BIR as its intermediate representation (BIR is presented in Section \ref{bir-presentation}).
+For this project, we will use the \gls{holba} framework. However, several other binary analysis platforms has been created for various purposes, such as formal verification or static analysis. A common characteristic of these platforms is to use an \gls{IR}. IRs are designed to be simpler to use for each platforms' end purpose. As an example, the HolBA platform has BIR as its intermediate representation (BIR is presented in Section \ref{bir-presentation}).
 
-\paragraph{Microsoft Boogie} is Microsoft's intermediate verification language. Boogie is the IR for multiple Microsoft tools, including VCC. Boogie as a tool can infer some invariants on the given Boogie program and then generate verification conditions that are passed to an SMT solver\footnotemark.
+\paragraph{Microsoft Boogie} is Microsoft's intermediate verification language. Boogie is the IR for multiple Microsoft tools, including VCC. Boogie as a tool can infer some invariants on the given Boogie program and then generate verification conditions that are passed to an SMT solver \footnote{\url{https://www.microsoft.com/en-us/research/project/boogie-an-intermediate-verification-language/}}.
 
-\footnotetext{\url{https://www.microsoft.com/en-us/research/project/boogie-an-intermediate-verification-language/}}
-
-\paragraph{Valgrind} is a framework for building program supervision tools, such as memory checkers, cache profilers or data-race detectors
-\cite{nethercote_valgrind:_2003}. As its core, Valgrind is a JIT x86-to-x86 compiler, translating binary programs into its IR called UCode. Then, \textit{skins}---the tools built on the Valgrind framework---are free to transform and work in the IR to perform several analysis.
+\paragraph{Valgrind} is a framework for building program supervision tools, such as memory checkers, cache profilers or data-race detectors \cite{nethercote_valgrind:_2003}. As its core, Valgrind is a JIT x86-to-x86 compiler, translating binary programs into its IR called UCode. Then, \textit{skins}---the tools built on the Valgrind framework---are free to transform and work in the IR to perform several analysis.
 
 \paragraph{LLVM} is a compiler infrastructure which supports a unique multi-stage optimization system \cite{lattner_llvm:_2002}. LLVM is built around its \gls{IR}, LLVM Virtual Instruction Set, which can be described as a strict RISC architecture with high-level type information. This IR was what made LLVM successful because it is a pragmatic IR suitable for optimizations at multiple stages (link-, post-link and run-time) and supporting a wide variety of transformations. Leveraging this IR, an ecosystem grew around LLVM, providing tools such as symbolic execution (LLVM KLEE), benchmarking environments or static and dynamic analysers.
 
 \paragraph{Mayhem} is a system for automatically finding exploitable bugs in binary programs and generating working exploits as proof of the discovered vulnerabilities \cite{cha_unleashing_2012}. It leverages BAP, the Binary Analysis Platform from Carnegie Mellon University (CMU BAP) \cite{brumley_bap:_2011}, as its IR. It proceeds by fist JIT-ing each instruction to the BAP intermediate language (IL) and then performing a custom symbolic execution.
 
-There are several other tools, platforms and frameworks, such as \gls{bap} \cite{noauthor_binary_2019}, Angr, and so on, but I cannot review them all here. An interesting note though is that BIR's design is based upon CMU BAP's intermediate language.
+There are several other tools, platforms and frameworks, such as \gls{bap} \cite{noauthor_binary_2019} or Angr. An interesting note though is that BIR's design is based upon CMU BAP's intermediate language.
 
-\textbf{TODO}: Explain the similarities and differences of HolBA with the cited platforms, and its unique characteristics. (proof producing down to the ISA)
-
-%\subsection{Previous work in the team}
-
-%In a way, this project consists in bridging Jonas' HOL4 NIC model \cite{haglund_formal_2016} and Andreas' TrABin framework \cite{lindner_trabin:_2019}, as shown in Figure \ref{hol-v-bir-nic-model-simple}.
+The novelty introduced in HolBA is that proofs are performed directly on the generated assembly code, not a the source code level. Therefore, proofs can be performed on programs without needing their source code, and regardless on the programming language used as long as it can be compiled in assembly code in an \gls{ISA} supported by the platform.
 
 
-\chapter{Definitions and relevant theories}
+\chapter{Overview of the formal verification of the NIC device}
 \vspace{-1cm}
 \textit{This chapter intends to introduce the concepts that are essential to the reader in order to understand the problem that this degree project aims to explore. This includes a presentation of Interactive Theorem Proving and formal proofs in HOL4, an introduction to \gls{BIR}, completing what has already been said about the \gls{holba} framework in the Introduction, and a brief overview of the formal NIC model and proof of \cite{haglund_formal_2016}.}
-
-\textbf{TODO}: The title of this chapter doesn't correspond to its content anymore.
+TODO TODO
 
 \section{Interactive Theorem Proving and HOL4}
 
@@ -323,32 +311,6 @@ HOL4 is built around a very small kernel: 3 axioms, 10 inference rules, two pred
 \footnotetext{This is true for the Hol Light Kernel, however the HOL4 kernel has slightly deviated from this simplicity for historical and performance reasons.}
 
 Several models of different ARM \gls{ISA} have been realized, such as ARMv3, ARMv4, ARMv7 \cite{noauthor_canonical_2019, hutchison_trustworthy_2010} and very recently ARMv8 \cite{armstrong_isa_2019}. These models enable making proofs directly at the ISA level, avoiding the necessity to trust the compiler and enabling to formally verify program behaviours according to the CPU specification. However, this process is tedious and cannot actually be perform by hand. To respond to this problem, \cite{metere_sound_2017} introduced a proof-producing lifter that moves the verification from raw assembly code to an higher-level intermediate representation, and introduced later some supporting tools \cite{lindner_trabin:_2019} in order to automate some of the work. This constitutes the foundation of HolBA.
-
-\section{HolBA's Binary Intermediate Representation (BIR)} \label{bir-presentation}
-
-HolBA's Binary Intermediate Representation (BIR) \cite{lindner_trabin:_2019}, introduced in the Introduction, is a machine independent binary representation. It aims to be the simplest possible while still being able to represent all possible binary programs but self-modifying programs. It does so by having a limited syntax---introduced in Table \ref{bir-syntax}---and forbidding implicit side-effects. A statement can only have explicit state changes and can only affect one variable.
-
-\begin{table}[h!]
-	\begin{align*}
-		prog   & :=~block^{\ast}                                                             \\
-		block  & :=~(string~|~integer,~stmt^{\ast},~estmt)                                   \\
-		stmt   & :=~\textbf{assign}~(string, exp)~|~\textbf{assert}~(exp)                    \\
-        estmt  & :=~\textbf{jmp}~(exp)~|~\textbf{cjmp}~(exp,~exp,~exp)~|~\mathbf{halt}~(exp) \\
-		exp    & :=~integer~|~\textbf{var}~string                                            \\
-		       & ~~~~|~\textbf{if-then-else}~(exp,~exp,~exp)                                 \\
-		       & ~~~~|~\diamond_{u}~exp~|~exp~\diamond_{b}~exp~                              \\
-		       & ~~~~|~\textbf{load}~(exp,~exp,~\tau)~|~\textbf{store}~(exp,~exp,~exp,~\tau) 
-	\end{align*}
-    % exp: string~|~ ??
-	\caption{BIR's syntax. Valid BIR programs must be well-typed. $integer$s represent bounded N-bit integers. $\diamond_{u}$ and $\diamond_{b}$ represent respectively unary and binary operators. BIR blocks are tuples, with the first element being its label, the second a list of statements and the third the end statement. BIR syntax contains some other statements that won't be used in this work and that have been omitted. For more information, see \cite{lindner_trabin:_2019}.}
-	\label{bir-syntax}
-\end{table}
-
-This representation allows to produce proofs more easily that with classical binary representations, whose design are focused on execution speed rather than offline analysis. Moreover, BIR is fully specified and doesn't have unspecified behaviour.
-
-BIR is implemented as a set of HOL4 \textit{datatypes}, and possesses a completely defined semantic. Section \ref{bir-memories-with-smt-solvers} contains a more thorough discussion of the BIR semantic. Section \ref{alice-bob-toy} shows a toy BIR program using the concrete BIR syntax.
-
-Among its supporting tools, HolBA features a tool to visualize the \gls{CFG} of BIR programs.
 
 \section{Overview of the formal NIC model} \label{overview-nic-model}
 
@@ -403,7 +365,7 @@ The majority of the lemmas are phrased in the same way, that we shall see in Cha
 
 \subsection{Visualizing proof dependencies}
 
-The model of the NIC consists of 1500 lines of HOL4 code, and required around three man-months of work. The NIC invariant consists of 650 lines of HOL4 code and the proof consists of approximately 55000 lines of HOL4 code, including comments. Identifying the invariant and implementing the proof in HOL4 required around one man-year of work \cite{haglund_trustworthy_nodate}.
+The model of the NIC consists of \num{1500} lines of HOL4 code, and required around three man-months of work. The NIC invariant consists of \num{650} lines of HOL4 code and the proof consists of approximately \num{55000} lines of HOL4 code, including comments. Identifying the invariant and implementing the proof in HOL4 required around one man-year of work \cite{haglund_trustworthy_nodate}.
 
 The proof being consequent, it is composed of a multitude of lemmas spread out in a multiple layers. The ideal objective of this work being to prove again the base lemmas on a different but equivalent BIR program, we therefore need to identify the relevant lemmas to be replaced. The proof is divided in two major parts, reception and transmission, and lemmas are scattered across a few files, each file being for a different part or abstraction level. Optimally, identifying the fringe of the dependency graph of the lemmas and theorems would give exactly the set of lemmas that all the other lemmas and theorems rely on, and therefore the smallest set of lemmas that are enough to prove in order to imply the security properties already proved in \cite{haglund_trustworthy_nodate} by using the existing proofs.
 
@@ -452,7 +414,35 @@ As an attempt to visualize this fringe, we developed a tool, called DepGraph \fo
 
 \chapter{The BIR NIC model} \label{nic-model}
 \vspace{-1cm}
-\textit{This chapter intends to discuss about the different ways of implementing an equivalent BIR model from the formal NIC model. After a discussion about the different possible ways of doing this translation, two approaches will be presented. Then, the final BIR model will be introduced along with the new tools that have been implemented in order to build it.}
+\textit{This chapter intends to discuss about the different ways of implementing an equivalent BIR model from the formal NIC model. After an introduction of BIR, it will present different possible ways of doing this translation and present three approaches. Then, the final BIR model will be introduced along with the new tools that have been implemented in order to build it.}
+
+\section{HolBA's Binary Intermediate Representation (BIR)} \label{bir-presentation}
+
+HolBA's Binary Intermediate Representation (BIR) \cite{lindner_trabin:_2019}, introduced in the Introduction, is a machine independent binary representation. It aims to be the simplest possible while still being able to represent all possible binary programs but self-modifying programs. It does so by having a limited syntax---introduced in Table \ref{bir-syntax}---and forbidding implicit side-effects. A statement can only have explicit state changes and can only affect one variable.
+
+\begin{table}[h!]
+	\begin{align*}
+		prog   & :=~block^{\ast}                                                             \\
+		block  & :=~(string~|~integer,~stmt^{\ast},~estmt)                                   \\
+		stmt   & :=~\textbf{assign}~(string, exp)~|~\textbf{assert}~(exp)                    \\
+        estmt  & :=~\textbf{jmp}~(exp)~|~\textbf{cjmp}~(exp,~exp,~exp)~|~\mathbf{halt}~(exp) \\
+		exp    & :=~integer~|~\textbf{var}~string                                            \\
+		       & ~~~~|~\textbf{if-then-else}~(exp,~exp,~exp)                                 \\
+		       & ~~~~|~\diamond_{u}~exp~|~exp~\diamond_{b}~exp~                              \\
+		       & ~~~~|~\textbf{load}~(exp,~exp,~\tau)~|~\textbf{store}~(exp,~exp,~exp,~\tau) 
+	\end{align*}
+    % exp: string~|~ ??
+	\caption{BIR's syntax. Valid BIR programs must be well-typed. $integer$s represent bounded N-bit integers. $\diamond_{u}$ and $\diamond_{b}$ represent respectively unary and binary operators. BIR blocks are tuples, with the first element being its label, the second a list of statements and the third the end statement. BIR syntax contains some other statements that won't be used in this work and that have been omitted. For more information, see \cite{lindner_trabin:_2019}.}
+	\label{bir-syntax}
+\end{table}
+
+This representation allows to produce proofs more easily that with classical binary representations, whose design are focused on execution speed rather than offline analysis. Moreover, BIR is fully specified and doesn't have unspecified behaviour.
+
+BIR is implemented as a set of HOL4 \textit{datatypes}, and possesses a completely defined semantic. Section \ref{bir-memories-with-smt-solvers} contains a more thorough discussion of the BIR semantic. Section \ref{alice-bob-toy} implements a toy BIR program and presents the concrete BIR syntax.
+
+Among its supporting tools, HolBA features a tool to visualize the \gls{CFG} of BIR programs.
+
+\section{Exploring multiple approaches of translating the formal NIC model}
 
 Multiple approaches of translation of the formal NIC model described in Section \ref{overview-nic-model} to an equivalent BIR program have been considered:
 
@@ -462,7 +452,7 @@ Multiple approaches of translation of the formal NIC model described in Section 
     \item \textbf{device model specific \gls{IR}}: This idea rejoins the previous one in the sense that it uses an additional intermediate representation (C in the previous idea) to implement the model, then uses some compiler to generate the BIR program (standard C compiler and HolBA's lifter). This idea would have the advantage that it introduces a new higher-level IR that would be common to possible later other device modelisations. Tools could also be developed for this IR. However, this approach would require to develop a new IR and, if we later want to develop a \gls{proof-producing} lifter (compiler) the implementation would be costly, especially since this language would be more complex. The following Section \ref{flowchart-attempt} tries to use visual flowchart language as IR. %This idea has not been explored in this work, where we decided to experiment using existing tools: the lifter, BIR and its supporting tools.
 \end{itemize}
 
-\section{Using flowcharts as Intermediate Representation} \label{flowchart-attempt}
+\subsection{Using flowcharts as Intermediate Representation} \label{flowchart-attempt}
 % essayé flowcharts, simple mais taille grossit très vite, complexe, tedious
 
 As already discussed in the previous Section, the structure of the formal model looks like a tree. Therefore, using flowcharts can be a convenient way to represent such structures. An attempt has been made to design a flowchart representation. Figures \ref{flowchart-scheduler}, \ref{flowchart-tx} and \ref{flowchart-tx_fetch_next_bd} show respectively a preview of the scheduler, transmission automaton and particular transition of this automaton.
@@ -498,14 +488,14 @@ While this visual representation was useful to get to know the formal NIC model,
 
 For those reasons, it has been decided to not go further with this visual representation, and to focus instead of existing tools of the HolBA platform. However, as we shall see in the rest of this thesis, we will explore other visualization tools, and flowcharts will be used as a visual help while designing the model using other methods.
 
-\section{Writing the model in C} \label{c-model}
+\subsection{Writing the model in C} \label{c-model}
 % Problem: we don't want to reason with the stack
 
 One-to-one translation of the transmission automaton, scheduler, state and \textit{CPPI\_RAM} related definitions of the formal model has been realized in C. This translation has been quite easy to perform and has been completed in around four hours. No difficulty arisen during this translation. Regarding the NIC state, C has all types needed to represent it. An array has been used to represent the function type of \textit{CPPI\_RAM}. Enumerations have been used in order to represent HOL4 enumerations. While not optimal is conventional usage of C because of their non restricted usage allowed by the C language (they can be freely modified as integers without checking their validity in C, while HOL4 and functional languages in general are restrictive and force to use correct values), enumerations are enough if used correctly and aware of those shortcomings. However, when studying the compiled assembly code and lifted BIR program, we noticed that all the convenient naming that we can use in the formal or the C model is lost and replaced with abundant usage of the stack. While this is completely normal behaviour for a C compiler, this is not convenient when performing later proofs on the model: we would first need to rename them in the proof using some definitions, and this process would be lengthy and cumbersome (if not automated), resulting in more code than if the model had been directly written in BIR in the first place. This experiment made us realize that writing the model is a rapid operation and that we should rather focus on making the verification step as smooth as possible, because it is the most difficult to carry out.
 
 For those reasons, it has been decided to try using BIR directly to write the NIC model. First, Section \ref{alice-bob-toy} presents a first prototype that has been realized in order to visualize the shape of a BIR program representing the NIC model, and identify the tools that would be needed in order to reduce the boilerplate of such implementation in BIR.
 
-\section{Implementing a toy BIR model} \label{alice-bob-toy}
+\subsection{Implementing a toy BIR model} \label{alice-bob-toy}
 % BIR toy model
 
 Before writing the whole NIC model by hand, we shall identify the structure of the model and develop tools that facilitate its implementation. Using well-designed tools can reduce the boilerplate work of the implementation, helping to focus only on the meaningful content of the implementation, and can also reduce the chance of introducing bugs as the code is factored and mechanically shorter.
@@ -573,7 +563,7 @@ From the design presented in Figures \ref{alice-bob-automata-overview}, \ref{ali
 %\subsection{Visualizing the CFG} \label{visualizing-cfg}
 % Moved to the introduction
 
-\section{BSL: BIR Simple Language} \label{bsl}
+\subsection{BSL: BIR Simple Language} \label{bsl}
 
 Because of its extreme verbosity, BIR is not a language convenient to manually use. Its primary use has been as an output from the \gls{proof-producing} lifter and as a machine-independent intermediate represent with a very limited feature-set convenient to reason about. A less verbose and more convenient method for producing BIR code is needed in order to open this language to other uses. Therefore, a library has been written that offers the same expressiveness than BIR but with shorter constructs. This library has been kept simple and will serve as the base layer of possible later abstractions. As such, it has been decided that no feature other than pure syntactic construct, such that type inference, would be included. This library has been named BIR Simple Language (BSL) and is implemented in the file \textit{bslSyntax.sml} \footnote{This file has been named in order to follow the HOL4 conventions: \textit{*Syntax.sml} files contain functions that create, destruct and check HOL4 terms. \textit{bslSyntax.sml} is a library for creating only BIR terms, and should therefore follow this convention.}.
 
@@ -597,7 +587,7 @@ val bjmplabel_str = (bjmp o belabel_str)
 %\subsection{Device model specific BIR helpers} \label{device-bir-helpers}
 %% not general enough to be part of BSL, but can be seen as an extension
 
-\section{Implementing the real model} \label{impl-real-model}
+\subsection{Implementing the real model} \label{impl-real-model}
 % model not-complete model (focus on key parts)
 
 From knowledge gained in the previous section, a set of helper functions has been implemented, mainly in order to facilitate reasoning about the state machine. Listings \ref{impl-real-tx_state} and \ref{impl-real-tx_bstate_cases} show the SML code respectively used to represent the transmission automaton and to generate the BIR blocks of the transmission ``case'' statement that jumps to the BIR block depending on the current state.
@@ -738,13 +728,11 @@ From Equation \ref{p_imp_wp} we see that, in order to prove that a triple \htrip
 
 \acrfull{SMT} problem is a decision problem for logical formulas with respect to combinations of background theories such as arithmetic, bit-vectors, arrays, and uninterpreted functions \cite{nikolaj_bjorner_programming_2019}. \gls{SMT} problem is a generalization of \gls{SAT} problem supporting more theories. When given a formula, a \gls{SMT} solver decides if the formula is satisfiable, i.e. if there exist a valuation of its variables where the formula evaluates to true. As a \gls{SMT} solver can fail to decide a given instance, there are three possible outputs: ``satisfiable'', ``unsatisfiable'' and ``unknown''. Another useful feature of some \gls{SMT} solvers is the ability to ask for a satisfying model, which represents a counter-example of a false predicate.
 
-\textbf{TODO}: isn't that the definition of tautologies? (next sentence)
-
 A predicate $P$ holds if it evaluates to true for all possible values of its variables. Alternatively, the negation of a predicate $\neg P$ holds if there exist no valuation of its variables where the predicate evaluates to true, i.e. if the instance is unsatisfiable. Therefore, if a \gls{SMT} solver report that $\neg P$ is ``unsatisfiable'', then $P$ holds.
 
 Another way of thinking about how to prove logical formulas with \gls{SMT} solvers is by using De Morgan's Laws: we know that $\neg (P \implies \WP) \equiv (P \land \neg \WP)$. Therefore, proving that $\neg (P \implies \WP)$ is ``unsatisfiable'' using an \gls{SMT} solver can be seen as proving that there exist no model where $P$ holds and $\WP$ doesn't.
 
-\subsection{Getting started with the BitVector theory}
+\subsection{The BitVector theory}
 
 To reason about fixed-size integers, \gls{SMT} solvers often implement a ``BitVector'', or ``FixedSizeBitVectors'', theory. In order to understand its particularities, we can try to prove Equation \ref{bv_eq1}. Hereafter, we will use Z3, a popular and efficient \gls{SMT} solver implemented by Microsoft Research\footnote{Z3 is available on GitHub at \url{https://github.com/Z3Prover/z3/}.}, and SMT-LIB 2.0, which is a standard format for \gls{SMT} solvers \cite{barrett_satisfiability_2016}. Listing \ref{bv_eq1_smtlib} shows the SMT-LIB 2.0 representation of this proof attempt.
 
@@ -953,7 +941,7 @@ Since this translation is sound, it has been added in \textit{HolSmtLib}. The tr
 
 
 
-\chapter{Non proof-producing automatic contract verification library} \label{impl-non-pp-wp-lib}
+\chapter{Non proof-producing automatic contract verification} \label{impl-non-pp-wp-lib}
 \vspace{-1cm}
 \textit{In the previous section, we learned about contract verification and the current status of \gls{holba}'s implementation. To perform verification on the \gls{NIC} model, we would like to automate the process as much as possible. \gls{holba} currently offers tools for automatic weakest precondition generation, therefore we need to close the gap between BIR expression and SMT solvers, as well as to implement a convenient interface on top.}
 
@@ -983,7 +971,7 @@ As an intermediate language for formal verification, \gls{BIR} possesses a preci
 
 Similarly, a set of definitions and theorems describe the semantic of operations on BIR memories. However, correct handling of endianness, alignment and genericity over the size of memories cells and addresses, these definitions and theorems are pretty complicated to work with. The same is true for the semantic of operations on BIR variables, because of well-typedness and initialization.
 
-For this reason---i.e. writing \gls{proof-producing} code is costly---, I decided to write a non-proof producing function \texttt{bir\_exp\_to\_words} that translates BIR expressions to the equivalent words expression. The obvious downside of such a function is that we now have to trust the translation to be sound, because we no longer get any guarantee from the theorem prover. However, development time is dramatically decreased and offers more time for experimenting. Moreover, this function can later be implemented in a proof-producing way for more trustful verification. Then, in order to have a high confidence of correctness, software engineering practices apply:
+For this reason---i.e. writing \gls{proof-producing} code is costly---, we decided to write a non-proof producing function \texttt{bir\_exp\_to\_words} that translates BIR expressions to the equivalent words expression. The obvious downside of such a function is that we now have to trust the translation to be sound, because we no longer get any guarantee from the theorem prover. However, development time is dramatically decreased and offers more time for experimenting. Moreover, this function can later be implemented in a proof-producing way for more trustful verification. Then, in order to have a high confidence of correctness, software engineering practices apply:
 
 \begin{itemize}
     \item write small and understandable pieces of code and compose them, and
@@ -1353,7 +1341,7 @@ val _ = if !level_log >= logLib.INFO
   else ();
 \end{lstlisting}
 
-% TODO: Mention time constraints?
+% TODO: Mention time constraints? -> Intro
 
 
 \subsection{Limitations of this approach}

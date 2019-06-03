@@ -1,5 +1,5 @@
-pdflatex main.tex \
+pdflatex -synctex=1 main.tex \
     && makeglossaries main \
     && biber main \
-    && pdflatex main.tex \
-    && pdflatex main.tex
+    && pdflatex -synctex=1 main.tex \
+    && pdflatex -synctex=1 main.tex
