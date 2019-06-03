@@ -101,7 +101,7 @@
 \newacronym{IR}{IR}{Intermediate Representation}
 \newglossaryentry{CPU} {
     name={CPU},
-    description={Control Processing Unit. This is the core processing unit of a computer.}
+    description={Control Processing Unit. This is the core processing unit of a computer}
 }
 \newacronym{DMA}{DMA}{Direct Memory Access}
 \newacronym{MMU}{MMU}{Memory Management Unit}
@@ -177,7 +177,10 @@
   \end{abstract}
 \end{otherlanguage}
 
+\begingroup
+\hypersetup{linkcolor=black}
 \tableofcontents
+\endgroup
 
 \printglossaries
 
@@ -1037,7 +1040,7 @@ Datatype `bir_exp_t =
     \label{bir_exp_to_words_variants_loc}
 \end{table}
 
-\section{Pretty-printing to visualize huge BIR expressions}
+\section{Pretty-printing to visualize BIR expressions}
 
 When working with complex constructs, the need of visualization techniques often arise. Generated weakest preconditions grow quickly with the number of statements in a program, linearly or exponentially depending on the type of statements---control flow statements produce exponential growth. While clever techniques can be implemented to keep their size reasonable \cite{lindner_trabin:_2019}, we often need to read and analyze them.
 

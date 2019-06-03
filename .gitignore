@@ -13,3 +13,6 @@
 *.fdb_latexmk
 *.fls
 *.tdo
+*.glg
+*.gls
+*.bak
