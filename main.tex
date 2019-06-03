@@ -99,6 +99,12 @@
 \newacronym{CFG}{CFG}{Control Flow Graph}
 \newacronym{SML}{SML}{Standard ML}
 \newacronym{IR}{IR}{Intermediate Representation}
+\newglossaryentry{CPU} {
+    name={CPU},
+    description={Control Processing Unit. This is the core processing unit of a computer.}
+}
+\newacronym{DMA}{DMA}{Direct Memory Access}
+\newacronym{MMU}{MMU}{Memory Management Unit}
 
 %% End of Glossary
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -237,6 +243,64 @@ The ultimate goal would be to obtain a fully automatic pipeline for performing s
 
 This work has been carried out step-by-step toward an ideal goal, i.e. re-establishing all the security properties. On the road, needs have been identified and tools have been implemented in order to tackle them. This approach made sense in this particular work because the needs weren't known in advance, and therefore needed to be identified. This thesis presents the steps taken during this work, the motivations of each tool that have been implemented, and discusses their limitations and future work in the conclusion.
 
+\chapter{Related work} \label{related-work}
+\vspace{-1cm}
+\textit{This chapter will present present the related work in the domain of secure execution platforms and binary analysis. After briefly introducing memory sharing between \gls{CPU} and devices, it will explain the need of secure execution platforms, present existing binary analysis platforms and explain the novelty of \gls{holba}, the platform used in this work.}
+
+\section{Memory sharing between CPU and devices}
+
+Figure \ref{cpu-memory-schema} represents how the \gls{CPU} and devices can share the main memory using \gls{DMA} \footnote{This schema doesn't represent caches.}. To read from/write to the main memory, the CPU passes through the \gls{MMU}, which is responsible for virtual/physical address translation. In a nutshell, memory addresses that the CPU uses are mapped on a virtual address space---each running process having its own---that are mapped to the actual physical addresses by the MMU. This enables virtualization and abstraction between processes, which can each have their own memory spaces in apparent isolation.
+
+Similarly, devices can directly access the main memory using DMA. This technique enables to offload the CPU from copying each byte of memory and instead setting the DMA controller to do so. DMA controllers also give devices direct access to the main memory. While fast and convenient, DMA creates a whole new range of vulnerabilities. Indeed, if misconfigured, the DMA controller can give complete access to the main memory to devices, like kernel private memory, page table or executable memory \cite{schwarz_formal_2014}.
+
+\begin{figure}[!t]
+	\includegraphics[height=5cm]{figures/cpu-memory-schema.png}
+	\centering
+	\caption{
+CPU schema from a memory point of view. The dashed line between the CPU and the DMA controller represent the capability of the CPU to send commands to the DMA controller through register writes. Dotted lines to the CPU represent the ability to raise interrupts.
+}
+	\label{cpu-memory-schema}
+\end{figure}
+
+\subsection{Necessity of secure execution platforms}
+
+\textbf{TODO}: Explain the ``necessity''.
+
+The \acrshort{prosper} project isn't the only project focused on high-security execution platforms. Platforms such that seL4, Microsoft Hyper-V and INTEGRITY Multivisor are examples of platforms already used in production and providing strong security properties.
+
+\paragraph{seL4} is a recent L4-based microkernel created in 2006 with the goal to produce a completely formally verified implementation of a L4 microkernel. This has been achieved in 2009 \cite{klein_sel4:_2009}. At this time, seL4 consisted of \num{8700} lines of C code and \num{600} lines of assembler. The implementation of seL4 has been formally from its abstract specification down to its C implementation. However, the correctness of compilers, assembly code and hardware has been assumed. \acrshort{prosper} differs from seL4 by removing the need to trust the compiler. (\textbf{TODO}: seL4 have been verified down to assembly level, mention this here)
+
+\paragraph{Microsoft Hyper-V} is Microsoft's hypervisor, widely used today within the Microsoft Azure cloud platform. It has been released in 2008. Hyper-V is a huge codebase, as we can read on VCC's website \footnote{\url{https://www.microsoft.com/en-us/research/project/vcc-a-verifier-for-concurrent-c/}}: ``Hyper-V consists of about 60 thousand lines of operating system-level C and x64 assembly code, it is therefore not a trivial target''. Microsoft has put a lot of work in formal verification\footnotemark of Hyper-V down to machine code \cite{leinenbach_verifying_2009}. However, they don't appear to include device drivers in their formal verification.
+
+\footnotetext{Microsoft has several formal verification projects, many of which are freely available for non-commercial use: \url{https://github.com/Microsoft?q=verifier}}
+
+\paragraph{INTEGRITY Multivisor} is a commercial real-time operating system developed by Green Hills Software. Although not much information seems to be publicly available, Green Hills Software has done considerable formal verification work \cite{richards_modeling_2010}. Multivisor has several certifications, including, for example, ISO 26262 ASIL D automotive electronics, NSA-certified secure mobile phones or FAA DO-178B Level A-certified avionics controlling life-critical functions on passenger and military aircraft\footnotemark.
+
+\footnotetext{\url{https://ghs.com/products/rtos/integrity_virtualization.html}}
+
+\section{Binary analysis platforms}
+
+For this project, I will use the \gls{holba} framework. However, several other binary analysis platforms has been created for various purposes, such as formal verification or static analysis. A common characteristic of these platforms is to use an \gls{IR}. IRs are designed to be simpler to use for each platforms' end purpose. As an example, the HolBA platform has BIR as its intermediate representation (BIR is presented in Section \ref{bir-presentation}).
+
+\paragraph{Microsoft Boogie} is Microsoft's intermediate verification language. Boogie is the IR for multiple Microsoft tools, including VCC. Boogie as a tool can infer some invariants on the given Boogie program and then generate verification conditions that are passed to an SMT solver\footnotemark.
+
+\footnotetext{\url{https://www.microsoft.com/en-us/research/project/boogie-an-intermediate-verification-language/}}
+
+\paragraph{Valgrind} is a framework for building program supervision tools, such as memory checkers, cache profilers or data-race detectors
+\cite{nethercote_valgrind:_2003}. As its core, Valgrind is a JIT x86-to-x86 compiler, translating binary programs into its IR called UCode. Then, \textit{skins}---the tools built on the Valgrind framework---are free to transform and work in the IR to perform several analysis.
+
+\paragraph{LLVM} is a compiler infrastructure which supports a unique multi-stage optimization system \cite{lattner_llvm:_2002}. LLVM is built around its \gls{IR}, LLVM Virtual Instruction Set, which can be described as a strict RISC architecture with high-level type information. This IR was what made LLVM successful because it is a pragmatic IR suitable for optimizations at multiple stages (link-, post-link and run-time) and supporting a wide variety of transformations. Leveraging this IR, an ecosystem grew around LLVM, providing tools such as symbolic execution (LLVM KLEE), benchmarking environments or static and dynamic analysers.
+
+\paragraph{Mayhem} is a system for automatically finding exploitable bugs in binary programs and generating working exploits as proof of the discovered vulnerabilities \cite{cha_unleashing_2012}. It leverages BAP, the Binary Analysis Platform from Carnegie Mellon University (CMU BAP) \cite{brumley_bap:_2011}, as its IR. It proceeds by fist JIT-ing each instruction to the BAP intermediate language (IL) and then performing a custom symbolic execution.
+
+There are several other tools, platforms and frameworks, such as \gls{bap} \cite{noauthor_binary_2019}, Angr, and so on, but I cannot review them all here. An interesting note though is that BIR's design is based upon CMU BAP's intermediate language.
+
+\textbf{TODO}: Explain the similarities and differences of HolBA with the cited platforms, and its unique characteristics. (proof producing down to the ISA)
+
+%\subsection{Previous work in the team}
+
+%In a way, this project consists in bridging Jonas' HOL4 NIC model \cite{haglund_formal_2016} and Andreas' TrABin framework \cite{lindner_trabin:_2019}, as shown in Figure \ref{hol-v-bir-nic-model-simple}.
+
 
 \chapter{Definitions and relevant theories}
 \vspace{-1cm}
@@ -247,13 +311,15 @@ This work has been carried out step-by-step toward an ideal goal, i.e. re-establ
 Interactive theorem provers are software producing formal proofs, in an
 interactive fashion, i.e. a human can step through the proof interactively while the proof assistant provides some automation (like rewriting of terms, arithmetic evaluation, integration with external tools like SMT solvers, \dots). Coq, HOL4 or Isabelle are such tools.
 
-HOL4 \cite{noauthor_hol_nodate} stands for Higher-Order Logic. It is a programming environment deeply embedded into the \gls{SML} programming language enabling to prove theorems and write \gls{proof-producing} programs. Since its first version in 1988, HOL has been focused on hardware verification, and has been successfully used in this domain, as shows its \texttt{examples/} directory \cite{noauthor_canonical_nodate}.
+HOL4 \cite{noauthor_hol_nodate} stands for Higher-Order Logic. It is a programming environment deeply embedded into the \gls{SML} programming language enabling to prove theorems and write \gls{proof-producing} programs. Since its first version in 1988, HOL has been focused on hardware verification, and has been successfully used in this domain, as shows its \texttt{examples/} directory \cite{noauthor_canonical_2019}.
 
-HOL4 is built around a very small kernel: 3 axioms, 10 inference rules, two predefined constants and two types \cite{tuerk_interactive_nodate}\footnote{This is true for the Hol Light Kernel, however the HOL4 kernel has slightly deviated from this simplicity for historical and performance reasons.}. A theorem can only be built using this core, every other higher-level theory must be built from lower-level ones. Furthermore, the kernel is consist of very few lines of code, leaving less space for bugs. Hence, for this reason, the trust needed is far inferior to standard systems.
+HOL4 is built around a very small kernel: 3 axioms, 10 inference rules, two predefined constants and two types \footnotemark \cite{tuerk_interactive_nodate}. A theorem can only be built using this core, every other higher-level theory must be built from lower-level ones. Furthermore, the kernel is consist of very few lines of code, leaving less space for bugs. Hence, for this reason, the trust needed is far inferior to standard systems.
+
+\footnotetext{This is true for the Hol Light Kernel, however the HOL4 kernel has slightly deviated from this simplicity for historical and performance reasons.}
 
 Several models of different ARM \gls{ISA} have been realized, such as ARMv3, ARMv4, ARMv7 \cite{noauthor_canonical_2019, hutchison_trustworthy_2010} and very recently ARMv8 \cite{armstrong_isa_2019}. These models enable making proofs directly at the ISA level, avoiding the necessity to trust the compiler and enabling to formally verify program behaviours according to the CPU specification. However, this process is tedious and cannot actually be perform by hand. To respond to this problem, \cite{metere_sound_2017} introduced a proof-producing lifter that moves the verification from raw assembly code to an higher-level intermediate representation, and introduced later some supporting tools \cite{lindner_trabin:_2019} in order to automate some of the work. This constitutes the foundation of HolBA.
 
-\section{HolBA's Binary Intermediate Representation (BIR)}
+\section{HolBA's Binary Intermediate Representation (BIR)} \label{bir-presentation}
 
 HolBA's Binary Intermediate Representation (BIR) \cite{lindner_trabin:_2019}, introduced in the Introduction, is a machine independent binary representation. It aims to be the simplest possible while still being able to represent all possible binary programs but self-modifying programs. It does so by having a limited syntax---introduced in Table \ref{bir-syntax}---and forbidding implicit side-effects. A statement can only have explicit state changes and can only affect one variable.
 
@@ -589,7 +655,7 @@ In order to perform the verification, the Hoare logic introduces a set of axioms
   \label{axiom_assignment_def}
 \end{equation}
 
-\textbf{TODO}: Introduce labels? \htriple{l1:P}{l1->\{l2,l3\}}{l2:Q,l3:Q'}
+\textbf{TODO}: Introduce labels? \htriple{l1:P}{l1\rightarrow\{l2,l3\}}{l2:Q,l3:Q'}
 
 \section{Weakest precondition derivation}
 
@@ -805,7 +871,7 @@ There exist five types of BIR expressions operating directly on memories (cf. Li
 
 We saw in the previous list that we need to implement the support for \textit{combinTheory} function update and application in the \textit{HolSmtLib} SMT-LIB 2.0 exporter. Since we only need two operations on the memory, load and store, the \textit{ArraysEx} theory is a good fit.
 
-SMT-LIB 2.0 \cite{smtlib} defines the \textit{ArraysEx} theory using the three following axioms:
+SMT-LIB 2.0 \cite{barrett_satisfiability_2016} defines the \textit{ArraysEx} theory using the three following axioms:
 
 \begin{lstlisting}[
     language=Lisp,
@@ -891,12 +957,14 @@ Testing of \texttt{bir\_exp\_to\_words} has been done using a set of $(bir\_exp,
 
 \begin{lstlisting}[
     label=bir_exp_t_def,caption=bir\_exp\_t definition.,
-    frame=tb,basicstyle=\footnotesize\ttfamily]
+    frame=tb,basicstyle=\footnotesize\ttfamily,
+    breaklines=true,postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}]
 Datatype `bir_exp_t =
     BExp_Const      bir_imm_t
   | BExp_Den        bir_var_t
 
-  | BExp_Cast       bir_cast_t bir_exp_t bir_immtype_t
+  | BExp_Cast
+  	  bir_cast_t bir_exp_t bir_immtype_t
 
   | BExp_UnaryExp   bir_unary_exp_t bir_exp_t
   | BExp_BinExp     bir_bin_exp_t bir_exp_t bir_exp_t
@@ -975,7 +1043,7 @@ bite (
 
 This expression is relatively small and yet the printed term is 17 lines long. Compared to the BSL expression that is 8 lines long\footnotemark, that is a two time increase in size. Moreover, lines are long and verbose: for example, a ``less-than'' binary expression is written as ``\texttt{BExp\_BinPred BIExp\_LessOrEqual e1 e2}''. Comparatively, the math expression ``$e1 \leq e2$'' and BSL expression ``\texttt{ble e1 e2}'' are shorter and arguably more readable.
 
-\footnotetext{8 lines correspond to the length in documents where line length is limited to 100 characters, instead of the 60 in the report.}
+\footnotetext{8 lines correspond to the length in documents where line length is limited to 100 characters, instead of the 60 in the report. 100 characters is the usual setting for maximum line lengths and corresponds more closely to the reality.}
 
 To answer to these kinds of issues, HOL4 provides the ability to implement ``pretty-printers'', which are custom printing functions for a given type. Four pretty-printers have been implemented to shorten the verbosity of the printed representation and to add colors to the output. Figure \ref{pp_ex_pretty_printing} shows the same expression printed with the pretty-printers enabled.
 
@@ -990,11 +1058,11 @@ The pretty-printers introduce a set of features:
 
 \begin{itemize}
     \item Simplification of verbose constructs as discussed before (e.g. \texttt{BExp\_BinExp BIExp\_Or} is written as \texttt{BExp\_Or}).
-    \item Different representation of ``if-then-else'' statements, simplifying reading the expression when either the condition or the ``then'' expression are very long.
+    \item Different representation of \textbf{if-then-else} statements, simplifying reading the expression when either the condition or the \textbf{then} expression are very long.
     \item Consistent breaking---new lines---of long expressions, because the default printer isn't aware of the structure of printed expressions. In Figure \ref{pp_ex_default_printing}, we can see inconsistent breaking in addition and multiplication binary operations.
     \item Highlighting of types, facilitating debugging when the expression isn't well-typed.
     \item Highlighting of all strings, facilitating reading labels and variable names.
-    \item Gathering of nested binary expressions of the same type on the same level. We can see this feature in Figure \ref{pp_ex_pretty_printing} with the two nested ``or'' binary operators, where the three operands are printed on the same level.
+    \item Gathering of nested binary expressions of the same type on the same level. We can see this feature in Figure \ref{pp_ex_pretty_printing} with the two nested \textbf{or} binary operators, where the three operands are printed on the same level.
     \item Rainbow parenthesis, i.e. matching pairs of parenthesis are printed in the same color. This feature is really useful when reading long expression in order to quickly identify where a sub-expression ends.
 \end{itemize}
 
@@ -1038,13 +1106,13 @@ When using \gls{BSL} to express pre- and post-conditions, this function provides
 
 \section{Testing the automatic proof procedure}
 
-Performing simple proofs is needed in order to test that the proof procedure works. The following examples introduce two of the tests that have been implemented, focusing on the critical parts of each of them. To this end, some liberties have been taken in order to reduce the complexity for the reader. Moreover, even if the test on conditional jumps has been the last one introduced in chronological order\footnotemark, it will be presented first because of its relative simplicity.
+Performing simple proofs is needed in order to test that the proof procedure works. The following examples introduce two of the tests that have been implemented, focusing on the critical parts of each of them. To this end, some liberties have been taken in order to reduce the complexity for the reader. Moreover, even if the test on conditional jumps has been the last one introduced in chronological order \footnotemark, it will be presented first because of its relative simplicity.
 
 \footnotetext{The test on conditional jumps has been introduced in order to fix a bug in the weakest precondition simplification library.}
 
 \subsection{Conditional jump test} \label{cjmp_test}
 
-Here we are interested in testing the \texttt{prove\_contract} function in the presence of a conditional jump with its condition being just an equality test. Feature-wise, this test contains only jump, conditional jump and assignment statements. Listing \ref{cjmp_test_pseudocode} gives a pseudocode representation of this test program, the conditional jump being represented with the \texttt{goto-if-then-else} construct.
+Here we are interested in testing the \texttt{prove\_contract} function in the presence of a conditional jump with its condition being just an equality test. Feature-wise, this test contains only jump, conditional jump and assignment statements. Listing \ref{cjmp_test_pseudocode} gives a pseudocode representation of this test program, the conditional jump being represented with the ``\textbf{goto-if-then-else}'' construct.
 
 \begin{lstlisting}[
     language=C,
