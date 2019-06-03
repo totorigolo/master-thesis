@@ -1,0 +1,17 @@
+digraph G {
+  a[label="0"];
+  b[label="1"];
+  c[label="2"];
+  d[label="3"];
+  e[label="4"];
+  m[label="0"];
+  n[label="1"];
+  o[label="2"];
+  p[label="3"];
+  q[label="4"];
+
+  a->b->d->e; a->d; a->c->d; c->e; a->e;
+
+  m->n->p->q; m->o->p;
+}
+
