@@ -22,7 +22,7 @@
 \ifgfivepaper
   \LoadClass[10pt]{report}
 \else
-  \LoadClass[12pt]{report}
+  \LoadClass[11pt]{report}
 \fi
 
 % Make it possible to conditionally depend on the TeX-engine used
