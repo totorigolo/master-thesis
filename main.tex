@@ -270,8 +270,6 @@ Similarly, devices can directly access the main memory using DMA. This technique
 
 \section{The necessity of secure execution platforms}
 
-\textbf{TODO}: Explain the ``necessity''.
-
 The \acrshort{prosper} project isn't the only project focused on high-security execution platforms. Platforms such that seL4, Microsoft Hyper-V and INTEGRITY Multivisor are examples of platforms already used in production and providing strong security properties.
 
 \paragraph{seL4} is a recent L4-based microkernel created in 2006 with the goal to produce a completely formally verified implementation of an L4 microkernel. This has been achieved in 2009 \cite{klein_sel4:_2009}. At this time, seL4 consisted of \num{8700} lines of C code and \num{600} lines of assembler. The implementation of seL4 has been formally proved from its abstract specification down to its C implementation. Later, the validity of the generated assembly code has been proved, removing the need of trusting the compiler \cite{noauthor_what_nodate}.
