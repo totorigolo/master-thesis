@@ -158,9 +158,9 @@
 \begin{abstract}
   With the advent of virtualization, more and more work is put into the verification of hypervisors. Being low level softwares, such verification should preferably be performed at binary level. Binary analysis platforms are being developed to help perform these proofs, but a lot of the work has to be carried out manually.
 
-  In this thesis, we focus on the formal verification of a Network Interface Controller (NIC), more specifically we look at how to automate and reduce the boilerplate work from an existing proof. We base our work on the HolBA platform, its hardware-independent intermediate representation language BIR and supporting tools, and we experiment on how to perform this proof by leveraging existing tools.
+  In this thesis, we focus on the formal verification of a Network Interface Controller (NIC), more specifically we look at how to automate and reduce the boilerplate work from an existing verification. We base our work on the HolBA platform, its hardware-independent intermediate representation language BIR and supporting tools, and we experiment on how to perform this proof by leveraging existing tools.
 
-  We first replaced the existing NIC model written in HOL4 to an equivalent one written using BIR, enabling the use of HolBA tools. Secondly, we developed some visualization tools to help navigate and gain some insight in the existing proof and its structure. Thirdly, we experimented with the use of Hoare triples in conjunction with an SMT solver to perform contract verification. Finally, we proved a simple contract written in terms of the formal NIC model on the BIR implementation of this model, unlocking the way of performing more complex proofs using the HolBA platform.
+  We first replaced the existing NIC model written in HOL4 to an equivalent one written using BIR, enabling the use of HolBA tools. Secondly, we developed some visualization tools to help navigate and gain some insight in the existing proof and its structure. Thirdly, we experimented the use of Hoare Triples in conjunction with an SMT solver to perform contract verification. Finally, we proved a simple contract written in terms of the formal NIC model on the BIR implementation of this model, unlocking the way of performing more complex proofs using the HolBA platform.
 
   \textit{Keywords}: binary analysis, formal verification, proof producing analysis, theorem proving
 \end{abstract}
@@ -196,7 +196,7 @@
 
 \section{Background}
 
-Embedded systems are becoming more and more common with the current advent of \Gls{iot} and mobile computing platforms such as smartphones. Those systems are fully-fledged computers with powerful hardware, complete operating systems, and access to the Internet. Such systems can run security-critical services, such as a building security system or automatic toll gates, or carry valuable information as it is the case for personal smartphones. Therefore, these two characteristics make them targets of choice for attackers.
+Embedded systems are becoming more and more common with the current advent of \Gls{iot} and mobile computing platforms, such as smartphones. Those systems are fully-fledged computers with powerful hardware, complete operating systems, and access to the Internet. Such systems can run security-critical services, such as a building security system or automatic toll gates, or carry valuable information as it is the case for personal smartphones. Therefore, these two characteristics make them targets of choice for attackers.
 
 The \gls{prosper} project \cite{noauthor_prosper:_nodate} aims to develop a secure and formally verified hypervisor for embedded systems. Hypervisors are thin layers running directly on top of hardware providing the ability to run virtualized applications, such that operating systems or real-time control systems. Those virtualized applications then don't have privileged access to the hardware and have to go through the hypervisor. This allows different applications to share the same hardware while providing strong isolation between them, thus ensuring confidentiality and security. Moreover, security not only means protection from external attacks but also resilience to bugs. If multiple critical systems are running on the same hardware, bugs or crashes in some systems shouldn't affect the others from behaving correctly. Figure \ref{figure-hypervisor-simple} shows a system running two isolated Linux on top of a hypervisor.
 
@@ -207,22 +207,22 @@ The \gls{prosper} project \cite{noauthor_prosper:_nodate} aims to develop a secu
 	\label{figure-hypervisor-simple}
 \end{figure}
 
-Previous work in the \acrshort{prosper} project achieved \cite{noauthor_prosper:_nodate-1} to formally verify a simple separation kernel \cite{dam_formal_2013}, which later resulted into an implementation of a working hypervisor. Then, they achieved to run both Linux and \gls{FreeRTOS} on top of it. Finally, they formally verified memory isolation for virtualized applications \cite{nemati_trustworthy_2015}. Now, among other projects, the PROSPER team is working on device virtualization, allowing to give access to hardware devices to virtualized applications. An interesting example are \gls{NIC} devices, which enable network communication and give the ability to communicate through the Internet.
+Previous work in the \acrshort{prosper} project achieved to formally verify a simple separation kernel \cite{noauthor_prosper:_nodate-1,dam_formal_2013}, which later resulted into an implementation of a working hypervisor. Then, they achieved to run both Linux and \gls{FreeRTOS} on top of it. Finally, they formally verified memory isolation for virtualized applications \cite{nemati_trustworthy_2015}. Nowadays, among other projects, the PROSPER team is working on device virtualization, allowing the use of hardware devices by virtualized applications. \gls{NIC} devices are interesting example, which enable network communication and give the ability to communicate through the Internet.
 
-A formal model of a \gls{NIC} device has already been produced, on which some security theorems have been proved \cite{haglund_formal_2016}. These high-level proofs relying on a layer of lower-level lemmas. This layer provides an abstraction over the raw formal model. This is illustrated in the left-hand side of Figure \ref{hol-v-bir-nic-model-simple}.
+A formal model of a \gls{NIC} device has already been produced, on which some security theorems have been proved \cite{haglund_formal_2016}. These theorems can be seen as high-level proofs relying on a layer of lower-level lemmas. This layer provides an abstraction over the raw formal model. This is illustrated in the left-hand side of Figure \ref{hol-v-bir-nic-model-simple}.
 
 \begin{figure}[ht]
 	\includegraphics[height=6cm]{figures/hol-v-bir-nic-model-simple.png}
 	\centering
-	\caption{HOL4 v. BIR NIC models. The left hand side already exists. This project would consist in the dashed elements. The dotted lines represent the work to be done during this project.}
+	\caption{HOL4 v. BIR NIC models. The left hand side already exists. This project consists in the dashed elements. The dotted lines represent the work done during this project.}
 	\label{hol-v-bir-nic-model-simple}
 \end{figure}
 
-The team is now developing a new framework for performing binary analysis in HOL4, an interactive theorem prover, named \gls{holba} \cite{noauthor_holba_2019}. This framework is based on two papers written in the team. The first one introduces sound \gls{transpilation} from binary to machine-independent code \footnotemark \cite{metere_sound_2017}. The second paper, ``TrABin: Trustworthy Analyses of Binaries'' \cite{lindner_trabin:_2019}, lays the foundations of the \gls{holba} platform: it formally models \gls{BIR}, introduces various supporting tools, implements two \gls{proof-producing} \glspl{transpiler} (ARMv8 and Cortex-M0) and a proof-producing weakest precondition generator for loop-free programs.
+The team is now developing a new framework for performing binary analysis in HOL4, an interactive theorem prover, named \gls{holba} \cite{noauthor_holba_2019}. This framework is based on two papers written in the team. The first one introduces sound \gls{transpilation} from binary to machine-independent code \footnotemark \cite{metere_sound_2017}. The second paper, ``TrABin: Trustworthy Analyses of Binaries'' \cite{lindner_trabin:_2019}, lays the foundations of the \gls{holba} platform: it formally models \gls{BIR}, introduces various supporting tools, implements two \gls{proof-producing} \glspl{transpiler} (ARMv8 and Cortex-M0), named lifters, and a proof-producing weakest precondition generator for loop-free programs.
 
 \footnotetext{The machine-independent language used in the work is an implementation of \gls{bap}'s BIL \cite{noauthor_binary_2019}. This implementation will evolve later in \cite{lindner_trabin:_2019} into BIR that HolBA uses today.}
 
-While this kind of \glspl{transpiler} and \gls{proof-producing} weakest precondition tools already exist \footnote{See related discussion in \cite{lindner_trabin:_2019}.}, the novelty in this work is that the transpiler is proof-producing, i.e. it produces a formal proof that both binary representations are equivalent, under the simulation theory, with respect to the \gls{ISA} model. With this method, you no longer need to trust the transpiler. Figure \ref{holba-overview} gives an overview of the TrABin framework\footnote{TrABin works with both ARMv8 and Cortex-M0 binary programs. Only ARMv8 is showed in Figure \ref{holba-overview} to save some space.}.
+While this kind of \glspl{transpiler} and \gls{proof-producing} weakest precondition tools already exist \footnote{See related discussion in \cite{lindner_trabin:_2019}.}, the novelty in this work is that the transpiler is proof-producing, i.e. it produces a formal proof that both binary representations are equivalent, under the simulation theory, with respect to the \gls{ISA} model \footnote{Several models of different ARM \gls{ISA} have been realized in multiple research institutions, such as ARMv3, ARMv4, ARMv7 \cite{noauthor_canonical_2019, hutchison_trustworthy_2010} and very recently ARMv8 \cite{armstrong_isa_2019}.}. With this method, you no longer need to trust the transpiler. Figure \ref{holba-overview} gives an overview of the HolBA framework.
 
 \begin{figure}[ht]
 	\includegraphics[height=5cm]{figures/holba-overview.png}
@@ -235,7 +235,7 @@ The idea of this work is to translate the formal \gls{NIC} model of \cite{haglun
 
 \section{Intended readers}
 
-In this thesis, formal verification is the central topic. The thesis presents how model a hardware device using a binary analysis platform and presents some formal verification techniques. A reader interested in this topic may find the results presented useful for further work. A casual reader will be presented with a light introduction to the concepts that are essential in order to understand the problem that this thesis aims to explore. Those concepts should also be useful in order to understand software verification in general. For a more coherent reading, the concepts are introduced throughout the document. However, the reader is expected to have a background in Computer Science in general, and knowledge in formal verification will make the thesis easier to digest.
+In this thesis, formal verification is the central topic. The thesis explores how to model a hardware device using a binary analysis platform and describes some formal verification techniques. A reader interested in this topic may find the results useful for further work. A casual reader will be presented with a light introduction to the concepts that are essential in order to understand the problem that this thesis aims to explore. Those concepts should also be useful in order to understand software verification in general. For a more coherent reading, the concepts are introduced throughout the document. However, the reader is expected to have a background in Computer Science in general, and knowledge in formal verification will make the thesis easier to digest.
 
 \section{Thesis objective}
 
@@ -249,7 +249,7 @@ This work being about the exploration of techniques towards automation of verifi
 
 \section{Choice of methodology}
 
-This work has been carried out step-by-step toward an ideal goal, i.e. re-establishing all the security properties. On the road, needs have been identified and tools have been implemented in order to tackle them. This approach made sense in this particular work because the needs weren't known in advance, and therefore needed to be identified. This thesis presents the steps taken during this work, the motivations of each tool that have been implemented, and discusses their limitations and future work in the conclusion.
+This work has been carried out step-by-step toward an ideal goal, i.e. re-establishing all the security properties. On the road, needs have been identified and tools have been implemented in order to tackle them. This approach made sense in this particular work because the needs were not known in advance, and therefore needed to be identified. This thesis presents the steps taken during this work, the motivations of each tool that have been implemented, and discusses their limitations and future work in the conclusion.
 
 \chapter{Related work} \label{related-work}
 \vspace{-1cm}
@@ -257,14 +257,14 @@ This work has been carried out step-by-step toward an ideal goal, i.e. re-establ
 
 \section{Memory sharing between CPU and devices}
 
-Figure \ref{cpu-memory-schema} represents how the \gls{CPU} and devices can share the main memory using \gls{DMA} \footnote{This schema doesn't represent caches.}. To read from/write to the main memory, the CPU passes through the \gls{MMU}, which is responsible for virtual/physical address translation. In a nutshell, memory addresses that the CPU uses are mapped on a virtual address space---each running process having its own---that are mapped to the actual physical addresses by the MMU. This enables virtualization and abstraction between processes, which can each have their own memory spaces in apparent isolation.
+Figure \ref{cpu-memory-schema} represents how the \gls{CPU} and devices can share the main memory using \gls{DMA}. To read from/write to the main memory, the CPU passes through the \gls{MMU}, which is responsible for virtual/physical address translation. In a nutshell, when an operating system is used, every process uses addresses mapped in a virtual address space. The virtual address spaces are set up by the operating system. When a process wants to access the memory, e.g. for reading its value, the request goes through the MMU that translates the virtual address to a concrete physical address. Then, processes run in apparent isolation and can not access other processes memory without permission from the operating system. This architecture provides strong security guarantees, providing the soudness of the operating system (i.e. absence of bugs).
 
 Similarly, devices can directly access the main memory using DMA. This technique enables to offload the CPU from copying each byte of memory by setting the DMA controller to do so. DMA controllers also give devices direct access to the main memory. While fast and convenient, DMA creates a whole new range of vulnerabilities. Indeed, if misconfigured, the DMA controller can give complete access to the main memory to devices, like kernel private memory, page table or executable memory \cite{schwarz_formal_2014}.
 
 \begin{figure}[!t]
 	\includegraphics[height=5cm]{figures/cpu-memory-schema.png}
 	\centering
-	\caption{CPU schema from a memory point of view. The dashed line between the CPU and the DMA controller represent the capability of the CPU to send commands to the DMA controller through register writes. Dotted lines to the CPU represent the ability to raise interrupts.}
+	\caption{CPU schema from a memory point of view. The dashed line between the CPU and the DMA controller represent the capability of the CPU to send commands to the DMA controller through register writes. Dotted lines to the CPU represent the ability to raise interrupts. This schema doesn't represent caches.}
 	\label{cpu-memory-schema}
 \end{figure}
 
@@ -278,7 +278,7 @@ The \acrshort{prosper} project isn't the only project focused on high-security e
 
 \footnotetext{Microsoft has several formal verification projects, many of which are freely available for non-commercial use: \url{https://github.com/Microsoft?q=verifier}}
 
-\paragraph{INTEGRITY Multivisor} is a commercial real-time operating system developed by Green Hills Software. Although not much information seems to be publicly available, Green Hills Software has done considerable formal verification work \cite{richards_modeling_2010}. Multivisor has several certifications, including, for example, ISO 26262 ASIL D automotive electronics, NSA-certified secure mobile phones or FAA DO-178B Level A-certified avionics controlling life-critical functions on passenger and military aircraft \footnote{\url{https://ghs.com/products/rtos/integrity_virtualization.html}}.
+\paragraph{INTEGRITY Multivisor} is a commercial real-time operating system and hypervisor developed by Green Hills Software. Although not much information seems to be publicly available, Green Hills Software has done considerable formal verification work \cite{richards_modeling_2010}. Multivisor has several certifications, including, for example, ISO 26262 ASIL D automotive electronics, NSA-certified secure mobile phones or FAA DO-178B Level A-certified avionics controlling life-critical functions on passenger and military aircraft \footnote{\url{https://ghs.com/products/rtos/integrity_virtualization.html}}.
 
 \section{Binary analysis platforms}
 
@@ -286,9 +286,9 @@ For this project, we will use the \gls{holba} framework. However, several other 
 
 \paragraph{Microsoft Boogie} is Microsoft's intermediate verification language. Boogie is the IR for multiple Microsoft tools, including VCC. Boogie as a tool can infer some invariants on the given Boogie program and then generate verification conditions that are passed to an SMT solver \footnote{\url{https://www.microsoft.com/en-us/research/project/boogie-an-intermediate-verification-language/}}.
 
-\paragraph{Valgrind} is a framework for building program supervision tools, such as memory checkers, cache profilers or data-race detectors \cite{nethercote_valgrind:_2003}. As its core, Valgrind is a JIT x86-to-x86 compiler, translating binary programs into its IR called UCode. Then, \textit{skins}---tools built using the Valgrind framework---are free to transform and work in the IR in order to perform their analysis.
+\paragraph{Valgrind} is a framework for building program supervision tools, such as memory checkers, cache profilers or data-race detectors \cite{nethercote_valgrind:_2003}. As its core, Valgrind is a JIT x86-to-x86 compiler, translating binary programs into its IR called UCode. Then, \textit{skins}---tools built using the Valgrind framework---are free to work with the IR in order to perform their analysis.
 
-\paragraph{LLVM} is a compiler infrastructure which supports a unique multi-stage optimization system \cite{lattner_llvm:_2002}. LLVM is built around its \gls{IR}, LLVM Virtual Instruction Set, which can be described as a strict RISC architecture with high-level type information. This IR was what made LLVM successful because it is a pragmatic IR suitable for optimizations at multiple stages (link-, post-link, and run-time) and supporting a wide variety of transformations. Leveraging this IR, an ecosystem grew around LLVM, providing tools such as symbolic execution (LLVM KLEE), benchmarking environments or static and dynamic analyzers.
+\paragraph{LLVM} is a compiler infrastructure which supports a unique multi-stage optimization system \cite{lattner_llvm:_2002}. LLVM is built around its \gls{IR}, LLVM Virtual Instruction Set, which can be described as a strict RISC architecture with high-level type information. This IR made LLVM successful because it is a pragmatic IR suitable for optimizations at multiple stages (link-, post-link, and run-time) and supporting a wide variety of transformations. Leveraging this IR, an ecosystem grew around LLVM, providing tools such as symbolic execution (LLVM KLEE), benchmarking environments or static and dynamic analyzers.
 
 \paragraph{Mayhem} is a system for automatically finding exploitable bugs in binary programs and generating working exploits as proof of the discovered vulnerabilities \cite{cha_unleashing_2012}. It leverages BAP, the Binary Analysis Platform from Carnegie Mellon University (CMU BAP) \cite{brumley_bap:_2011}, as its IR. It proceeds by fist JIT-ing each instruction to the BAP intermediate language (IL) and then performing a custom symbolic execution.
 
@@ -301,24 +301,61 @@ The novelty introduced in HolBA is that proofs are performed directly on the gen
 \vspace{-1cm}
 \textit{This chapter will introduce the formal verification of \cite{haglund_formal_2016} that will serve as a guideline throughout this work. It will first introduce Interactive Theorem Proving and formal verification in HOL4, then give a brief overview of the formal NIC model and its proof.}
 
-\section{Interactive Theorem Proving and HOL4}
+\section{Interactive Theorem Proving and HOL4} \label{hol4-presentation}
 
 Interactive theorem provers are software producing formal proofs, in an
 interactive fashion, i.e. a human can step through the proof interactively while the proof assistant provides some automation (like rewriting of terms, arithmetic evaluation, integration with external tools like SMT solvers, \dots). Coq, HOL4 or Isabelle are such tools.
 
 HOL4 \cite{noauthor_hol_nodate} stands for Higher-Order Logic. It is a programming environment deeply embedded into the \gls{SML} programming language enabling to prove theorems and write \gls{proof-producing} programs. Since its first version in 1988, HOL has been focused on hardware verification and has been successfully used in this domain, as shows its \texttt{examples/} directory \cite{noauthor_canonical_2019}.
 
-HOL4 is built around a very small kernel: 3 axioms, 10 inference rules, two predefined constants, and two types \footnotemark \cite{tuerk_interactive_nodate}. A theorem can only be built using this core, every other higher-level theory must be built from lower-level ones. Furthermore, the kernel is consist of very few lines of code, leaving less space for bugs. Hence, for this reason, the trust needed is far inferior to standard systems.
+HOL4 is built around a very small kernel: 3 axioms, 10 inference rules, two predefined constants, and two types \cite{tuerk_interactive_nodate} \footnotemark. A theorem can only be built using this core, every other higher-level theory must be built from lower-level ones. Furthermore, the kernel consists of very few lines of code, leaving less space for bugs. Hence, for this reason, the trust needed is far inferior to standard systems.
 
 \footnotetext{This is true for the Hol Light Kernel, however, the HOL4 kernel has slightly deviated from this simplicity for historical and performance reasons.}
 
-Several models of different ARM \gls{ISA} have been realized, such as ARMv3, ARMv4, ARMv7 \cite{noauthor_canonical_2019, hutchison_trustworthy_2010} and very recently ARMv8 \cite{armstrong_isa_2019}. These models enable making proofs directly at the ISA level, avoiding the necessity to trust the compiler and enabling to formally verify program behaviors according to the CPU specification. However, this process is tedious and cannot actually be performed by hand. To respond to this problem, \cite{metere_sound_2017} introduced a proof-producing lifter that moves the verification from raw assembly code to an higher-level intermediate representation and introduced later some supporting tools \cite{lindner_trabin:_2019} in order to automate some of the work. This constitutes the foundation of HolBA.
+A proof is a demonstration that a proposition is true. In HOL4, proofs are held inside \textit{theorems}, stating that its proposition \textit{can be proved}. This theorem prover offers two ways of building proofs: in a forward and a backward style. A forward proof derives new theorems using axioms and inference rules: one starts with the building blocks and describes how to combine them. Backwards proofs start instead from the goal to be proved and progress in the proof towards obtaining axioms or known theorems. HOL4 puts emphasis on backward proofs, using tactics. Since every theorem is inferred from the small kernel, forward proofs must be ultimately used. Therefore, automation and tactics are written as forward proofs, and used in backward proofs.
+
+To illustrate the idea of forward and backward proofs, and tactics, let's prove the same proposition using the two approaches (since forward proofs quickly requires wide knowledge of HOL4, the following theorem is a simple contrived example).
+
+\begin{theorem}
+\begin{equation}
+    \forall p.~p \implies p
+    \label{hol4-simple-eq-for-proof}
+\end{equation}
+\end{theorem}
+
+{
+\renewcommand*{\proofname}{Forward proof}
+\begin{proof}
+Let's start with a free variable $p$ of boolean type. Then, assuming $p$ we have that $p$ is true (assumptions are written in square brackets):
+$$[p]~~p$$
+Let's discharge the hypothesis. We obtain:
+$$p \implies p$$
+Finally, we generalize this theorem over all boolean variable, concluding the proof.
+\end{proof}
+}
+
+In this proof, the discharge and generalize operations are inference rules, available as base lemmas already proved from the kernel. In the following backward proof, emphasised words in squared brackets are tactics corresponding to the written explanation of the sentence.
+
+{{
+\renewcommand*{\proofname}{Backward proof}
+\begin{proof}
+Universal quantifier can be added to free variables, so let's remove them [\textit{GEN\_TAC}]. The goal becomes:
+$$p \implies p$$
+Let's discharge the implication into an assumption [\textit{DISCH\_TAC}]. The goal becomes:
+$$[p]~~p$$
+Finally, we can use the assumptions in order to prove the goal [\textit{ASM\_REWRITE\_TAC}].
+\end{proof}
+}
+
+In this contrived example, the two proofs are exact opposite of each other. In more complex proofs, it is often infeasible to use forward proofs because it requires to many operations and doesn't offer automation.
+
+In HOL4, a theory is a coherent set of theorems and definitions. Theories are written in \gls{SML} script files, then compiled into a theory file. A definition is the equivalent concept than when using the $\eqdef$ symbol: a symbol or function is defined to be a synonym of a more complex formula.
 
 \section{Overview of the formal NIC model} \label{overview-nic-model}
 
 The formal NIC model of \cite{haglund_formal_2016} has been designed from reading the hardware specification of the device because no model nor device driver is freely available.
 
-The NIC model is designed as a transition system with four types of transitions: register read, register write, autonomous, and memory read request reply transitions. They are described by four functions which constitute its public interface: \texttt{read\_nic\_register}, \texttt{write\_nic\_register}, \texttt{nic\_transition\_autonomous} and \texttt{memory\_read\_reply}. Each of these functions update the given initial NIC state, simulating the real behavior of the NIC. To make the model sound, the state is marked \textit{dead} if the model is asked to describe any transition or operation that is not described by the specification. Dead states represent undefined states and cannot be left with further transitions.
+The NIC model is designed as a transition system with four types of transitions: register read, register write, autonomous, and memory read request reply transitions. They are described by four functions which constitute its public interface: \texttt{read\_nic\_register}, \texttt{write\_nic\_register}, \texttt{nic\_transition\_autonomous} and \texttt{memory\_read\_reply}. Each of these functions update the given NIC state, simulating the real behavior of the NIC. To make the model sound, the state is marked \textit{dead} if the model is asked to describe any transition or operation that is not described by the specification. Dead states represent undefined states and cannot be left with further transitions.
 
 The model is composed of five finite state automata describing the inner transitions of the whole system, each automata describing a part of the NIC. The five automata are initialisation, transmission, transmission teardown, reception and reception teardown. The function \texttt{nic\_execute} performs one autonomous step of one of the five automata. The automaton that takes a step is decided by a scheduler, depending on the NIC inner state. If more than one automaton are in a ready state, their order is not deterministic \footnote{To reason about non-determinism, the notion of oracles has been introduced in \cite{haglund_formal_2016}. To put it simply, an oracle can be seen as a list of steps to perform, but where each element of the list is undefined. As we will not directly reason about the oracle, we will not explain how this works in more details. The reader can read a thorough explanation in \cite{haglund_formal_2016}.}. Each finite state automata is defined as a set of transitions working on NIC states. Each transition takes a NIC state and returns an update one, possibly dead.
 
@@ -438,7 +475,7 @@ HolBA's Binary Intermediate Representation (BIR) \cite{lindner_trabin:_2019}, in
 	\label{bir-syntax}
 \end{table}
 
-This representation allows producing proofs more easily that with classical binary representations, whose design are focused on execution speed rather than offline analysis. Moreover, BIR is fully specified and doesn't have unspecified behavior.
+This representation allows producing proofs more easily that with classical binary representations, whose design are focused on execution speed rather than offline analysis. Moreover, BIR doesn't have unspecified behavior.
 
 BIR is implemented as a set of HOL4 \textit{datatypes}, and possesses a completely defined semantic. Section \ref{bir-memories-with-smt-solvers} contains a more thorough discussion of the BIR semantic. Section \ref{alice-bob-toy} implements a toy BIR program and presents the concrete BIR syntax.
 
