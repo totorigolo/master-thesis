@@ -305,7 +305,7 @@ There are several other tools, platforms and frameworks, such as \gls{bap} \cite
 The novelty introduced in HolBA is that proofs are performed directly on the generated assembly code, not a the source code level. Therefore, proofs can be performed on programs without needing their source code, and regardless on the programming language used as long as it can be compiled in assembly code in an \gls{ISA} supported by the platform.
 
 
-\chapter{Overview of the formal verification of the NIC device}
+\chapter{Overview of the formal verification of the NIC device} \label{chapter-overview-nic}
 \vspace{-1cm}
 \textit{This chapter will introduce the formal verification of \cite{haglund_formal_2016} that will serve as a guideline throughout this work. It will first introduce Interactive Theorem Proving and formal verification in HOL4, then give a brief overview of the formal NIC model and its proof.}
 
@@ -1774,26 +1774,43 @@ The non proof-producing contract verification library implemented in this work c
 
 \appendix
 
-%\chapter{Tracing and error handling in HOL4}
-
-
 \chapter{DepGraph's design} \label{appendix_depgraph}
 \vspace{-1cm}
+\textit{This appendix will briefly present the design of DepGraph, the tool introduced in Chapter \ref{chapter-overview-nic}. While this experiment didn't reveal to be successful in order to get insights of the formal NIC model of \cite{haglund_formal_2016}, the tool still presents a powerful architecture and can be useful in order to generate documentation of \gls{SML} modules.}
 
+DepGraph is a Python software that has been designed with modularity and extensibility in mind. The architecture is centered around a common data structure, the dependency graph, that is created by \textit{frontends}, mutated by \textit{middlewares} and exported by \textit{backends}. Figure shows DepGraph's class diagram. Adding new frontends, middlewares or backends is as simple as adding one independent file and declare it the corresponding \textit{\_\_init\_\_.py}, and doesn't require to change any other code. Therefore, DepGraph allows easy creation of pipelines, that are a succession of one frontend, multiple middlewares and ended with one backend, and it can easily by extended to any need.
 
-\textbf{TODO}: Is this annex relevant in this thesis?
-
-Content:
-\begin{itemize}
- 	\item Present the modular architecture: Frontend $\rightarrow$ [middlewares] $\rightarrow$ backend structure.
- 	\item This tool can be used for other languages or data via new front-ends.
- 	\item Other visualization techniques/rendering can be implemented via backends.
- 	\item Middlewares can be any graph algorithm. Signature: \texttt{graph -> graph}.
- 	\item Time to implement: 4 days
-\end{itemize}
+\begin{figure}[p]
+	\includegraphics[height=16cm]{figures/depgraph-class-diagram.pdf}
+	\centering
+	\caption{DepGraph's class diagram, showing frontends, middlewares and backends. The common intermediate representation, the dependency diagram, is implemented in \textit{dependency\_graph.py}.}
+	\label{depgraph-class-diagram}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \tailmatter % back cover page
 
 \end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

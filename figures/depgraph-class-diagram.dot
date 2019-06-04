@@ -1,0 +1,53 @@
+digraph g {
+    rankdir="LR";
+
+    node[shape="box"]
+    edge[arrowhead="onormal"]
+
+    g[label="dependency_graph.py"]
+
+    backend[label="backend.py"]
+    b_dot[label="dot.py.py"]
+    b_no[label="no_backend.py"]
+    b_rawgraph[label="raw_graph.py"]
+
+    cluster_regex[label="cluster_regex.py"]
+    highlight_dependencies_of[label="highlight_dependencies_of.py"]
+    highlight_dependents_of[label="highlight_dependents_of.py"]
+    highlight_leafs[label="highlight_leafs.py"]
+    highlight_roots[label="highlight_roots.py"]
+    keep_only_dependencies_of[label="keep_only_dependencies_of.py"]
+    keep_only_dependents_of[label="keep_only_dependents_of.py"]
+    middleware[label="middleware.py"]
+    remove_dependencies_of[label="remove_dependencies_of.py"]
+    remove_dependents_of[label="remove_dependents_of.py"]
+    remove_leafs[label="remove_leafs.py"]
+    remove_roots[label="remove_roots.py"]
+    transitive_reduction[label="transitive_reduction.py"]
+
+    frontend[label="frontend.py"]
+    hol4[label="hol4.py"]
+    hol4_thms[label="hol4_thms.py"]
+
+    frontend -> hol4
+    frontend -> hol4_thms
+
+    backend -> b_dot;
+    backend -> b_no;
+    backend -> b_rawgraph;
+
+    middlewares -> cluster_regex
+    middlewares -> highlight_dependencies_of
+    middlewares -> highlight_dependents_of
+    middlewares -> highlight_leafs
+    middlewares -> highlight_roots
+    middlewares -> keep_only_dependencies_of
+    middlewares -> keep_only_dependents_of
+    middlewares -> middleware
+    middlewares -> remove_dependencies_of
+    middlewares -> remove_dependents_of
+    middlewares -> remove_leafs
+    middlewares -> remove_roots
+    middlewares -> transitive_reduction
+}
+
