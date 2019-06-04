@@ -105,6 +105,7 @@
 }
 \newacronym{DMA}{DMA}{Direct Memory Access}
 \newacronym{MMU}{MMU}{Memory Management Unit}
+\newacronym{CI}{CI}{Continuous Integration}
 
 %% End of Glossary
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -225,9 +226,9 @@ A formal model of a \gls{NIC} device has already been produced, on which some se
 
 The team is now developing a new framework for performing binary analysis in HOL4, an interactive theorem prover, named \gls{holba} \cite{noauthor_holba_2019}. This framework is based on two papers written in the team. The first one introduces sound \gls{transpilation} from binary to machine-independent code \footnotemark \cite{metere_sound_2017}. The second paper, ``TrABin: Trustworthy Analyses of Binaries'' \cite{lindner_trabin:_2019}, lays the foundations of the \gls{holba} platform: it formally models \gls{BIR}, introduces various supporting tools, implements two \gls{proof-producing} \glspl{transpiler} (ARMv8 and Cortex-M0) and a proof-producing weakest precondition generator for loop-free programs.
 
-\footnotetext{The machine-independent language used in the work is an implementation of \gls{bap}'s BIL \cite{noauthor_binary_2019}. This implementation will evolve later in the TrABin paper into BIR that HolBA uses.}
+\footnotetext{The machine-independent language used in the work is an implementation of \gls{bap}'s BIL \cite{noauthor_binary_2019}. This implementation will evolve later in \cite{lindner_trabin:_2019} into BIR that HolBA uses today.}
 
-While this kind of \glspl{transpiler} and \gls{proof-producing} weakest precondition tools already exist \footnote{See related discussion in \cite{lindner_trabin:_2019}.}, the novelty in this work is that the transpiler is proof-producing, i.e. it produces a formal proof that both binary representations are equivalent, under the simulation theory, with respect to the \gls{ISA} model. With this method, you no longer need to trust the transpiler. Figure \ref{holba-overview} gives an overview of the TrABin framework\footnote{TrABin works with both ARMv8 and Cortex-M0 binary programs. Only ARMv8 is showed in Figure \ref{trabin-overview} to save some space.}.
+While this kind of \glspl{transpiler} and \gls{proof-producing} weakest precondition tools already exist \footnote{See related discussion in \cite{lindner_trabin:_2019}.}, the novelty in this work is that the transpiler is proof-producing, i.e. it produces a formal proof that both binary representations are equivalent, under the simulation theory, with respect to the \gls{ISA} model. With this method, you no longer need to trust the transpiler. Figure \ref{holba-overview} gives an overview of the TrABin framework\footnote{TrABin works with both ARMv8 and Cortex-M0 binary programs. Only ARMv8 is showed in Figure \ref{holba-overview} to save some space.}.
 
 \begin{figure}[ht]
 	\includegraphics[height=5cm]{figures/holba-overview.png}
@@ -249,7 +250,8 @@ The primary goal of this thesis project is to explore verification techniques in
 The ultimate goal would be to obtain a fully automatic pipeline for performing such verifications. However, it is evident that goal isn't reachable in such a small amount of time, or even at all. Thus, this thesis focuses instead on exploring what toolkit is needed in order to facilitate this work.
 
 \section{Delimitations}
-\textbf{TODO}: Use this section to explain the time limits that have made it impossible to perform certain experiments.
+
+This work being about exploration of techniques towards automation of verification techniques, instead of being about producing an actual complete proof of a hardware device, some implementations have not been completed in order to save time to explore in more areas. Additionally, this work mainly concerns the HolBA platform that is developed in the team where this thesis took place.
 
 \section{Choice of methodology}
 
@@ -305,8 +307,7 @@ The novelty introduced in HolBA is that proofs are performed directly on the gen
 
 \chapter{Overview of the formal verification of the NIC device}
 \vspace{-1cm}
-\textit{This chapter intends to introduce the concepts that are essential to the reader in order to understand the problem that this degree project aims to explore. This includes a presentation of Interactive Theorem Proving and formal proofs in HOL4, an introduction to \gls{BIR}, completing what has already been said about the \gls{holba} framework in the Introduction, and a brief overview of the formal NIC model and proof of \cite{haglund_formal_2016}.}
-TODO TODO
+\textit{This chapter will introduce the formal verification of \cite{haglund_formal_2016} that will serve as a guideline throughout this work. It will first introduce Interactive Theorem Proving and formal verification in HOL4, then give a brief overview of the formal NIC model and its proof.}
 
 \section{Interactive Theorem Proving and HOL4}
 
@@ -736,7 +737,7 @@ While the triple \htriple{n=1}{n:=n+1}{even(n)} uses a sufficient precondition f
 
 More generally, for a triple \htriple{P}{prog}{Q} to hold, $P$ must be stronger than the weakest precondition, i.e. we need to prove that $P \implies \WP(prog, Q)$:
 
-\textbf{TODO}: Here and above, should we mention/explain termination?
+%\textbf{TODO}: Here and above, should we mention/explain termination?
 
 \begin{equation}
   (P \implies \WP(prog, Q)) \implies \htriple{P}{prog}{Q}
@@ -886,15 +887,14 @@ Assuming well-typedness and initialization, after rewriting the definition of $b
     \end{equation}
 \end{small}
 
-In Equation \ref{eval_pre_imp_eval_wp} we can recognize Equation \ref{p_imp_wp} that we discussed how to prove using \gls{SMT} solvers in Section \ref{using-smt-to-prove-contracts}. However, the expressions are expressed as BIR expressions. We then have to find a way to use an SMT solver. This is the focus of the following of this thesis. Section \ref{impl-non-pp-wp-lib} will use a non \gls{proof-producing} method for translating those BIR expressions into an equivalent formula that SMT solvers can work on, then focus on automating the whole verification process. Chapter \ref{trustful-nic-analysis} will complete this proof and use it to lift properties that have been proved on the BIR implementation to the \gls{NIC} model. The following Section \ref{bir-memories-with-smt-solvers} will discuss how to make proofs about BIR memories using \gls{SMT} solvers.
+In Equation \ref{eval_pre_imp_eval_wp} we can recognize Equation \ref{p_imp_wp} that we discussed how to prove using \gls{SMT} solvers in Section \ref{using-smt-to-prove-contracts}. However, the expressions are expressed as BIR expressions. We then have to find a way to use an SMT solver \footnotemark. This is the focus of the following of this thesis. Section \ref{impl-non-pp-wp-lib} will use a non \gls{proof-producing} method for translating those BIR expressions into an equivalent formula that SMT solvers can work on, then focus on automating the whole verification process. Chapter \ref{trustful-nic-analysis} will complete this proof and use it to lift properties that have been proved on the BIR implementation to the \gls{NIC} model. The following Section \ref{bir-memories-with-smt-solvers} will discuss how to make proofs about BIR memories using \gls{SMT} solvers.
 
-% TODO: Explain why "EVAL ``bir_eval_exp exp``" doesn't work
+\footnotetext{HOL4 \textit{computeLib} provides a convenient way for turning expressions of this form into a non-BIR expressions using BIR's semantic, via its \texttt{EVAL} function. However, this approach stops working as soon as the BIR expression contains BIR memories, that are crucial for contract verification with HolBA. As such, this method will not be further mentioned in this document.}
 
 \section{BIR memories and SMT solvers} \label{bir-memories-with-smt-solvers}
 
-\textbf{TODO}: Mention SMT-LIB logics?
-
-\textbf{TODO}: Mention proof reconstruction?
+% \textbf{TODO}: Mention SMT-LIB logics?
+% \textbf{TODO}: Mention proof reconstruction?
 
 HOL4 features a library for interfacing \gls{SMT} solvers and HOL4, called \textit{HolSmtLib}. This library supports Yices 1 and Z3 as external provers. Yices 1 being an abandoned project that doesn't support SMT-LIB 2.0, we will focus on Z3 and the standard format SMT-LIB 2.0 \cite{barrett_satisfiability_2016}. While \textit{HolSmtLib} supports export for some SMT-LIB 2.0 theories, it doesn't support the \textit{ArraysEx} theory and doesn't know about BIR. In Section \ref{contract-verif-holba}, we discussed the translation from BIR expressions to \textit{wordsTheory}. However, this theory doesn't contain anything about memories or arrays in general. Therefore, some modifications are needed.
 
@@ -1150,7 +1150,7 @@ Interface in Listing \ref{ideal_interface_prove_contract} leverages the general 
 
 \footnotetext{A proposal is being discussed at the time of writing this report about making the weakest precondition generation and the Hoare triple definition more general, and possibly allowing this feature.}
 
-When implementing this function, high attention has been paid to provide useful and comprehensive feedback in the case of failure. To that end, extensive use of exception wrapping has been made in order to give precise context to exceptions, and a logging library has been implemented (cf. Appendix \ref{appendix_user-friendliness}).
+When implementing this function, high attention has been paid to provide useful and comprehensive feedback in the case of failure. To that end, extensive use of exception wrapping has been made in order to give precise context to exceptions, and a logging library has been implemented (cf. Chapter \ref{user-friendliness}).
 
 When using \gls{BSL} to express pre- and post-conditions, this function provides an automatic solution to prove contracts. In the following sections, we will then see usage of this function, first to test it and then to perform proofs on the NIC model.
 
@@ -1611,6 +1611,128 @@ Finally, using the deduction rule with Theorems \ref{proof_R_inj_thm}, \ref{proo
 \renewcommand\qedsymbol{$\blacksquare$}
 \end{proof}
 
+\chapter{User experience and good practices} \label{user-friendliness}
+\vspace{-1cm}
+\textit{This chapter will present the care that has been put into user experience and good practices throughout this work.}
+
+% User experience
+% * BSL
+% * pretty printer
+% * logging utilities
+% * error handling (guidelines SML + HOL4)
+% * exception printer
+%
+% Best practices: critical to build lasting complex systems
+% * simple interfaces: CFG lig and WP tool
+% * Git workflow
+% * CI: regression tests + static analysis (insight into the code)
+
+% The need arose in general when debugging HOL4 code for tracing code.
+% LogLib is a higher-level implementation of HOL4 tracing system. Verbosity levels are specified and output is colored, helping to read long outputs.
+
+In this work, we took the role of user of the HolBA platform, and of HOL4 by necessity. HOL4 learning curve is quite steep, and very few effort has been invested towards beginner friendliness, because this topic can become really time consuming and its perceived importance greatly depend on one's experience. Throughout our design and implementation process, great care have been put into having a good user experience while keeping time spent on this issue reasonably low. Section \ref{towards-user-exp} will briefly present what have been done in order to increase user experience.
+
+Additionally, binary analysis platforms are complex software systems, and should as such follow well-known best practices in order to make it last and develop serenely. Therefore, Section \ref{best-practices-complex-platform} presents some best practices that have been adopted in HolBA.
+
+\section{Towards better user experience} \label{towards-user-exp}
+\subsection{BSL and the pretty-printer}
+
+Already presented in details in Sections \ref{bsl} and \ref{pretty-printers} respectively, BSL and BIR pretty-printers are two successful attempts to simplify HolBA users manipulation of BIR, respectively writing and reading BIR code.
+
+BSL is, as the name suggests, a really simple library that enables less verbose writing of BIR terms. There were no strict need for this library, since HOL4 features a powerful quoting system that can already parse raw BIR code. However, the raw BIR syntax is (a) cumbersome to use and arguably becomes hard to maintain as the code grows in size and (b) isn't easy to mix with SML code. BSL offers a convenient solution to both these problems, and the time spent in order to implement it has been very limited, roughly about two days.
+
+Similarly, BIR pretty-printers were not a hard need, but rather a welcomed feature. When debugging large BIR expressions, we spent a non negligible amount of time counting parenthesis, grouping operators and searching arms of binary operators. The pretty-printers give a convenient solution to these problem, and required a limited implementation effort, roughly about two days spent in iterative improvements.
+
+\subsection{Error handling in SML and HOL4}
+% Present the problems specific to HOL4 that arise when debugging proofs and libs.
+% Introduce exception wrapping and explain how they help to locate the location of errors and can help interactive use of HOL4 by giving more precise information about what went wrong. Analogous to backtraces.
+
+Errors happen. This is a truth in engineering and software engineering is no exception to the rule. However, when handled successfully, errors can increase the reliability and usefulness of a system, because they can force invariants and provide insightful information.
+
+\gls{SML} offers error handling via exceptions that can be raised and handled, raised on errors and handled at places where recovery is possible and desirable. Being deeply embedded in SML, HOL4 inherit this behaviour. However, being a complex system on its own, HOL4 can raise exceptions at a lot of places. When used without attention, HOL4 can raise exceptions at unexpected and often distant (i.e. in dependencies of the functions that are directly used) locations. Hence, when some exceptions are raised, meaningless error messages are raised and dumped at the user. For example, a user incorrectly using some function could receive an exception saying ``\textit{Not a conjunction}'', whereas the function interface doesn't directly takes logical expressions as arguments. Here, the implementation is leaking to the user that should not have to know anything about it.
+
+To answer to this issue, there are two immediate possibilities (in addition to fixing the actual error): (a) code could handle possible exceptions of code that it uses and that could produce some, and either handle the issue (if possible) or raising another more meaningful error, and (b) HOL4 provides an exception wrapping mechanism in its \textit{Feedback} library that offers the possibility of adding information to and exception on the flight, producing a result analogous to backtrace in other programming languages.
+
+\subsection{LogLib, a logging library} \label{loglib}
+%Introduce tracing in HOL4 in general (levels, HOL4 warnings and error \textbf{messages}).
+
+A logging library, called \textit{logLib}, has been implemented. HOL4 provides a tracing system which allow to register \textit{traces}, i.e. references to integer representing the verbosity level of some system that can be changed at runtime in order to adjust the desired level of debug information. However, HOL4 only provides the system for registering traces and some logging function, but it does not provide conditional logging functions on the current trace level.
+
+\textit{logLib} offers a convenient way to tracing: when given a trace variable, it returns four functions conditional on the value of the trace variable. The functions are named, in increasing verbosity level, \textit{trace}, \textit{debug}, \textit{info}, \textit{warn} and \textit{error}. Additionally, each function prints the given message with a specific header. This header is coloured depending on the log level, making reading long logs easier. Furthermore, each log line contains location information, facilitating the process of identifying where some error or warning happened. Figure \ref{loglib-ppexn-ppterm} shows an execution output with message from the \textit{trace} and \textit{debug} functions.
+
+\begin{figure}[t]
+	\includegraphics[width=\textwidth]{figures/loglib-ppexn-ppterm.png}
+	\centering
+	\caption{Extract of a script output, featuring \textit{trace} and \textit{debug} information from \textit{logLib} (Section \ref{loglib}), and an exception printed using the exception pretty-printer (Section \ref{pp_exn}). The original exception can be seen in white at the bottom of the image.}
+	\label{loglib-ppexn-ppterm}
+\end{figure}
+
+\subsection{SML exception pretty-printer} \label{pp_exn}
+
+As can be seen on Figure \ref{loglib-ppexn-ppterm}, default printing of HOL4 exceptions is not really easy to decipher. The is due to the fact that HOL4 has been designed as an \textbf{interactive} theorem prover to be used with \textit{Emacs}, which provides some layout and pretty-printing features. Therefore, a small pretty-printing library for SML exceptions has been implemented, called \textit{pretty\_exnLib}. It provides only two analogous functions that, given an exception has parameter, pretty-print the exception and return it unchanged. Listing \ref{pretty_exnLib_sig} presents the signature of the library, and Listing \ref{pretty_exnLib_usage} shows how it is used.
+
+\begin{lstlisting}[
+    language=Caml,
+    backgroundcolor=\color{codebackcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    stringstyle=\color{codepurple},
+    label=pretty_exnLib_sig,caption={Signature of the \textit{pretty\_exnLib} library.},
+    frame=tb,basicstyle=\footnotesize\ttfamily,
+    float,floatplacement=H]
+signature pretty_exnLib =
+sig
+  val pp_exn: exn -> exn
+  val pp_exn_s: string -> exn -> exn
+end
+\end{lstlisting}
+
+
+\begin{lstlisting}[
+    language=Caml,
+    backgroundcolor=\color{codebackcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    stringstyle=\color{codepurple},
+    label=pretty_exnLib_usage,caption={Typical usage of the \textit{pretty\_exnLib} library.},
+    frame=tb,basicstyle=\footnotesize\ttfamily,
+    float,floatplacement=H]
+(* some code  that can raise ... *)
+handle e => raise pp_exn e;
+
+(* or *)
+handle e => raise pp_exn "Failed to perform A, check that B." e;
+\end{lstlisting}
+
+
+\section{Best practices for a complex platform} \label{best-practices-complex-platform}
+
+When building complex systems, special care should be taken in order to ensure a that is grows in good conditions. Despite providing the best capabilities, a system with poor usability will encounter a slow adoption, as shown in the previous section. But when a system gets used by an increasing number of users, a different working organization is needed. This section will first briefly a critical concept that should be mastered for successful growth of a software platform. Then, we will study the \gls{CI} system that has been set up for HolBA.
+
+\subsection{Developing simple interfaces}
+
+% Make sense for contract verification library
+
+In 1995, the Gang of Four published a book about design patterns for software design \cite{gamma_design_1995}. ``Program to an interface, not an implementation.'' is a key concept presented among the patterns. Since them, this sentence is considered as one of the most important design principle in software development.
+
+This section doesn't intend to give a thorough explanation of the concept. However, some key insights shall be provided:
+
+\begin{itemize}
+    \item An interface is a contract between a system (such as a function, a library, a platform) and its user. This contract states the behaviour and guarantees that this system offers via its public components. It defines the interaction between the component, the system and the user. But most importantly, the contract leaves out the implementation. An interface builds an abstraction over the implementation. Using contracts is particularly use for contract based verification, as it can simplify about reasoning about components and build a resilient system.
+    \item Libraries provide features, which sometime have a very complex implementation. This is particularly true for trustworthy binary code analysis. Building interfaces helps to abstract away complex implementations and helps to compose systems together.
+    \item Programming to an interface instead of an implementation makes code more resilient to changes. Indeed, if an implementation must be changed in order to provide more features, fix critical bugs or deliver more performance, codes that are not aware of the implementation will not need to be modified.
+\end{itemize}
+
+%\subsection{Using a Git workflow suitable for teams}
+% * merge often
+% what else?
+
+\subsection{Continuous Integration: tests and static analysis}
+
+\acrfull{CI} is a development practice where developers of a project \textit{integrate} frequently their code and changes into a single shared source repository, hence the name of this practice. Each integration of any change into the shared repository should be automatically verified by automated builds and a full set of automated tests. This allows to immediately see if changes to the source repository break a feature or introduce a regression, thus allowing to fix it immediately. Since this practices imposes to run a whole battery of tests for each and every change, even the smallest one, automation is key. \cite{martin_fowler_continuous_nodate} gives a detailed introduction to this practice.
+
+A CI system has been added to the HolBA repository, and its practices are being adopted by the research team. For each change, the CI system recompiles the whole platform from scratch and runs all the tests and executes a set of example scripts. Additionally, the CI system also performs some static analysis of the source code in order to give developers some key insight of the state of the code. Two static analysers have been implemented, showing respectively the \textit{cheats} used in the formal proofs and the ``\textit{TODO}'' comments indicating left work to be done \footnote{At the time of writing, this feature has not been added yet to the CI system because of time constraints. However, it is ready to be integrated.}.
+
 \chapter{Conclusions}
 
 \section{Discussion}
@@ -1623,7 +1745,7 @@ The goal of this paper was to perform experiments about automation of formal ver
     \item \textbf{Formal proof of a BIR program on a HOL4 state}: a novel usage of BIR and method for transferring properties from BIR program to formal HOL4 specification has been carried out. Additionally, while not automated, the work needed in order to implemented automatic HOL4 tactics has been clearly identified. Every automation work should be preceded by a manual implementation of the task, that this proof intends to be.
 \end{enumerate}
 
-Throughout this work, a strong focus has been placed on ease of use and user-friendliness with BSL, the pretty-printer, the implementation of new logging utilities, guidelines about error handling in SML and with HOL4, and a friendly exception printer, as discussed in Appendix \ref{appendix_user-friendliness}. I strongly believe that user experience of such complex platforms are of primary importance, because it can dramatically reduce time spent in debugging and the need of an exhaustive documentation, and give to users to desire to keep using the platform. If it is decided to put more work in HolBA in order to make it a powerful binary analysis platform, the research team is advised to consider this aspect while expanding HolBA capabilities.
+Throughout this work, a strong focus has been placed on ease of use and user-friendliness with BSL, the pretty-printer, the implementation of new logging utilities, guidelines about error handling in SML and with HOL4, and a friendly exception printer. I strongly believe that user experience of such complex platforms are of primary importance, because it can dramatically reduce time spent in debugging and the need of an exhaustive documentation, and give to users to desire to keep using the platform. If it is decided to put more work in HolBA in order to make it a powerful binary analysis platform, the research team is advised to consider this aspect while expanding HolBA capabilities.
 
 Some failed experiments have also been realized, including the DepGraph tool that revealed to not be adapted to its planned usage or which would have needed to much work for too few benefits (though DepGraph's design is future-proof and the tool can easily be extended later if new needs or novel ideas appear), and the former two implementation attempts of the NIC model using flowcharts or C which have been found to not be suitable for device models.
 
@@ -1653,72 +1775,6 @@ The non proof-producing contract verification library implemented in this work c
 \appendix
 
 %\chapter{Tracing and error handling in HOL4}
-\chapter{User experience and good practices} \label{appendix_user-friendliness}
-\vspace{-1cm}
-\textit{}
-
-% User experience
-% * BSL
-% * pretty printer
-% * logging utilities
-% * error handling (guidelines SML + HOL4)
-% * exception printer
-%
-% Best practices: critical to build lasting complex systems
-% * simple interfaces: CFG lig and WP tool
-% * Git workflow
-% * CI: regression tests + static analysis (insight into the code)
-
-% The need arose in general when debugging HOL4 code for tracing code.
-% LogLib is a higher-level implementation of HOL4 tracing system. Verbosity levels are specified and output is colored, helping to read long outputs.
-
-In this work, we took the role of user of the HolBA platform, and of HOL4 by necessity. HOL4 learning curve is quite steep, and very few effort has been invested towards beginner friendliness, because this topic can become really time consuming and its perceived importance greatly depend on one's experience. Throughout the our design and implementation process, great care have been put into having a good user experience while keeping time spent on this issue reasonably low. Section \ref{towards-user-exp} will briefly present what have been done in order to increase user experience.
-
-Additionally, binary analysis platforms are complex software systems, and should as such follow well-known best practices in order to make it last and develop serenely. Therefore, Section \ref{best-practices-complex-platform} presents some best practices that have been adopted in HolBA.
-
-\section{Towards better user experience} \label{towards-user-exp}
-\subsection{BSL and the pretty-printer}
-
-Already presented in details in Sections \ref{bsl} and \ref{pretty-printers} respectively, BSL and BIR pretty-printers are two successful attempts to simplify HolBA users manipulation of BIR, respectively writing and reading BIR code.
-
-BSL is, as the name suggests, a really simple library that enables less verbose writing of BIR terms. There were no strict need for this library, since HOL4 features a powerful quoting system that can already parse raw BIR code. However, the raw BIR syntax is (a) cumbersome to use and arguably becomes hard to maintain as the code grows in size and (b) isn't easy to mix with SML code. BSL offers a convenient solution to both these problems, and the time spent in order to implement it has been very limited, roughly about two days.
-
-Similarly, BIR pretty-printers were not a hard need, but rather a welcomed feature. When debugging large BIR expressions, we spent a non negligible amount of time counting parenthesis, grouping operators and searching arms of binary operators. The pretty-printers give a convenient solution to these problem, and required a limited implementation effort, roughly about two days spent in iterative improvements.
-
-\subsection{Error handling in SML and HOL4}
-% Present the problems specific to HOL4 that arise when debugging proofs and libs.
-% Introduce exception wrapping and explain how they help to locate the location of errors and can help interactive use of HOL4 by giving more precise information about what went wrong. Analogous to backtraces.
-
-Errors happen. This is a truth in engineering and software engineering is no exception to the rule. However, when handled successfully, errors can increase the reliability and usefulness of a system, because they can force invariants and provide insightful information.
-
-\gls{SML} offers error handling via exceptions that can be raised and handled, raised on errors and handled at places where recovery is possible and desirable. Being deeply embedded in SML, HOL4 inherit this behaviour. However, being a complex system on its own, HOL4 can raise exceptions at a lot of places. When used without attention, HOL4 can raise exceptions at unexpected and often distant (i.e. in dependencies of the functions that are directly used) locations. Hence, when some exceptions are raised, meaningless error messages are raised and dumped at the user. For example, a user incorrectly using some function could receive an exception saying ``\textit{Not a conjunction}'', whereas the function interface doesn't directly takes logical expressions as arguments. Here, the implementation is leaking to the user that should not have to know anything about it.
-
-To answer to this issue, there are two immediate possibilities (in addition to fixing the actual error): (a) code could handle possible exceptions of code that it uses and that could produce some, and either handle the issue (if possible) or raising another more meaningful error, and (b) HOL4 provides an exception wrapping mechanism in its \textit{Feedback} library that offers the possibility of adding information to and exception on the flight, producing a result analogous to backtrace in other programming languages.
-
-\subsection{LogLib, a logging library} \label{loglib}
-%Introduce tracing in HOL4 in general (levels, HOL4 warnings and error \textbf{messages}).
-
-A logging library, called \textit{logLib}, has been implemented.
-
-
-\begin{figure}[bp]
-	\includegraphics[width=\textwidth]{figures/loglib-ppexn-ppterm.png}
-	\centering
-	\caption{Extract of a script output, featuring \textit{trace} and \textit{debug} information from \textit{logLib} (Section \ref{loglib}), and an exception printed using the exception pretty-printer (Section \ref{pp_exn}). The original exception can be seen in white at the bottom of the image.}
-	\label{loglib-ppexn-ppterm}
-\end{figure}
-
-
-
-
-
-\subsection{SML exception pretty-printer} \label{pp_exn}
-
-
-\section{Best practices for a complex platform} \label{best-practices-complex-platform}
-\subsection{Developing simple interfaces}
-\subsection{Using a Git workflow suitable for teams}
-\subsection{Continuous Integration: tests and static analysis}
 
 
 \chapter{DepGraph's design} \label{appendix_depgraph}
