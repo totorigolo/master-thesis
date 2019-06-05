@@ -527,11 +527,11 @@ While this visual representation was useful to get to know the formal NIC model,
     \item It is hard to design a textual representation of this visual language other than conventional programming languages, so using such representation would require a substantial implementation effort in order to implement all the tools needed to use it. Developing visualization tools for a conventional language appears to be a more reasonable approach than developing a visual language.
 \end{itemize}
 
-For those reasons, it has been decided to not go further with this visual representation, and to focus instead of existing tools of the HolBA platform. However, as we shall see in the rest of this thesis, we will explore other visualization tools, and flowcharts will be used as a visual help while designing the model using other methods.
+For those reasons, it has been decided to not go further with this visual representation, and to focus instead on existing tools of the HolBA platform. However, as we shall see in the rest of this thesis, we will explore other visualization tools, and flowcharts will be used as a visual help while designing the model using other methods.
 
 \subsection{Writing the model in C} \label{c-model}
 
-One-to-one translation of the transmission automaton, scheduler, state, and \textit{CPPI\_RAM} related definitions of the formal model have been realized in C. This translation has been quite easy to perform and has been completed in roughly one day, and no difficulty arose during this translation. Regarding the NIC state, C has all types needed to represent it. An array has been used to represent the function type of \textit{CPPI\_RAM}. Enumerations have been used in order to represent HOL4 enumerations. While not optimal because of their non-restricted usage allowed by the C language---they can be freely modified as integers without checking their validity in C, while HOL4 and functional languages in general are restrictive and force to use correct values---enumerations are enough if used correctly while being well-aware of those shortcomings.
+One-to-one translation of the definitions related to the transmission automaton, scheduler, state, and \textit{CPPI\_RAM} of the formal model have been realized in C. This translation has been quite easy to perform and has been completed in roughly one day, and no difficulty arose during this translation. Regarding the NIC state, C has all types needed to represent it. An array has been used to represent the function type of \textit{CPPI\_RAM}. Enumerations have been used in order to represent HOL4 enumerations. While not optimal because of their non-restricted usage allowed by the C language---they can be freely modified as integers without checking their validity in C, while HOL4 and functional languages in general are restrictive and force to use correct values---enumerations are enough if used correctly while being well-aware of those shortcomings.
 
 When studying the compiled assembly code and lifted BIR program, we noticed that all the convenient naming that we can use in the formal or the C model is lost and replaced with abundant usage of the stack. While this is completely normal behaviour for a C compiler, this is not convenient when performing later proofs on the model: we would first need to rename them in the proof using some definitions, and this process would be lengthy and cumbersome (if not automated), resulting in more code than if the model had been directly written in BIR in the first place. This experiment made us realize that writing the model is a rapid operation and that we should rather focus on making the verification step as smooth as possible because it is the most difficult one to perform.
 
@@ -572,7 +572,7 @@ It has been decided to implement a transition system similar to the one of the N
 	\label{alice-bob-alice_autonomous_transitions}
 \end{figure}
 
-From the design presented in Figures \ref{alice-bob-automata-overview}, \ref{alice-bob-entrypoints} and \ref{alice-bob-alice_autonomous_transitions}, writing the BIR program is a repetitive but straightforward step. The resulting BIR program is 450 lines of code long. The following issues have been identified:
+From the design presented in Figures \ref{alice-bob-automata-overview}, \ref{alice-bob-entrypoints} and \ref{alice-bob-alice_autonomous_transitions}, writing the BIR program is a repetitive but straightforward step. The resulting BIR program is \num{450} lines of code long. The following issues have been identified:
 
 \begin{itemize}
     \item BIR, as a HOL4 embedded language, is very verbose. Simple operations like additions or assignments require long constructions, as shown in Listing \ref{alice-bob-bir-verbose}. Section \ref{bsl} presents BSL, a less verbose way of writing BIR programs.
@@ -584,26 +584,23 @@ From the design presented in Figures \ref{alice-bob-automata-overview}, \ref{ali
     stringstyle=\color{codepurple},
     label=alice-bob-bir-verbose,caption=BIR ,
     frame=tb,basicstyle=\tiny\ttfamily]
-(* A1. Eating *)                                                                                                                     
-<|bb_label := BL_Label "alice_automaton.step.1";                                                                                     
-  bb_statements := [                                                                                                                 
-    (* state.alice.hunger -= 20 *)                                                                                                   
-    BStmt_Assign (BVar "state.alice.hunger" (BType_Imm Bit32))                                                                       
-      (BExp_BinExp BIExp_Minus                                                                                                       
-        (BExp_Den (BVar "state.alice.hunger" (BType_Imm Bit32)))                                                                   
-        (BExp_Const (Imm32 20w)));                                                                                                 
-    (* state.alice.step := 2 *)                                                                                                      
-    BStmt_Assign (BVar "state.alice.step" (BType_Imm Bit32))                                                                         
-      (BExp_Const (Imm32 2w))                                                                                                        
-  ];                                                                                                                                 
-  bb_last_statement := BStmt_Jmp (BLE_Label (BL_Label "alice_automaton.end"))                                                        
-|>;                                                                                                                                  
+(* A1. Eating *)
+<|bb_label := BL_Label "alice_automaton.step.1";
+  bb_statements := [
+    (* state.alice.hunger -= 20 *)
+    BStmt_Assign (BVar "state.alice.hunger" (BType_Imm Bit32))
+      (BExp_BinExp BIExp_Minus
+        (BExp_Den (BVar "state.alice.hunger" (BType_Imm Bit32)))
+        (BExp_Const (Imm32 20w)));
+    (* state.alice.step := 2 *)
+    BStmt_Assign (BVar "state.alice.step" (BType_Imm Bit32))
+      (BExp_Const (Imm32 2w))
+  ];
+  bb_last_statement := BStmt_Jmp (BLE_Label (BL_Label "alice_automaton.end"))
+|>;
 \end{lstlisting}
     \item BIR features only one conditional statement controlling the control flow of a program: conditional jumps. Hence, BIR is not convenient for representing \textbf{if-then-else} statements with more than two branches. Section \ref{impl-real-model} presents some helper functions that have been implemented in order to be able to abstract the raw BIR code and work at a higher level.
 \end{itemize}
-
-%\subsection{Visualizing the CFG} \label{visualizing-cfg}
-% Moved to the introduction
 
 \subsection{BSL: BIR Simple Language} \label{bsl}
 
@@ -632,7 +629,7 @@ val bjmplabel_str = (bjmp o belabel_str)
 \subsection{Implementing the real model} \label{impl-real-model}
 % model not-complete model (focus on key parts)
 
-From the knowledge gained in the previous section \ref{alice-bob-toy}, a set of helper functions has been implemented, mainly in order to facilitate reasoning about the state machine. Listings \ref{impl-real-tx_state} and \ref{impl-real-tx_bstate_cases} show the SML code respectively used to represent the transmission automaton and to generate the BIR blocks that jumps to the right label of the program depending on the current step of the automaton (analogous to a \textit{case} or \textit{switch} construct in higher-level languages).
+From the knowledge gained in the previous section \ref{alice-bob-toy}, a set of helper functions has been implemented, mainly in order to facilitate reasoning about the state machine. Listings \ref{impl-real-tx_state} and \ref{impl-real-tx_bstate_cases} show the SML code respectively used to represent the transmission automaton and to generate the BIR blocks that jump to the right label of the program depending on the current step of the automaton (analogous to a \textit{case} or \textit{switch} construct in higher-level languages).
 
 \begin{lstlisting}[
     language=Caml,
@@ -725,7 +722,7 @@ The static and loop-free control-flow of this BIR program is very suitable for u
 Contract-based verification is a powerful approach for verifying programs. For a given program $prog$ consisting of a list of instructions and two predicates $P$ and $Q$ called respectively pre- and postcondition, a Hoare triple \htriple{P}{prog}{Q} states that when executing the program $prog$ from a state $S$ terminates in a state $S'$, if $P$ holds in $S$ then $Q$ will hold in $S'$ (Equation \ref{ht_def}). Hereafter, we assume programs and states to be well-typed.
 
 \begin{equation}
-  \htriple{P}{prog}{Q} \triangleq S' = exec(S, prog) \implies P(S) \implies Q(S')
+  \htriple{P}{prog}{Q} \eqdef S' = exec(S, prog) \implies P(S) \implies Q(S')
   \label{ht_def}
 \end{equation}
 
@@ -742,7 +739,7 @@ In order to perform the verification, the Hoare logic introduces a set of axioms
 
 \section{Weakest precondition derivation}
 
-While Hoare logic introduces sufficient preconditions, Dijkstra introduced the concept of necessary and sufficient preconditions, called ``weakest'' preconditions. Such weakest preconditions can be automatically derived from a program $prog$ and a postcondition $Q$. Let's call $\WP(prog, Q)$ such a weakest precondition. Then, from Equation \ref{ht_def} follows:
+While Hoare logic introduces sufficient preconditions, Dijkstra introduced the concept of necessary and sufficient preconditions, called ``weakest'' preconditions \cite{dijkstra_guarded_1975}. Such weakest preconditions can be automatically derived from a program $prog$ and a postcondition $Q$. Let's call $\WP(prog, Q)$ such a weakest precondition. Then, from Equation \ref{ht_def} follows:
 
 \begin{equation}
   \forall (prog, Q),
@@ -900,7 +897,7 @@ Definitions \ref{holba_wp_ht_thm} introduces additional conditions about well-ty
 
 This tool doesn't provide a simple interface to compute weakest preconditions for a given program and postcondition, nor does it provide and support for proving the relation between the precondition and the weakest precondition. Then, in order to prove that the Hoare triple holds from this generated Theorem \ref{triple_wp_thm}, we need to prove:
 
-\begin{equation} 
+\begin{equation}
     bir\_exec\_to\_labels\_triple~p~entry\_l~end\_ls~\mathbf{pre}~post
     \label{triple_pre_thm}
 \end{equation}
@@ -928,7 +925,7 @@ In Equation \ref{eval_pre_imp_eval_wp} we can recognize Equation \ref{p_imp_wp} 
 
 HOL4 features a library for interfacing \gls{SMT} solvers and HOL4, called \textit{HolSmtLib}. This library supports Yices 1 and Z3 as external provers. Yices 1 being an abandoned project that doesn't support SMT-LIB 2.0, we will focus on Z3 and the standard format SMT-LIB 2.0 \cite{barrett_satisfiability_2016}. While \textit{HolSmtLib} supports export for some SMT-LIB 2.0 theories, it doesn't support the \textit{ArraysEx} theory and doesn't know about BIR. In Section \ref{contract-verif-holba}, we discussed the translation from BIR expressions to \textit{wordsTheory}. However, this theory doesn't contain anything about memories or arrays in general. Therefore, some modifications are needed.
 
-BIR memories are semantically defined as functions from addresses to values. 
+BIR memories are semantically defined as functions from addresses to values.
 
 There exist five types of BIR expressions operating directly on memories (cf. Listing \ref{bir_bin_exp_def} for the list of BIR expressions, and Section \ref{exporting-bir-to-smt} for a more precise discussion of the BIR semantic):
 
@@ -1793,6 +1790,7 @@ The pretty-printer implemented in this work is only a small experiment only scra
 
 The non-proof-producing contract verification library implemented in this work can be really useful for prototyping, but it cannot be used for trustful verification. The limitations it suffers could be reasonably fast to overcome, and they should be fixed especially if HolBA were to become a strong binary analysis platform. Limitations include (a) the impossibility to compose contract in order to reason about longer functions, to compose functions or to prove properties on not loop-free programs, and (b) the obvious limitation of not being proof-producing. Work is ongoing at the time of writing about weak-correctness and contract composition, answering to (a). The main blocker of (b) is the absence of a proof-producing ways of using SMT solvers for proving contracts (Equation \ref{eval_pre_imp_eval_wp}). The proof of Chapter \ref{trustful-nic-analysis} and its SML implementation identify what automatic procedures should be added to HolBA in order to perform step (b) and progress towards proof-producing automatic verification. Additionally, the signature of \texttt{prove\_contract} should be reworked in order to enable mixing it with proof-producing code, after both (a) and (b) are solved. For example, it should work with HOL4 definitions instead of raw terms.
 
+% TODO: SMT: axioms for faster reasoning about memory + exponential problem
 
 % Left out:
 % - During binary verification, we work with ASM instead of clean C code. Therefore, pre-postconditions are harder to define. Hence, this one-button solution would need more support to easily define those expressions.
