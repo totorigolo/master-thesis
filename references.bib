@@ -4,7 +4,6 @@
 	title = {A Trustworthy Monadic Formalization of the {ARMv}7 Instruction Set Architecture},
 	volume = {6172},
 	isbn = {978-3-642-14051-8 978-3-642-14052-5},
-	url = {http://link.springer.com/10.1007/978-3-642-14052-5_18},
 	abstract = {This paper presents a new {HOL}4 formalization of the current {ARM} instruction set architecture, {ARMv}7. This is a modern {RISC} architecture with many advanced features. The formalization is detailed and extensive. Considerable tool support has been developed, with the goal of making the model accessible and easy to work with. The model and supporting tools are publicly available – we wish to encourage others to make use of this resource. This paper explains our monadic speciﬁcation approach and gives some details of the endeavours that have been made to ensure that the sizeable model is valid and trustworthy. A novel and eﬃcient testing approach has been developed, based on automated forward proof and communication with {ARM} development boards.},
 	pages = {243--258},
 	booktitle = {Interactive Theorem Proving},
@@ -54,7 +53,6 @@
 	title = {An Axiomatic Basis for Computer Programming},
 	volume = {12},
 	issn = {0001-0782},
-	url = {http://doi.acm.org/10.1145/363235.363259},
 	doi = {10.1145/363235.363259},
 	abstract = {In this paper an attempt is made to explore the logical foundations of computer programming by use of techniques which were first applied in the study of geometry and have later been extended to other branches of mathematics. This involves the elucidation of sets of axioms and rules of inference which can be used in proofs of the properties of computer programs. Examples are given of such axioms and rules, and a formal proof of a simple theorem is displayed. Finally, it is argued that important advantage, both theoretical and practical, may follow from a pursuance of these topics.},
 	pages = {576--580},
@@ -131,7 +129,6 @@
 	location = {San Francisco, {CA}, {USA}},
 	title = {Unleashing Mayhem on Binary Code},
 	isbn = {978-1-4673-1244-8 978-0-7695-4681-0},
-	url = {http://ieeexplore.ieee.org/document/6234425/},
 	doi = {10.1109/SP.2012.31},
 	abstract = {In this paper we present {MAYHEM}, a new system for automatically ﬁnding exploitable bugs in binary (i.e., executable) programs. Every bug reported by {MAYHEM} is accompanied by a working shell-spawning exploit. The working exploits ensure soundness and that each bug report is securitycritical and actionable. {MAYHEM} works on raw binary code without debugging information. To make exploit generation possible at the binary-level, {MAYHEM} addresses two major technical challenges: actively managing execution paths without exhausting memory, and reasoning about symbolic memory indices, where a load or a store address depends on user input. To this end, we propose two novel techniques: 1) hybrid symbolic execution for combining online and ofﬂine (concolic) execution to maximize the beneﬁts of both techniques, and 2) index-based memory modeling, a technique that allows {MAYHEM} to efﬁciently reason about symbolic memory at the binary level. We used {MAYHEM} to ﬁnd and demonstrate 29 exploitable vulnerabilities in both Linux and Windows programs, 2 of which were previously undocumented.},
 	eventtitle = {2012 {IEEE} Symposium on Security and Privacy ({SP}) Conference dates subject to change},
@@ -159,7 +156,6 @@
 	title = {Valgrind: A Program Supervision Framework},
 	volume = {89},
 	issn = {1571-0661},
-	url = {http://www.sciencedirect.com/science/article/pii/S1571066104810429},
 	doi = {10.1016/S1571-0661(04)81042-9},
 	series = {{RV} '2003, Run-time Verification (Satellite Workshop of {CAV} '03)},
 	shorttitle = {Valgrind},
@@ -178,7 +174,6 @@
 	location = {Boston, {MA}},
 	title = {Modeling and Security Analysis of a Commercial Real-Time Operating System Kernel},
 	isbn = {978-1-4419-1539-9},
-	url = {https://doi.org/10.1007/978-1-4419-1539-9_10},
 	abstract = {This chapter summarizes the modeling and formal analysis effort that led to an {EAL}6+ certification for a commercial real-time operating system kernel. We begin by describing the {INTEGRITY}-178B kernel, as well as the approach taken for the Common Criteria evaluation effort. We present a generalization of the {GWV} theorem, formulated in order to capture the meaning of separation in a dynamic system. We detail how the {INTEGRITY}-178B kernel was modeled, including System State, Behavior, and Information Flow. We discuss the proof architecture used to demonstrate correspondence and conclude with a description of the informal analysis of the hardware abstraction layer.},
 	pages = {301--322},
 	booktitle = {Design and Verification of Microprocessor Systems for High-Assurance Applications},
@@ -213,7 +208,6 @@
 	location = {Big Sky, Montana, {USA}},
 	title = {{seL}4: formal verification of an {OS} kernel},
 	isbn = {978-1-60558-752-3},
-	url = {http://portal.acm.org/citation.cfm?doid=1629575.1629596},
 	doi = {10.1145/1629575.1629596},
 	shorttitle = {{seL}4},
 	abstract = {Complete formal veriﬁcation is the only known way to guarantee that a system is free of programming errors.},
@@ -232,7 +226,6 @@
 	title = {Guarded Commands, Nondeterminacy and Formal Derivation of Programs},
 	volume = {18},
 	issn = {0001-0782},
-	url = {http://doi.acm.org/10.1145/360933.360975},
 	doi = {10.1145/360933.360975},
 	abstract = {So-called “guarded commands” are introduced as a building block for alternative and repetitive constructs that allow nondeterministic program components for which at least the activity evoked, but possibly even the final state, is not necessarily uniquely determined by the initial state. For the formal derivation of programs expressed in terms of these constructs, a calculus will be be shown.},
 	pages = {453--457},
@@ -249,7 +242,6 @@
 	title = {{TrABin}: Trustworthy analyses of binaries},
 	volume = {174},
 	issn = {0167-6423},
-	url = {http://www.sciencedirect.com/science/article/pii/S0167642318301667},
 	doi = {10.1016/j.scico.2019.01.001},
 	shorttitle = {{TrABin}},
 	abstract = {Verification of microkernels, device drivers, and crypto routines requires analyses at the binary level. In order to automate these analyses, in the last years several binary analysis platforms have been introduced. These platforms share a common design: the adoption of hardware-independent intermediate representations, a mechanism to translate architecture dependent code to this representation, and a set of architecture independent analyses that process the intermediate representation. The usage of these platforms to verify software introduces the need for trusting both the correctness of the translation from binary code to intermediate language (called transpilation) and the correctness of the analyses. Achieving a high degree of trust is challenging since the transpilation must handle (i) all the side effects of the instructions, (ii) multiple instruction encodings (e.g. {ARM} Thumb), and (iii) variable instruction length (e.g. Intel). Similarly, analyses can use complex transformations (e.g. loop unrolling) and simplifications (e.g. partial evaluation) of the artifacts, whose bugs can jeopardize correctness of the results. We overcome these problems by developing a binary analysis platform on top of the interactive theorem prover {HOL}4. First, we formally model a binary intermediate language and we prove correctness of several supporting tools (i.e. a type checker). Then, we implement two proof-producing transpilers, which respectively translate {ARMv}8 and {CortexM}0 programs to the intermediate language and generate a certificate. This certificate is a {HOL}4 proofdemonstrating correctness of the translation. As demonstrating analysis, we implement a proof-producing weakest precondition generator, which can be used to verify that a given loop-free program fragment satisfies a contract. Finally, we use an {AES} encryption implementation to benchmark our platform.},
@@ -286,10 +278,9 @@
 }
 
 @software{noauthor_canonical_2019,
-	title = {Canonical sources for {HOL}4 theorem-proving system.   Branch `develop` is where “mainline development” occurs; when `develop` passes our regression tests, `master` is merged forward to catch up.: H..},
+	title = {Canonical sources for {HOL}4 theorem-proving system.},
 	rights = {View license},
 	url = {https://github.com/HOL-Theorem-Prover/HOL},
-	shorttitle = {Canonical sources for {HOL}4 theorem-proving system.   Branch `develop` is where “mainline development” occurs; when `develop` passes our regression tests, `master` is merged forward to catch up.},
 	publisher = {{HOL} Theorem Proving System},
 	urldate = {2019-02-04},
 	date = {2019-02-03},
@@ -328,7 +319,6 @@
 
 @inproceedings{dam_formal_2013,
 	title = {Formal Verification of Information Flow Security for a Simple {ARM}-Based Separation Kernel},
-	url = {http://urn.kb.se/resolve?urn=urn:nbn:se:kth:diva-136348},
 	abstract = {A separation kernel simulates a distributed environment us-ing a single physical machine by executing partitions in iso-lation and appropriately controlling communication amongthem. We present a fo ...},
 	eventtitle = {2013 {ACM} {SIGSAC} Conference on Computer \& Communications Security ({CCS}'13),November 4 - 8, 2013 Berlin, Germany},
 	publisher = {{ACM} Press},
@@ -338,10 +328,18 @@
 	file = {Full Text PDF:/home/totorigolo/Zotero/storage/X5SGK26R/Dam et al. - 2013 - Formal Verification of Information Flow Security f.pdf:application/pdf;Snapshot:/home/totorigolo/Zotero/storage/5X6GWK59/record.html:text/html}
 }
 
-@article{haglund_formal_2016,
+@thesis{haglund_formal_2016,
 	title = {Formal verification of systems software},
-	abstract = {No Execution of Malicious Software in Linux in Networked Embedded Systems},
-	pages = {290},
+	abstract = {Embedded systems provide critical services in numerous applications requiring complex functionality. The complex functionality is often implemented by complex software stacks, such as {GNU}/Linux. Since complex software often contains bugs, some of which might be exploitable by attackers, embedded systems are exposed to security attacks. For instance, malicious software might be injected by exploiting a buffer overflow bug. In addition, the number of embedded systems connected to the Internet is increasing, enabling attackers to perform their attacks remotely and thus making embedded systems even more exposed to security attacks. 
+
+To address this issue, this thesis presents a software design and an implementation that host Linux with Internet support, such that only signed (non-malicious) Linux code is executed. The software design consists of three software components: A hypervisor and two guests, Linux and a monitor. These three software components can be executed on the development board {BeagleBone} Black, containing an {ARMv}7 {CPU} and a network interface controller ({NIC}). The hypervisor ensures that the three software components are securely separated and the monitor ensures that only signed Linux code is executed. The software design and the implementation take into account that Linux code might instruct the {CPU} to configure the {NIC} to access memory. This software design and implementation therefore ensure that the security service provided by the monitor is not breached by the {NIC}. In order to increase the reliability of this system, a pen-and-paper proof plan is presented with the purpose of guiding a formal proof of that only signed Linux code is executed in this system.
+
+The original software design and implementation of the hypervisor, provided by the {PROSPER} project, did not have {NIC} support. The software design and the implementation of the hypervisor therefore have been extended with a security layer that intercepts writes to {NIC} registers that are performed by the {CPU} when it is executing Linux. If a {NIC} register write cannot enable unsigned (malicious) Linux code to be executed, the hypervisor lets the {NIC} register write take effect, and otherwise blocks it. In addition, the original software design of the monitor, also provided by the {PROSPER} project, did not consider the operation of the {NIC}. The design of the monitor therefore has also been extended in order to prevent memory configurations of Linux that enable unsigned Linux code to be executed. The proof plan describes and motivates how it can be formally proved in a theorem prover that only signed Linux code is executed in this system. For the purposes of the proof plan, {HOL}4 models of the hardware have been identified and a formal model of the {NIC} has been specified in pseudocode.
+
+If the work presented in this thesis is fully implemented and combined with earlier work from the {PROSPER} project, a networked embedded system is acquired in which, with high reliability, no malicious Linux code is executed.},
+	pagetotal = {290},
+	institution = {{KTH} Royal Institute of Technology},
+	type = {Master's Thesis},
 	author = {Haglund, Jonas},
 	date = {2016-11-05},
 	langid = {english},
