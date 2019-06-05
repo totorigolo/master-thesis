@@ -34,6 +34,7 @@
 % Bib setup
 \usepackage{csquotes} % Recommended by biblatex
 \usepackage[style=numeric,sorting=none,backend=biber]{biblatex}
+\DeclareBibliographyAlias{software}{online}
 \addbibresource{references.bib} % The file containing our references, in BibTeX format
 
 \title{Experiments on automation of formal verification of devices at the binary level}
@@ -1179,7 +1180,7 @@ Interface in Listing \ref{ideal_interface_prove_contract} leverages the general 
 
 When implementing this function, high attention has been paid to provide useful and comprehensive feedback in the case of failure. To that end, extensive use of exception wrapping has been made in order to give precise context to exceptions, and a logging library has been implemented (cf. Chapter \ref{user-friendliness}).
 
-When using \gls{BSL} to express pre- and post-conditions, this function provides an automatic solution to prove contracts. In the following sections, we will then see usage of this function, first to test it and then to perform proofs on the NIC model.
+When used with \gls{BSL} to express pre- and post-conditions, this function provides a convenient and automatic solution to prove contracts. In the following sections, we will then see usage of this function, first to test it and then to perform proofs on the NIC model.
 
 \section{Testing the automatic proof procedure}
 
@@ -1233,7 +1234,7 @@ val thm = prove_contract "cjmp"
   )
 \end{lstlisting}
 
-Figure \ref{test_cjmp_bir} shows the auto-generated BIR $P \implies \WP$ expression, and Equation \ref{test_cjmp_words} shows the same expression after translation to a \textit{wordsTheory} expression. This expression can be trivially simplified to $\top$, which SMT solvers can very efficiently do. Hence, this invocation to \texttt{prove\_contract} succeeds.
+Figure \ref{test_cjmp_bir} shows the auto-generated BIR $P \implies \WP$ expression, and Equation \ref{test_cjmp_words} shows the same expression after translation to a \textit{wordsTheory} expression. This expression can be trivially simplified to $\top$, what SMT solvers can very efficiently do. Hence, this invocation to \texttt{prove\_contract} succeeds.
 
 \begin{figure}[!h]
 	\includegraphics[width=\textwidth]{figures/test_cjmp_bir.png}
@@ -1250,7 +1251,7 @@ Figure \ref{test_cjmp_bir} shows the auto-generated BIR $P \implies \WP$ express
 
 \subsection{Load and store test} \label{addreq_test}
 
-The \gls{NIC} manipulating a buffer descriptor queue, represented in BIR using memories, we need to ensure that \texttt{prove\_contract} works with programs containing memories. In this test, we will store a number $N$ in memory at address \textit{A}, then load a number into $x$ from address \textbf{B}. We want to check the following Hoare Triple: \htriple{A=B}{prog}{x=N}. Listing \ref{test_addreq_pseudocode} shows the equivalent pseudocode of the test program, Figure \ref{test_addreq_bir} the auto-generated $P \implies \WP$ expression, Figure \ref{test_addreq_words} the same expression translated in \textit{wordsTheory} and Listing \ref{test_addreq_smtlib} the auto-generated SMT-LIB 2.0 instance featuring \texttt{select} and \texttt{store} operations.
+The \gls{NIC} manipulating a buffer descriptor queue, represented in BIR using memories, we need to ensure that \texttt{prove\_contract} works with programs containing memories. In this test, we will store a number $N$ in memory at address $A$, then load a number into $x$ from address $B$. We want to check the following Hoare Triple: \htriple{A=B}{prog}{x=N}. Listing \ref{test_addreq_pseudocode} shows the equivalent pseudocode of the test program, Figure \ref{test_addreq_bir} the auto-generated $P \implies \WP$ expression, Figure \ref{test_addreq_words} the same expression translated in \textit{wordsTheory} and Listing \ref{test_addreq_smtlib} the auto-generated SMT-LIB 2.0 instance featuring \texttt{select} and \texttt{store} operations.
 
 \begin{lstlisting}[
     language=C,
@@ -1389,16 +1390,13 @@ val _ = if !level_log >= logLib.INFO
   else ();
 \end{lstlisting}
 
-% TODO: Mention time constraints? -> Intro
-
-
 \subsection{Limitations of this approach}
 
 While being convenient and working well for simple contracts, the contract verification library implemented in this chapter suffers from two limitations:
 
 \begin{itemize}
-	\item The first one is straightforward: this library isn't proof-producing. Using HOL4 requires a significant learning effort, and easier non-proof producing tools exist. Hence, when using HOL4, one usually wants to reason about proofs, and this library is not proof-producing and could, therefore, introduce subtle bugs or inconsistencies. Moreover, this library doesn't offer the possibility to compose Hoare Triples because it doesn't output any related theorem. If one wanted to do so, an oracle would have to be used in order to generate such theorems and enabling theorem composition and further reasoning. Nevertheless, as already explained, proof-producing code is more costly. The desired level of trustworthiness should be carefully decided, and this library offers a pragmatic solution.
-	\item Secondly, this library and its approach of contract-based verification is limited by the expressiveness of BIR, since the pre- and post-conditions are BIR terms. BIR doesn't have quantifiers, and it is, therefore, impossible to prove contracts containing existential quantifiers. The existing formal proof on the NIC of \cite{haglund_formal_2016} requires existential quantifiers in order to reason about the buffer descriptor queue in the \textit{CPPI\_RAM} memory of the NIC, and this part of the proof can therefore not be replaced by using \texttt{prove\_contract}. Moreover, as explained in the first point of this list, composing verification produced with this library with raw HOL4 proofs is not straightforward. The following Chapter \ref{trustful-nic-analysis} explores a new proof-producing approach for performing contract-based verification on the BIR model that answer to this issue.
+	\item The first one is straightforward: this library isn't \gls{proof-producing}. Using HOL4 requires a significant learning effort, and easier non proof-producing tools exist. Hence, when using HOL4, one usually wants to reason about proofs, and this library is not proof-producing and could, therefore, introduce subtle bugs or inconsistencies. Moreover, this library doesn't offer the possibility to compose Hoare Triples because it doesn't output any related theorem. If one wanted to do so, an oracle would have to be used in order to generate such theorems and enabling theorem composition and further reasoning. Nevertheless, as already explained, proof-producing code is more costly. The desired level of trustworthiness should be carefully decided, and this library offers a pragmatic solution.
+	\item Secondly, this library, with its approach to contract-based verification, is limited by the expressiveness of BIR, since the pre- and post-conditions are BIR terms. BIR doesn't have quantifiers, and it is, therefore, impossible to prove contracts containing existential quantifiers. The existing formal proof on the NIC of \cite{haglund_formal_2016} requires existential quantifiers in order to reason about the buffer descriptor queue in the \textit{CPPI\_RAM} memory of the NIC, and this part of the proof can therefore not be replaced by using \texttt{prove\_contract}. Moreover, as explained in the first point of this list, composing verification produced with this library with raw HOL4 proofs is not straightforward. The following Chapter \ref{trustful-nic-analysis} explores a new proof-producing approach for performing contract-based verification on the BIR model that answers this issue.
 \end{itemize}
 
 \chapter{Trustful analysis on the NIC model} \label{trustful-nic-analysis}
