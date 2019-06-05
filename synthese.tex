@@ -27,6 +27,7 @@
 \usepackage{pmboxdraw}
 \usepackage{textcomp} % for the apostrophe
 \usepackage{float}
+\usepackage{comment}
 
 % hyperref setup
 \definecolor{darkgreen}{RGB}{0,180,0}
@@ -47,6 +48,29 @@
 \usepackage[style=numeric,sorting=none,backend=biber]{biblatex}
 \addbibresource{references.bib} % The file containing our references, in BibTeX format
 
+
+\newcommand{\htriple}[3]{\ensuremath{\{#1\}~#2~\{#3\}}}
+\newcommand{\WP}{\ensuremath{\mathit{WP}}}
+\newcommand{\notimplies}{%
+  \mathrel{{\ooalign{\hidewidth$\not\phantom{=}$\hidewidth\cr$\implies$}}}}
+\newcommand{\eqdef}{\stackrel{def}{=}}
+\newcommand{\eqeval}{\stackrel{eval}{=}}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{remark}{Remark}
+\newtheorem*{remark*}{Remark}
+
+%% Listing settings
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{codeblue}{rgb}{0.10,0,0.82}
+\definecolor{codebackcolour}{rgb}{0.95,0.95,0.92}
+ 
+
+
 \title{Experiments on automation of formal verification of devices at the binary level}
 \author{Thomas Lacroix --- \email{thomas.lacroix@insa-lyon.fr}\medskip\\
 Département Informatique\\
@@ -62,26 +86,32 @@ INSA de Lyon}
 
 {
 \noindent Sous la responsabilité de :\\
-Mads Dam : Division of Theoretical Computer Science -- KTH\\
-Pierre-\'Edouard Portier : Département Informatique -- INSA Lyon
+\indent Mads Dam : Division of Theoretical Computer Science -- KTH\\
+\indent Pierre-\'Edouard Portier : Département Informatique -- INSA Lyon
 }
+
+\vspace{\baselineskip}\vspace{\baselineskip}
 
 { % Block used for font size in abstracts
 \fontsize{9}{10.8}
 
 \begin{abstract}
+  \rightmargin=1cm \leftmargin=1cm
   With the advent of virtualization, more and more work is put into the verification of hypervisors. Being low-level softwares, such verification should preferably be performed at binary level. Binary analysis platforms are being developed to help perform these proofs, but a lot of the work has to be carried out manually.
-  
+
   In this thesis, we focus on the formal verification of a Network Interface Controller (NIC), more specifically we look at how to automate and reduce the boilerplate work from an existing proof. We base our work on the HolBA platform, its hardware-independent intermediate representation language BIR and supporting tools, and we experiment on how to perform this proof by leveraging existing tools.
-  
+
   We first replaced the existing NIC model written in HOL4 to an equivalent one written using BIR, enabling the use of HolBA tools. Secondly, we developed some visualization tools to help navigate and gain some insight into the existing proof and its structure. Thirdly, we experimented with the use of Hoare triples in conjunction with an SMT solver to perform contract verification. Finally, we proved a simple contract written in terms of the formal NIC model on the BIR implementation of this model, unlocking the way of performing more complex proofs using the HolBA platform.
 \end{abstract}
+
+\leftmargin=1cm
 {\small\textbf{\textit{Keywords---}} binary analysis, formal verification, proof producing analysis, theorem proving}
 
-\vspace{0.6cm}
+\vspace{\baselineskip}\vspace{\baselineskip}
 
 \begin{otherlanguage}{french}
   \begin{abstract}
+    \rightmargin=1cm \leftmargin=1cm
     Avec la démocratisation de la virtualisation, de plus en plus d'efforts sont consacrés à la vérification des hyperviseurs. S'agissant de logiciels de bas niveau, une telle vérification devrait de préférence être effectuée au niveau binaire. Des plates-formes d'analyse binaire sont en cours de développement pour aider à réaliser ces preuves, mais une grande partie du travail doit encore être effectuée manuellement.
 
     Dans cette thèse, nous nous concentrons sur la vérification formelle d'un Contrôleur d'Interface Réseau (NIC), plus spécifiquement sur la manière d'automatiser et de réduire le travail répétitif d'une preuve existante. Nous nous basons sur la plate-forme HolBA, son langage de représentation intermédiaire indépendant du matériel, BIR et ses outils de support, et nous nous intéressons à la manière de réaliser cette preuve en utilisant des outils existants.
@@ -89,77 +119,207 @@ Pierre-\'Edouard Portier : Département Informatique -- INSA Lyon
     Nous avons d'abord remplacé le modèle NIC existant écrit en HOL4 par un modèle équivalent écrit en BIR, permettant ainsi l'utilisation des outils de HolBA. Deuxièmement, nous avons développé des outils de visualisation pour nous aider à naviguer et à mieux comprendre la preuve existante et sa structure. Troisièmement, nous avons expérimenté l'utilisation des triplets de Hoare en conjonction avec un solveur SMT pour effectuer une vérification par contrat. Enfin, nous avons prouvé un contrat simple écrit en termes du modèle formel du NIC sur l'implémentation de ce modèle en BIR, ouvrant la voie à la réalisation de preuves plus complexes avec la plate-forme HolBA.
   \end{abstract}
 \end{otherlanguage}
+
+\leftmargin=1cm
 {\small\textbf{\textit{Mot-clés---}} binary analysis, formal verification, proof producing analysis, theorem proving}
 }
 
-\vspace{2cm}
+\vspace{\baselineskip}\vspace{\baselineskip}
+
 \restoregeometry
 \newgeometry{margin=3cm}
 \fontsize{10}{12}\selectfont
 %--------------------------
 
-%\begin{multicols}{2}
+\begin{multicols}{2}
 
 \section{Introduction}
-\textit{This chapter serves as an introduction to the degree project and presents the background of the work along with this thesis objective. Delimitations to the project and the choice of the methodology are also discussed.}
+\textit{This section serves as an introduction to the degree project and presents the background of the work along with this thesis objective. Delimitations to the project and the choice of the methodology are also discussed.}
 
-\section{Background}
+\subsection{Background}
 
-Embedded systems are becoming more and more common with the current advent of {iot} and mobile computing platforms, such as smartphones. Those systems are fully-fledged computers with powerful hardware, complete operating systems, and access to the Internet. Such systems can run security-critical services, such as a building security system or automatic toll gates, or carry valuable information as it is the case for personal smartphones. Therefore, these two characteristics make them targets of choice for attackers.
+Embedded systems are becoming more and more common with the current advent of {IoT} and mobile computing platforms, such as smartphones. Those systems are fully-fledged computers with powerful hardware, complete operating systems, and access to the Internet. Such systems can run security-critical services, such as a building security system or automatic toll gates, or carry valuable information as it is the case for personal smartphones. Therefore, these two characteristics make them targets of choice for attackers.
 
-The {prosper} project \cite{noauthor_prosper:_nodate} aims to develop a secure and formally verified hypervisor for embedded systems. Hypervisors are thin layers running directly on top of hardware providing the ability to run virtualized applications, such that operating systems or real-time control systems. Those virtualized applications then don't have privileged access to the hardware and have to go through the hypervisor. This allows different applications to share the same hardware while providing strong isolation between them, thus ensuring confidentiality and security. Moreover, security not only means protection from external attacks but also resilience to bugs. If multiple critical systems are running on the same hardware, bugs or crashes in some systems shouldn't affect the others from behaving correctly. Figure \ref{figure-hypervisor-simple} shows a system running two isolated Linux on top of a hypervisor.
+The {PROSPER} project \cite{noauthor_prosper:_nodate} aims to develop a secure and formally verified hypervisor for embedded systems. Hypervisors are thin layers running directly on top of hardware providing the ability to run virtualized applications, such that operating systems or real-time control systems. Those virtualized applications then don't have privileged access to the hardware and have to go through the hypervisor. This allows different applications to share the same hardware while providing strong isolation between them, thus ensuring confidentiality and security. Moreover, security not only means protection from external attacks but also resilience to bugs. If multiple critical systems are running on the same hardware, bugs or crashes in some systems shouldn't affect the others from behaving correctly.
 
-\begin{figure}[H]
-	\includegraphics[height=4cm]{figures/figure-hypervisor-simple.png}
-	\centering
-	\caption{Two Linux on top of an hypervisor. They run isolated from each other and from the hypervisor.}
-	\label{figure-hypervisor-simple}
-\end{figure}
+Previous work in the {PROSPER} project achieved to formally verify a simple separation kernel \cite{noauthor_prosper:_nodate-1,dam_formal_2013}, which later resulted into an implementation of a working hypervisor. Then, they achieved to run both Linux and {FreeRTOS} on top of it. Finally, they formally verified memory isolation for virtualized applications \cite{nemati_trustworthy_2015}. However, hardware devices were not included in the verification, so devices, like Network Interface Controller ({NIC}), cannot be used by the virtualized applications reducing the value of the hypervisor. In order to solve this issue, verification of hardware devices is being carried out.
 
-Previous work in the {prosper} project achieved to formally verify a simple separation kernel \cite{noauthor_prosper:_nodate-1,dam_formal_2013}, which later resulted into an implementation of a working hypervisor. Then, they achieved to run both Linux and {FreeRTOS} on top of it. Finally, they formally verified memory isolation for virtualized applications \cite{nemati_trustworthy_2015}. Nowadays, among other projects, the PROSPER team is working on device virtualization, allowing to give access to hardware devices to virtualized applications. An interesting example are {NIC} devices, which enable network communication and give the ability to communicate through the Internet.
-
-A formal model of a {NIC} device has already been produced, on which some security theorems have been proved \cite{haglund_formal_2016}. These theorems can be seen as high-level proofs relying on a layer of lower-level lemmas. This layer provides an abstraction over the raw formal model. This is illustrated in the left-hand side of Figure \ref{hol-v-bir-nic-model-simple}.
+A formal model of a {NIC} device has already been produced, on which some security theorems have been proved \cite{haglund_formal_2016}. These theorems can be seen as high-level proofs relying on a layer of lower-level lemmas. This layer provides an abstraction over the raw formal model. This is illustrated in the left-hand side of Figure \ref{hol-v-bir-nic-model-simple}. However, there exist more devices that are of interest to verify, so it is very desirable to automate formal verification of devices and use a standard model for reasoning about them.
 
 \begin{figure}[H]
+  \centering
 	\includegraphics[height=6cm]{figures/hol-v-bir-nic-model-simple.png}
-	\caption{HOL4 v. BIR NIC models. The left hand side already exists. This project consists in the dashed elements. The dotted lines represent the work done during this project.}
+	\caption{Formal v. BIR NIC models. The left hand side already exists. The dashed elements represent the work done during this project.}
 	\label{hol-v-bir-nic-model-simple}
 \end{figure}
 
-The team is now developing a new framework for performing binary analysis in HOL4, an interactive theorem prover, named {holba} \cite{noauthor_holba_2019}. This framework is based on two papers written in the team. The first one introduces sound {transpilation} from binary to machine-independent code \footnotemark \cite{metere_sound_2017}. The second paper, ``TrABin: Trustworthy Analyses of Binaries'' \cite{lindner_trabin:_2019}, lays the foundations of the {holba} platform: it formally models {BIR}, introduces various supporting tools, implements two {proof-producing} {transpilers} (ARMv8 and Cortex-M0) and a proof-producing weakest precondition generator for loop-free programs.
-
-\footnotetext{The machine-independent language used in the work is an implementation of {bap}'s BIL \cite{noauthor_binary_2019}. This implementation will evolve later in \cite{lindner_trabin:_2019} into BIR that HolBA uses today.}
-
-While this kind of {transpilers} and {proof-producing} weakest precondition tools already exist \footnote{See related discussion in \cite{lindner_trabin:_2019}.}, the novelty in this work is that the transpiler is proof-producing, i.e. it produces a formal proof that both binary representations are equivalent, under the simulation theory, with respect to the {ISA} model. With this method, you no longer need to trust the transpiler. Figure \ref{holba-overview} gives an overview of the HolBA framework\footnote{TrABin works with both ARMv8 and Cortex-M0 binary programs. Only ARMv8 is showed in Figure \ref{holba-overview} to save some space.}.
-
-\begin{figure}[H]
-	\includegraphics[height=5cm]{figures/holba-overview.png}
-	\centering
-	\caption{The HolBA framework. The lifter generates a BIR program and an equivalence proof from an ARMv8 program. The equivalence proof establishes a simulation property between the ARMv8 binary program and the generated BIR binary program, showing that they have the same behavior with respect to the ARMv8 {ISA} specification and the BIR specification. HolBA also support the Cortex-M0 ISA.}
-	\label{holba-overview}
-\end{figure}
+The team is now developing a new framework for performing binary analysis in HOL4, an interactive theorem prover, named {HolBA} \cite{noauthor_holba_2019}. This framework features a machine-independent Binary Intermediate Representation (BIR), a proof-producing transpiler from ARMv8 and Cortex-M0 assembly code to BIR, called the lifter, a proof-producing weakest precondition generator for loop-free programs, and supporting tools \cite{metere_sound_2017,lindner_trabin:_2019}.
 
 The idea of this work is to translate the formal {NIC} model of \cite{haglund_formal_2016} using {BIR}, then use HolBA's proof-producing weakest precondition tool to prove the same lower-level lemmas than the formal model. With all the lemmas proved, the security properties are implied. Figure \ref{hol-v-bir-nic-model-simple} gives an overview of this idea: using the proof-producing weakest precondition tool to bind together a newly written BIR NIC model and the work done on the formal model.
 
-\section{Intended readers}
+\subsection{Thesis objective}
 
-In this thesis, formal verification is the central topic. The thesis presents how to model a hardware device using a binary analysis platform and presents some formal verification techniques. A reader interested in this topic may find the results presented useful for further work. A casual reader will be presented with a light introduction to the concepts that are essential in order to understand the problem that this thesis aims to explore. Those concepts should also be useful in order to understand software verification in general. For a more coherent reading, the concepts are introduced throughout the document. However, the reader is expected to have a background in Computer Science in general, and knowledge in formal verification will make the thesis easier to digest.
+The goal of this thesis project is to explore verification techniques in order to automate parts, if not all, of the verification process of hardware devices using the HolBA platform. The formal {NIC} model of \cite{haglund_formal_2016} is used as working example.
 
-\section{Thesis objective}
+\subsection{Delimitations}
 
-The primary goal of this thesis project is to explore verification techniques in order to automate parts, if not all, of the verification process of hardware devices using the HolBA platform. The formal {NIC} model of \cite{haglund_formal_2016} is used as working example.
+This work being about exploration of techniques towards automation of verification techniques, instead of being about producing an actual complete proof of a hardware device, some implementations have not been completed in order to save time to explore in more areas. Additionally, this work mainly concerns the HolBA platform that is developed in the team where this thesis took place.
 
-The ultimate goal would be to obtain a fully automatic pipeline for performing such verifications. However, it is evident that this goal isn't reachable in such a small amount of time, or even at all. Thus, this thesis focuses instead on exploring what toolkit is needed in order to facilitate this work.
-
-\section{Delimitations}
-
-This work being about the exploration of techniques towards automation of verification techniques, instead of being about producing an actual complete proof of a hardware device, some implementations have not been completed in order to save time to explore in more areas. Additionally, this work mainly concerns the HolBA platform that is developed in the team where this thesis took place.
-
-\section{Choice of methodology}
+\subsection{Choice of methodology}
 
 This work has been carried out step-by-step toward an ideal goal, i.e. re-establishing all the security properties. On the road, needs have been identified and tools have been implemented in order to tackle them. This approach made sense in this particular work because the needs were not known in advance, and therefore needed to be identified. This thesis presents the steps taken during this work, the motivations of each tool that have been implemented, and discusses their limitations and future work in the conclusion.
 
-%\end{multicols}
+\subsection{Related work}
+
+\subsubsection{Secure execution platforms}
+
+The {PROSPER} project isn't the only project focused on high-security execution platforms. Platforms such that seL4, Microsoft Hyper-V, INTEGRITY Multivisor or even MINIX 3 are examples of platforms used in production and providing strong security properties.
+
+\paragraph{seL4} is a recent L4-based microkernel created in 2006 with the goal to produce a completely formally verified implementation of an L4 microkernel. This has been achieved in 2009 \cite{klein_sel4:_2009}. At this time, seL4 consisted of \num{8700} lines of C code and \num{600} lines of assembler. The implementation of seL4 has been formally proved from its abstract specification down to its C implementation. Later, the validity of the generated assembly code has been proved, removing the need of trusting the compiler \cite{noauthor_what_nodate}.
+
+\paragraph{Microsoft Hyper-V} is Microsoft's hypervisor, widely used today within the Microsoft Azure cloud platform. It has been released in 2008. Hyper-V is a huge codebase, as we can read on VCC's website \footnote{\url{https://www.microsoft.com/en-us/research/project/vcc-a-verifier-for-concurrent-c/}}: ``Hyper-V consists of about 60 thousand lines of operating system-level C and x64 assembly code, it is therefore not a trivial target''. Microsoft has put a lot of work in formal verification\footnotemark of Hyper-V down to machine code \cite{leinenbach_verifying_2009}. However, they don't appear to include device drivers in their formal verification.
+
+\footnotetext{Microsoft has several formal verification projects, many of which are freely available for non-commercial use: \url{https://github.com/Microsoft?q=verifier}}
+
+\paragraph{INTEGRITY Multivisor} is a commercial real-time operating system and hypervisor developed by Green Hills Software. Although not much information seems to be publicly available, Green Hills Software has done considerable formal verification work \cite{richards_modeling_2010}. Multivisor has several certifications, including, for example, ISO 26262 ASIL D automotive electronics, NSA-certified secure mobile phones or FAA DO-178B Level A-certified avionics controlling life-critical functions on passenger and military aircraft \footnote{\url{https://ghs.com/products/rtos/integrity_virtualization.html}}.
+
+\paragraph{MINIX 3} is an operating system whose design is focused on high reliability and security. It is based on a tiny microkernel with the least responsibility possible, and the rest of the operating system is running an a number of isolated user processes. MINIX 3 has not been formally verified, but intends to provide strong security guarantees by design.
+
+\subsubsection{Binary analysis platforms}
+
+For this project, we will use the {HolBA} framework. However, several other binary analysis platforms have been created for various purposes, such as formal verification or static analysis. A common characteristic of these platforms is their use of an Intermediate Representation ({IR}). IRs are designed to be simpler to use for each platforms' end purpose. As an example, the HolBA platform has BIR as its intermediate representation.
+
+\paragraph{Microsoft Boogie} is Microsoft's intermediate verification language. Boogie is the IR for multiple Microsoft tools, including VCC. Boogie as a tool can infer some invariants on the given Boogie program and then generate verification conditions that are passed to an SMT solver \footnote{\url{https://www.microsoft.com/en-us/research/project/boogie-an-intermediate-verification-language/}}.
+
+\paragraph{Valgrind} is a framework for building program supervision tools, such as memory checkers, cache profilers or data-race detectors \cite{nethercote_valgrind:_2003}. As its core, Valgrind is a JIT x86-to-x86 compiler, translating binary programs into its IR called UCode. Then, \textit{skins}---tools built using the Valgrind framework---are free to work with the IR in order to perform their analysis.
+
+\paragraph{LLVM} is a compiler infrastructure which supports a unique multi-stage optimization system \cite{lattner_llvm:_2002}. LLVM is built around its {IR}, LLVM Virtual Instruction Set, which can be described as a strict RISC architecture with high-level type information. This IR made LLVM successful because it is a pragmatic IR suitable for optimizations at multiple stages (link-, post-link, and run-time) and supporting a wide variety of transformations. Leveraging this IR, an ecosystem grew around LLVM, providing tools such as symbolic execution (LLVM KLEE), benchmarking environments or static and dynamic analyzers.
+
+\paragraph{Mayhem} is a system for automatically finding exploitable bugs in binary programs and generating working exploits as proof of the discovered vulnerabilities \cite{cha_unleashing_2012}. It leverages BAP, the Binary Analysis Platform from Carnegie Mellon University (CMU BAP) \cite{brumley_bap:_2011}, as its IR. It proceeds by fist JIT-ing each instruction to the BAP intermediate language (IL) and then performing a custom symbolic execution.
+\medskip
+
+There are several other tools, platforms, and frameworks, such as Angr. An interesting note though is that BIR's design is based upon CMU BAP's intermediate language.
+
+The novelty introduced in HolBA, however, is that proofs are performed directly on the generated assembly code, not at the source code level. Therefore, proofs can be performed on programs without needing their source code, and regardless on the programming language used as long as it can be compiled in assembly code in an {ISA} supported by the platform.
+
+\section{Definitions and relevant theories}
+\textit{This section intends to provide brief introductions for concepts and the foundation of theories that are essential in order to understand the problem that this project aims to explore.}
+
+\subsection{Interactive Theorem Proving and HOL4} \label{hol4-presentation}
+
+Interactive theorem provers are software producing formal proofs, in an
+interactive fashion, i.e. a human can step through the proof interactively while the proof assistant provides some automation (like rewriting of terms, arithmetic evaluation, or integration with external tools like SMT solvers). Coq, HOL4 or Isabelle are such tools.
+
+HOL4 \cite{noauthor_hol_nodate} stands for Higher-Order Logic. It is a programming environment deeply embedded into the {SML} programming language enabling to prove theorems and write {proof-producing} programs. HOL4 uses a very small kernel in order to provide very high guarantees of correctness.
+
+
+\subsection{HolBA's BIR} \label{bir-presentation}
+
+HolBA's Binary Intermediate Representation (BIR) \cite{lindner_trabin:_2019}, introduced in the Introduction, is a machine independent binary representation. It aims to be the simplest possible while still being able to represent all possible binary programs but self-modifying programs. It does so by having a limited syntax and by forbidding implicit side-effects. A statement can only have explicit state changes and can only affect one variable. Valid BIR programs must be well-typed.
+
+This representation allows producing proofs more easily that with classical binary representations, whose design are focused on execution speed rather than offline analysis. Moreover, BIR doesn't have unspecified behavior.
+
+BIR is implemented as a set of HOL4 \textit{datatypes}, and possesses a completely defined semantic. Section \ref{bir-memories-with-smt-solvers} contains a more thorough discussion of the BIR semantic. Section \ref{alice-bob-toy} implements a toy BIR program and presents the concrete BIR syntax.
+
+Among its supporting tools, HolBA features a tool to visualize the Control Flow Graph ({CFG}) of BIR programs.
+
+
+
+
+\section{Overview of the formal proof of the NIC model} \label{overview-nic-proof}
+\textit{This section will present the formal verification of \cite{haglund_formal_2016} and present an attempt that have been made about visualization of the proofs.}
+\medskip
+
+The formal verification of a NIC in \cite{haglund_formal_2016} represents the NIC as a transition system. composed of five finite state automata, each responsible for a different task: initialization, transmission, transmission teardown, reception and reception teardown. These automata have autonomous transitions that represent the standalone operation of the device. Communication with the CPU is represented with non-autonomous transitions. The model also contains a scheduler. Since this model has been realized using the public specification of the device, which is underspecified, the simulated state of the device is marked \textit{dead} if the model is asked to describe any transition or operation that is not described by the specification.
+Being designed as a transition system, the whole model is loop free, which is convenient for contract-based verification, since that hard composition theorems would otherwise be needed.
+
+% TODO: Check that loop-free is mentioned afterwards
+
+The state of the NIC is defined as a nested data type containing registers and a memory called \textit{CPPI\_RAM}.
+
+The low-level lemmas of the verification (represented in Figure \ref{hol-v-bir-nic-model-simple}) are stated using invariants that must hold for every possible transition.
+
+
+\begin{small}
+  \begin{gather}
+    \label{nic-proof-invariant-shape}
+    I_{NIC} \eqdef \neg dead~\land~I_{init}~\land~I_{tx}~\land~I_{td}~\land~I_{rx}~\land~I_{rd}\\
+  %
+    \label{nic-proof-typical-lemma}
+    I~nic~ \land nic' = transition~nic \implies I~nic'
+  \end{gather}
+\end{small}
+
+\subsection{Visualizing proof dependencies}
+
+The model of the NIC consists of \num{1500} lines of HOL4 code and required around three man-months of work. The NIC invariant consists of \num{650} lines of HOL4 code and the proof consists of approximately \num{55000} lines of HOL4 code including comments. Identifying the invariant and implementing the proof in HOL4 required around one man-year of work \cite{haglund_trustworthy_nodate}.
+
+The proof being consequent and divided into several script files, it is difficult to identify what are the low-level lemmas to be reproved in this work. Therefore, a tool, called DepGraph, has been implemented in order to extract the dependency structure from proof files in the form of a graph. Then, the fringe of the graph represents the smallest set of lemmas that is enough to prove in order to imply the security properties by using the rest of the proofs unchanged.
+
+DepGraph features two frontends that can extract dependencies between HOL4 theories (i.e. compiled {SML} files containing proofs of lemmas and theorems) and between definitions, theorems, and lemmas. However, this tool presents some critical shortcomings:
+
+\begin{figure}[H]
+	\includegraphics[height=3.6cm]{figures/transitive-reduction.png}
+	\centering
+	\caption{The right-hand side graph represent the transitive reduction of the left-hand side graph. Edges $(0 \rightarrow 3)$, $(0 \rightarrow 4)$ and $(2 \rightarrow 4)$ have been deleted because the transitive dependency relationship is preserved in the remaining edges. For example, the dependency $(0 \rightarrow 3)$ is represented in paths $(0 \rightarrow 1  \rightarrow 3)$ and $(0 \rightarrow 2 \rightarrow 3)$.}
+	\label{transitive-reduction}
+\end{figure}
+
+\begin{itemize}
+	\item The theory dependencies exporter uses files generated by Holmake, the HOL4 compile system, in order to get the dependencies between theories. However, those files don't really represent dependencies but the files to be loaded before this script can be loaded, in a recursive fashion. Therefore, they represent the transitive reduction of the dependency graph. Figure \ref{transitive-reduction} presents transitive reduction. Because of this fact, precious knowledge is lost and cannot be recovered by using this method: edges representing direct dependencies can be removed if the remaining edges still account for this dependency. Therefore, we are still able to tell which nodes depend on some node $n$, but we cannot identify the aforementioned fringe. In order to solve this problem, different approaches exist, such as implementing a simplified SML parser that looks only at dependencies, or injecting code inside the dependency resolution of an existing SML compiler. However, this would involve too much work that isn't the direct focus of this thesis.
+	\item The definition, theorem and lemma dependencies exporter uses word-based heuristics in order to extract dependencies, and is as such not quite reliable and cannot give any guarantee. As above, there exist similar solutions in order to get multiple levels of guarantees, such that implementing a SML parser or injecting code inside HOL4 theory and definitions handling, but this would also require too much work. Destructuring HOL4 theories does not work because of how HOL4 has been designed. Moreover, such dependency graphs become quickly big, making them unusable in practice, and some additional work would be needed in order to represent them in a convenient way. Therefore, as above, no further work has been put into this exporter.
+\end{itemize}
+
+\noindent DepGraph's frontend for theory dependencies is still useful for documentation purpose, and has been used to visualize HolBA's architecture.
+
+\section{The BIR NIC model} \label{nic-model}
+\textit{This section presents the three different approaches made in order to implement an equivalent BIR model from the formal NIC model. Tools that have been implemented in order to build it will also be introduced.}
+\medskip
+
+Multiple approaches to the translation of the formal NIC model to an equivalent BIR program have been considered, from handwritting a BIR program (Sections \ref{alice-bob-toy} to \ref{impl-real-model}), lifting a C program (Section \ref{c-model}) to developing a new device model specific IR (Section \ref{flowchart-attempt}).
+
+\subsection{Using flowcharts as Intermediate Representation} \label{flowchart-attempt}
+
+The CFG of the transition system of the formal model looks like a tree. Therefore, using flowcharts could be a convenient way to represent such structures. An attempt has been made to design a flowchart representation. Figures \ref{flowchart-scheduler}, \ref{flowchart-tx} and \ref{flowchart-tx_fetch_next_bd} show respectively a preview of the scheduler, transmission automaton and a particular transition of this automaton.
+
+While this visual representation was useful to get to know the formal NIC model, we encountered several shortcomings:
+
+\begin{itemize}
+    \item Flowcharts of each transition rapidly grew in size with the complexity of its formal counterpart. Possible workarounds include the use of nested diagrams, as it is the case of Figure \ref{flowchart-tx_fetch_next_bd} representing one node of Figure \ref{flowchart-tx}, namely \texttt{fetch\_next\_bd}, or usage of shorter ways of representing common patterns, as it is the case for representing dead transitions on Figure \ref{flowchart-tx_fetch_next_bd}.
+    \item It is hard to define a coherent visual language able to represent the full set of features needed in order to realize device models. Additionally, this language must be compatible or easily translatable to BIR.
+    \item It is hard to design a textual representation of this visual language other than conventional programming languages, so using such representation would require a substantial implementation effort in order to implement all the tools needed to use it. Developing visualization tools for a conventional language appears to be a more reasonable approach than developing a visual language.
+\end{itemize}
+
+For those reasons, it has been decided to not go further with this visual representation, and to focus instead of existing tools of the HolBA platform. However, as we shall see in the rest of this thesis, we will explore other visualization tools, and flowcharts will be used as a visual help while designing the model using other methods.
+
+
+\end{multicols}
+
+\section*{Appendix. {\normalsize\textit{Figures}}}
+\renewcommand{\thefigure}{A.\arabic{figure}}
+\setcounter{figure}{0}
+
+\begin{figure}[p]
+	\includegraphics[width=\columnwidth]{figures/flowchart-scheduler.png}
+	\centering
+	\caption{Flowchart of the scheduler of the NIC model. Green nodes represent condition statements, here they represent the value of the popped action from the oracle. The full dot represents the entry point, and the other point the exit point.}
+	\label{flowchart-scheduler}
+\end{figure}
+
+\begin{figure}[p]
+	\includegraphics[width=\columnwidth]{figures/flowchart-tx.png}
+	\centering
+	\caption{Flowchart of the transmission automaton of the NIC model. Green nodes are similar to the ones of Figure \ref{flowchart-scheduler}. Red nodes represent non autonomous transitions leading to dead states.}
+	\label{flowchart-tx}
+\end{figure}
+
+\begin{figure}[p]
+	\includegraphics[width=\columnwidth]{figures/flowchart-tx_fetch_next_bd.png}
+	\centering
+	\caption{Flowchart of the \texttt{fetch\_next\_bd} transition of the transmission automaton of the NIC model. The full dot represent the entry point, $\bigotimes$ represents the exit point and the other dots are shorthands to represent dead transitions (the symbols have been changed because of technical limitations of the tool used to draw the diagram).}
+	\label{flowchart-tx_fetch_next_bd}
+\end{figure}
+
 \end{document}
 
 
