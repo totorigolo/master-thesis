@@ -55,7 +55,8 @@
 \newcommand{\notimplies}{%
   \mathrel{{\ooalign{\hidewidth$\not\phantom{=}$\hidewidth\cr$\implies$}}}}
 \newcommand{\eqdef}{\stackrel{def}{=}}
-\newcommand{\eqeval}{\stackrel{eval}{=}}
+
+% \renewcommand{\implies}{\ensuremath{\Rightarrow}}
 
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{corollary}{Corollary}[theorem]
@@ -141,9 +142,9 @@ INSA de Lyon}
 
 Embedded systems are becoming more and more common with the current advent of {IoT} and mobile computing platforms, such as smartphones. Those systems are fully-fledged computers with powerful hardware, complete operating systems, and access to the Internet. Such systems can run security-critical services, such as a building security system or automatic toll gates, or carry valuable information as it is the case for personal smartphones. Therefore, these two characteristics make them targets of choice for attackers.
 
-The {PROSPER} project \cite{noauthor_prosper:_nodate} aims to develop a secure and formally verified hypervisor for embedded systems. Hypervisors are thin layers running directly on top of hardware providing the ability to run virtualized applications, such that operating systems or real-time control systems. Those virtualized applications then don't have privileged access to the hardware and have to go through the hypervisor. This allows different applications to share the same hardware while providing strong isolation between them, thus ensuring confidentiality and security. Moreover, security not only means protection from external attacks but also resilience to bugs. If multiple critical systems are running on the same hardware, bugs or crashes in some systems shouldn't affect the others from behaving correctly.
+The {PROSPER} project \cite{noauthor_prosper:_nodate-1} aims to develop a secure and formally verified hypervisor for embedded systems. Hypervisors are thin layers running directly on top of hardware providing the ability to run virtualized applications, such that operating systems or real-time control systems. Those virtualized applications then don't have privileged access to the hardware and have to go through the hypervisor. This allows different applications to share the same hardware while providing strong isolation between them, thus ensuring confidentiality and security. Moreover, security not only means protection from external attacks but also resilience to bugs. If multiple critical systems are running on the same hardware, bugs or crashes in some systems shouldn't affect the others from behaving correctly.
 
-Previous work in the {PROSPER} project achieved to formally verify a simple separation kernel \cite{noauthor_prosper:_nodate-1,dam_formal_2013}, which later resulted into an implementation of a working hypervisor. Then, they achieved to run both Linux and {FreeRTOS} on top of it. Finally, they formally verified memory isolation for virtualized applications \cite{nemati_trustworthy_2015}. However, hardware devices were not included in the verification, so devices, like Network Interface Controller ({NIC}), cannot be used by the virtualized applications reducing the value of the hypervisor. In order to solve this issue, verification of hardware devices is being carried out.
+Previous work in the {PROSPER} project achieved to formally verify a simple separation kernel \cite{dam_formal_2013}, which later resulted into an implementation of a working hypervisor. Then, they achieved to run both Linux and {FreeRTOS} on top of it. Finally, they formally verified memory isolation for virtualized applications \cite{nemati_trustworthy_2015}. However, hardware devices were not included in the verification, so devices, like Network Interface Controller ({NIC}), cannot be used by the virtualized applications reducing the value of the hypervisor. In order to solve this issue, verification of hardware devices is being carried out.
 
 A formal model of a {NIC} device has already been produced, on which some security theorems have been proved \cite{haglund_formal_2016}. These theorems can be seen as high-level proofs relying on a layer of lower-level lemmas. This layer provides an abstraction over the raw formal model. This is illustrated in the left-hand side of Figure \ref{hol-v-bir-nic-model-simple}. However, there exist more devices that are of interest to verify, so it is very desirable to automate formal verification of devices and use a standard model for reasoning about them.
 
@@ -517,38 +518,33 @@ The following Section \ref{trustful-nic-analysis} explores a new proof-producing
 
 
 \section{A new approach for trustful analysis} \label{trustful-nic-analysis}
-\textit{In this section,  we will perform a proof on a BIR program and then lift it to an abstract model.}
+\textit{In this section, we will perform a proof on a BIR program and then lift it to an abstract model.}
 \medskip
 
-In order to prove the feasibility of this approach, we will prove a simple property. Listing \ref{proof_nic_state} contains the formal state on which we want to prove a property, Equations \ref{proof_nic_P_def}, \ref{proof_nic_Q_def} and \ref{proof_goal} present the property that we want to prove, and Listing \ref{proof_prog} contains a pseudocode representation of the BIR program on which we will perform the verification. Figure \ref{proof_schema} represents visually the structure of the verification and the steps that we will take during the proof. 
-
-\begin{lstlisting}[
-    language={},
-    backgroundcolor=\color{codebackcolour},
-    commentstyle=\color{codegreen},
-    keywordstyle=\color{magenta},
-    stringstyle=\color{codepurple},
-    label=proof_nic_state,caption=NIC state used in this proof,
-    frame=tb,basicstyle=\footnotesize\ttfamily]
-Datatype `nic_state = <|
-  dead : bool;
-  x : word32
-|>`
-\end{lstlisting}
-
+In order to prove the feasibility of the approach, we decided to prove a simple property. We used as a formal state, on which we want to prove a property, a HOL4 data type composed of two variables: $NIC.dead:bool$ and $NIC.x:word32$. Equations \ref{proof_nic_P_def}, \ref{proof_nic_Q_def} and \ref{proof_goal} present the property that we proved. Listing \ref{proof_prog} contains a pseudocode representation of the BIR program on which we performed the verification. Figure \ref{proof_schema} represents visually the structure of the verification and the steps that we took during the proof.
+%
 \begin{small}
 \begin{align}
-\label{proof_nic_P_def}
-\vdash~&\forall nic.~P_{NIC}~nic \eqdef \neg nic.dead \land nic.x = 0w\\
-%
-\label{proof_nic_Q_def}
-\vdash~&\forall nic~nic'.~Q_{NIC}~nic~nic' \eqdef \neg nic'.dead \land nic'.x = nic.x + 1w\\
-%
-\label{proof_goal}
-\vdash~&\forall nic~nic'.~P_{NIC}~nic~\land~exec\_prog~nic~bir\_prog~nic'~\implies~Q_{NIC}~nic~nic'
+  \begin{split}
+    \label{proof_nic_P_def}
+    \vdash~\forall &nic.~P_{NIC}~nic \eqdef\\
+      &~~~~~\neg nic.dead \land nic.x = 0w
+  \end{split}\\
+  %
+  \begin{split}
+    \label{proof_nic_Q_def}
+    \vdash~&\forall nic~nic'.~Q_{NIC}~nic~nic' \eqdef\\
+      &~~~~~\neg nic'.dead \land nic'.x = nic.x + 1w
+  \end{split}\\
+  %
+  \begin{split}
+    \label{proof_goal}
+    \vdash~&\forall nic~nic'.~(exec\_prog~nic~bir\_prog~nic'\\
+      &\land~P_{NIC}~nic)~\implies~Q_{NIC}~nic~nic'
+  \end{split}
 \end{align}
 \end{small}
-
+%
 \begin{lstlisting}[
     language=C,
     backgroundcolor=\color{codebackcolour},
@@ -561,200 +557,218 @@ nic.x := nic.x + 1
 if nic.x > 10:
     nic.dead := true
 \end{lstlisting}
-
-\begin{figure}[!h]
-	\includegraphics[height=5cm]{figures/proof_schema.png}
+%
+\begin{figure}[H]
+	\includegraphics[width=\columnwidth]{figures/proof_schema.png}
 	\centering
 	\caption{Visual structure of the proof. References like (a) to the arrows of this Figure are used throughout the proof to refer to a particular step.}
 	\label{proof_schema}
 \end{figure}
-
+%
 \begin{remark} \label{remark_Q_nic_intial_final}
-$Q_{NIC}~nic~nic'$ is defined on both initial and final states, in order to be able to reason about the initial state in the postcondition. This allows us to write $nic'.x = nic.x + 1w$ instead of $nic'.x = 1w$ for example.
+$Q_{NIC}~nic~nic'$ has been defined on both initial and final states, in order to be able to reason about the initial state in the postcondition. This allowed us to write $nic'.x = nic.x + 1w$ instead of $nic'.x = 1w$ for example.
 \end{remark}
-
-Equation \ref{proof_goal} uses a relation $exec\_prog$ that we shall define now. As we want to make a proof on an undefined HOL4 definition (a), we must establish an equivalence between the HOL4 definition (a) and the BIR program (c). In real proofs, this can either be produced by a lifter which generates the BIR program from a given input program and gives a ``certificate'', i.e. a theorem stating the equivalence, or be a definition which would then mean that we trust that the BIR program is equivalent to the HOL4 definition. In this proof, we will use a definition. This definition shall state that $exec\_prog~nic~bir\_prog~nic'$ (a) is equivalent to executing the BIR program from a state $bir\_state$ to a state $bir\_state'$ (c), where $nic$ is somehow equivalent to $bir\_state$ (b) and $nic'$ somehow equivalent to $bir\_state'$ (d). To express an equivalence between HOL4 states ("NIC") and BIR states, we introduce a relation $R$. The relation $R~nic~bir\_state$ is defined as a simple mapping between the BIR state and the NIC state, as shown in Listing \ref{proof_R_def}. Then, we define the relation $exec\_prog$ as shown in Equation \ref{proof_eq_thm}\footnotemark.
-
-\footnotetext{Definition \ref{proof_eq_thm} has been annotated to visualize how it is connected to the structure of the proof on Figure \ref{proof_schema}. In addition, the $BIR\_exec$ relation is used as a shorthand for $bir\_exec\_to\_labels$ in order to simplify the proof.}
-
-\begin{lstlisting}[
-    language=C,
-    backgroundcolor=\color{codebackcolour},
-    commentstyle=\color{codegreen},
-    keywordstyle=\color{magenta},
-    stringstyle=\color{codepurple},
-    label=proof_R_def,caption=Definition of the relation $R$,
-    frame=tb,basicstyle=\footnotesize\ttfamily]
-val R_def = Define `
-  R (nic: nic_state) (bir_state: bir_state_t) <=>
-       (bir_env_lookup "nic_dead" bir_state.bst_environ
-          = SOME (BType_Bool,
-                  SOME (BVal_Imm (Imm1 nic.dead))))
-    /\ (bir_env_lookup "nic_x" bir_state.bst_environ
-          = SOME (BType_Imm Bit32,
-                  SOME (BVal_Imm (Imm32 nic.x))))`
-\end{lstlisting}
-
+%
+\par We used Definition \ref{proof_eq_thm} in order to establish a relation between the HOL4 definition (a) and the BIR program (c). Another solution would have been to generate a proof-producing lifter from the formal definition (a) to BIR program (c), but has been kept as future work.
+%
 \begin{small}
-\begin{equation}
-\begin{split}
-  \vdash \forall nic~nic'. &~exec\_prog~nic~bir\_prog~nic' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \text{(a)}\\
-    \eqdef~&\forall bir\_state~bir\_state'.\\
-          & ~~~~~~ (R~nic~bir\_state ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \text{(b)}\\
-          & ~~~~~~ \land bir\_state' = BIR\_exec~prog~bir\_state) ~~~~~ \text{(c)}\\
-          & ~~~~~~ \implies R~nic'~bir\_state' ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \text{(d)}
-\end{split}
-\label{proof_eq_thm}
-\end{equation}
+  \begin{equation}
+  \begin{split}
+    \vdash \forall &nic~nic'.~exec\_prog~nic~bir\_prog~nic'~\eqdef ~~\, \mathbf{(a)}\\
+      &\forall bir\_state~bir\_state'.~(R~nic~bir\_state~\land ~~ \mathbf{(b)}\\
+            &~~~~bir\_state' = BIR\_exec~prog~bir\_state) ~~ \mathbf{(c)}\\
+            &~\implies R~nic'~bir\_state' ~~~~~~~~~~~~~~~~~~~~~~~~~~~\, \mathbf{(d)}
+  \end{split}
+  \label{proof_eq_thm}
+  \end{equation}
 \end{small}
-
-\begin{proof}[Proof of Equation \ref{proof_goal}]
-
-\numberwithin{equation}{theorem} % Changes numbering of equations inside theorems
-
-%\textit{\textbf{Note}: The proof has been simplified in order to focus on its global structure.}
-
-In order to begin the proof, as the goal \ref{proof_goal} is defined over $nic$ states, we need a theorem about the injectivity of the relation $R$, stating that for all $nic$ exists a $bir\_state$ such that $R~nic~bir\_state$ (b). Additionally, the $BIR\_exec$ relation will also need some properties on $bir\_state$, that we shall add in this injectivity theorem now.
-
-\begin{theorem} \label{proof_R_inj_thm}
-Injectivity theorem of $R$
-\begin{equation*} \label{proof_R_inj_thm_eq}
-\begin{split}
-    \vdash~\forall nic.&~\exists bir\_state.\\
-    		&~~~~~R~nic~bir\_state\\
-		&\land~bir\_state.bst\_pc.bpc\_index = 0\\
-		&\land~bir\_state.bst\_pc.bpc\_label = entry\_label\\
-		&\land~bir\_state.bst\_status = BST\_Running
-\end{split}
-\end{equation*}
-\end{theorem}
+%
+\vspace{-5pt}
+\par The relation $R$ is used to express an equivalence between HOL4 states (``$nic$'') and BIR states, and is defined as a simple mapping of the variables between the BIR state and the formal state.
 
 \begin{proof}
-After rewriting the relation $R$, we prove theorem \ref{proof_R_inj_thm} by exhibiting a satisfying $bir\_state$.
-\end{proof}
 
-In possession of a $bir\_state$ in relation with a $nic$, we now need to lift the precondition $P_{NIC} nic$ on this $bir\_state$. First, we need to introduce equivalent pre- ---and post- ---conditions on the BIR states, then we shall prove that the precondition lifts.
+For (b), we proved the injectivity of $R$, and added to the theorem some constraints on the initial BIR state needed as hypothesis for $BIR\_exec$.
 
-\begin{lstlisting}[
-    language=C,
-    backgroundcolor=\color{codebackcolour},
-    commentstyle=\color{codegreen},
-    keywordstyle=\color{magenta},
-    stringstyle=\color{codepurple},
-    label=proof_bir_conditions,caption=Equivalent pre- and postconditions on BIR states,
-    frame=tb,basicstyle=\footnotesize\ttfamily]
-val BIR_P_exp_def = Define `BIR_P_exp = ^(bandl [
-  beq ((bden o bvarimm1) "nic_dead", bfalse),
-  beq ((bden o bvarimm32) "nic_x", bconst32 0)
-])`
-val BIR_Q_exp_def = Define `BIR_Q_exp = ^(bandl [
-  beq ((bden o bvarimm1) "nic_dead", bfalse),
-  beq ((bden o bvarimm32) "nic_x", bconst32 1)
-])`
-val BIR_P_def = Define `BIR_P bstate =
-  bir_eval_bool_exp BIR_P_exp bstate.bst_environ`
-val BIR_Q_def = Define `BIR_Q bstate =
-  bir_eval_bool_exp BIR_Q_exp bstate.bst_environ`
-\end{lstlisting}
-
+Then, we defined the equivalent pre- and postcondition on BIR, and proved Theorem \ref{proof_b_thm}.
+%
+\begin{equation} \label{proof_b_thm}
+  \begin{split}
+  \vdash~\forall bir\_state~(\exists nic.~R~nic~bir\_state~\land\\
+  P_{NIC}~nic) \implies P_{BIR}~bir\_state
+  \end{split}
+\end{equation}
+  
 \paragraph{Limitation} $Q_{BIR}$ is a function of the end state only. Hence, in order to reason about the initial state, we need in general to introduce ghost variables postcondition. In this proof, since the contract that we are proving is simple, using the actual value of $nic.x$ is enough. However, this may pose a problem if we want to generalize the proof.
 
-\paragraph{Notation} $P_{BIR}~bir\_state$ and $Q_{BIR}~bir\_state$ are defined using $bir\_eval\_bool\_exp$, which evaluates respectively the expressions $P^{exp}_{BIR}$ and $Q^{exp}_{BIR}$ in a given BIR state. In order to simplify the proof, let's define a new operator $\eqeval$ that is used to evaluate given variables, e.g. $bir\_state.x \eqeval 0w$.
-\bigskip
-
-\begin{theorem} \label{proof_b_thm}
-Lifting of $P_{NIC}~nic$ to $bir\_state$
-\begin{equation*} \label{proof_b_thm_eq}
-\begin{split}
-\vdash~\forall bir\_state~(\exists nic.~R~nic~bir\_state~\land~P_{NIC}~nic) \implies P_{BIR}~bir\_state
-%⊢ ∀bir_state. (∃nic. R nic bir_state ∧ NIC_P nic) ⇒ BIR_P bir_state
-\end{split}
-\end{equation*}
-\end{theorem}
-
-\begin{proof}
-Let's do this proof in a backward way. By discharging the antecedent of the implication and using the existential elimination inference rule, we get as assumptions $P_{NIC}~nic$ and $R~nic~bir\_state$. From this, we can deduce that $bir\_state.x \eqeval 1w$ and $bir\_state.dead \eqeval \bot$. Then, we can substitute those values in the goal, which proves it.
-\end{proof}
-
-Assuming that we have a Hoare Triple theorem between initial and final BIR states, we can use Definition \ref{proof_eq_thm} in order to establish that $R~nic'~bir\_state'$. Then, in order to prove $Q_{NIC}~nic$ (d), we have to transfer the postcondition back from $bir\_state$ to $nic$.
-
-\begin{theorem} \label{proof_d_thm}
-Lowering $Q_{BIR}~bir\_state$ to $nic$.
-\begin{equation*} \label{proof_d_thm_eq}
+For step (d), we proved Theorem \ref{proof_d_thm}. We introduced $bir\_state$ and $P_{BIR}$ in order to reason about both the initial and final state in the postcondition (cf. Remark \ref{remark_Q_nic_intial_final}).
+%
+\begin{equation} \label{proof_d_thm}
 \begin{split}
 \vdash~\forall~&bir\_state'.~Q_{BIR}~bir\_state' \implies\\
 	&(\forall nic~nic'~bir\_state.~P_{BIR}~bir\_state\\
 	&~~~~~~\land~R~nic~bir\_state~\land~R~nic'~bir\_state'\\
 	&~~~\implies Q_{NIC}~nic~nic')
 \end{split}
-\end{equation*}
-We introduce $bir\_state$ and $P_{BIR}$ in this theorem for the reason explained in Remark \ref{remark_Q_nic_intial_final}, i.e. reason about both the initial and final state in the postcondition.
-\end{theorem}
-
-\begin{proof}
-This proof has been done in HOL4. The reasoning is quite similar to the proof of Theorem \ref{proof_b_thm}, as the backward proof mainly involves rewriting and simplification. We will omit this proof here and redirect the reader to the HOL4 proof available in our source repository \cite{lacroix_trustful_2019}.
-\end{proof}
-
-We will now prove that the Hoare Triple holds on the BIR program.
-\bigskip
-
-\begin{theorem} \label{proof_ht_thm}
-\htriple{P^{exp}_{BIR}}{bir\_prog}{Q^{exp}_{BIR}}
-\end{theorem}
-
-\begin{proof}
-To prove this Hoare Triple, we used the proof-producing procedure implemented in {holba} in order to generate the weakest precondition. The automatically derived weakest precondition is shown in Figure \ref{proof_wp_exp}. Section \ref{contract-verif-holba} already discussed how to perform this proof: we have to prove Equation \ref{eval_pre_imp_eval_wp} with $\mathbf{wp}$ being the expression in Figure \ref{proof_wp_exp} and $\mathbf{pre}$ being $P^{exp}_{BIR}$. Because we want to use a {SMT} solver, we need to turn the goal of the backward proof into a \textit{wordsTheory} expression. \textit{combinTheory} isn't needed in this case since BIR memories are not used. Equation \ref{eval_pre_imp_eval_wp} uses $bir\_eval\_exp$ which evaluates an expression in the given BIR state. Therefore, to translate the goal into a \textit{wordsTheory} expression, we need to use BIR's semantic. The semantic needs well-typedness and initialization of the variables. At the time of writing, HolBA offers no support for automatic rewriting with the semantic definitions, so multiple lemmas about initialization, well-typedness, and type equality must be manually proved for every variable. Those are not shown here because they consist of simple rewriting and simplification.
-
-\begin{figure}[!h]
-	\includegraphics[scale=.65]{figures/proof_wp_exp.png}
-	\centering
-	\caption{Autogenerated weakest precondition for proof of Theorem \ref{proof_ht_thm}.}
-	\label{proof_wp_exp}
-\end{figure}
-
-Then, the proof consist of consecutively rewriting following the definition of $bir\_eval\_exp$ and the definition it uses until the goal only contains $$bir\_env\_read~(BVar~``nic\_x"~(BType\_Imm~Bit32))~bir\_state.bst\_environ$$ and similarly for $nic.dead$. Let's call those expressions $x\_val$ and $dead\_val$ respectively. For expressions, BIR semantic is defined over immutable and constant values. Therefore, we need to establish an equivalence between the values that we currently have.
-
-\begin{lemma}
-	\begin{equation*}
-		\exists x\_imm.~x\_val = BVal\_Imm~x\_imm
-	\end{equation*}
-	\label{proof_exists_x_imm}
-\end{lemma}
-\begin{proof}
-Assuming well-typedness and initialization, this theorem immediately results from the BIR semantic.
-\end{proof}
-
-\begin{lemma}
-	\begin{equation*}
-		\exists x\_word.~x\_imm = Imm32~x\_word
-	\end{equation*}
-	\label{proof_exists_x_word}
-\end{lemma}
-\begin{proof}
-This lemma is part of the BIR semantic, as one of the six conjuncts of the \texttt{bir\_imm\_t\_nchotomy} theorem, which establishes this existence theorem for every BIR immutable types.
-\end{proof}
-
-Now, using Lemma \ref{proof_exists_x_imm}, we are able to substitute all occurrences of $x\_val$ into $BVal\_Imm~(Imm32~x\_word)$, and similarly for $dead\_val$. Finally, rewriting the goal using the full set of BIR semantic theorems and some rewriting rules, the goal reduces to an expression free of BIR terms:
-
-\begin{equation} \label{proof_wp_word_goal}
-\begin{split}
-&(dead\_w = 0w) \land (x\_w = 0w) \implies\\
-&\Big(\neg(10w <_{+} x\_w + 1w) \lor \big((1w = 0w) \land (x\_w + 1w = 1w)\big)\Big)~\land\\
-&\Big((10w <_{+} x\_w + 1w) \lor \big((dead\_w = 0w) \land (x\_w + 1w = 1w)\big)\Big)
-\end{split}
 \end{equation}
 
-An {SMT} solver is able to prove this goal. Interestingly, HOL4 simplification procedures are also able to prove it. However, they won't be able to prove it for more complicated ones or will be less effective than SMT solvers.
-\end{proof} % End of Hoare Triple proof
+Finally, we proved that the Hoare Triple holds on the BIR program:
 
-Finally, using the deduction rule with Theorems \ref{proof_R_inj_thm}, \ref{proof_b_thm}, \ref{proof_R_def}, \ref{proof_ht_thm}, \ref{proof_eq_thm} and \ref{proof_d_thm}, in that order, concludes this proof.
-\renewcommand\qedsymbol{$\blacksquare$}
+\begin{equation} \label{proof_ht_thm}
+\vdash~\htriple{P^{exp}_{BIR}}{bir\_prog}{Q^{exp}_{BIR}}
+\end{equation}
+
+To that end, we used HolBA's proof-producing WP tool to generate the implication $P \implies WP$ as a BIR expression. Then, to turn the goal into a \textit{wordsTheory} expression, we showed the assumptions needed to use BIR semantic's rewrite theorems about well-typedness and initialization, as well as Lemmas \ref{proof_exists_x_imm} and \ref{proof_exists_x_word} instantiated for all BIR variables. We were then able to substitute all occurrences of $x\_val$ into $BVal\_Imm~(Imm32~x\_word)$, and similarly for $dead\_val$.
+%
+\begin{align}
+  \label{proof_exists_x_imm}
+  \exists x\_imm.~x\_val = BVal\_Imm~x\_imm\\
+  \label{proof_exists_x_word}
+  \exists x\_word.~x\_imm = Imm32~x\_word
+\end{align}
+
+Finally, we were able to rewrite the goal using the full set of BIR semantic theorems and some rewriting rules into a form that \textit{HolSmtLib} can handle.
+
+To complete the proof of Theorem \ref{proof_goal}, we used the deduction rule with the injectivity theorem, Theorem \ref{proof_b_thm}, the definition of $R$, and Theorems \ref{proof_ht_thm}, \ref{proof_eq_thm} and \ref{proof_d_thm}, in that order.
+  
 \end{proof}
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{User experience and good practices} \label{user-friendliness}
+\textit{This chapter will present the care that has been put into user experience and good practices throughout this work.}
+
+In this work, we took the role of a user of the HolBA platform, and of HOL4 by necessity. HOL4 learning curve is quite steep, and very few efforts have been invested towards beginner friendliness because this topic can become really time-consuming and its perceived importance greatly depends on one's experience. Throughout our design and implementation process, great care has been put into having a good user experience while keeping time spent on this issue reasonably low. Section \ref{towards-user-exp} will briefly present what has been done in order to increase user experience.
+
+Additionally, binary analysis platforms are complex software systems, and should as such follow well-known best practices in order to make it last and develop serenely. Therefore, Section \ref{best-practices-complex-platform} presents some best practices that have been adopted in HolBA.
+
+\subsection{Towards better user experience} \label{towards-user-exp}
+\subsubsection{BSL and the pretty-printer}
+
+Already presented in details in Sections \ref{bsl} and \ref{pretty-printers} respectively, BSL and BIR pretty-printers are two successful attempts to simplify HolBA users manipulation of BIR, respectively writing and reading BIR code.
+
+BSL is, as the name suggests, a really simple library that enables less verbose writing of BIR terms. There was no strict need for this library, since HOL4 features a powerful quoting system that can already parse raw BIR code. However, the raw BIR syntax is (a) cumbersome to use and arguably becomes hard to maintain as the code grows in size and (b) isn't easy to mix with SML code. BSL offers a convenient solution to both problems, and the time spent in order to implement it has been very limited, roughly about two days.
+
+Similarly, BIR pretty-printers were not a hard need, but rather a welcomed feature. When debugging large BIR expressions, we spent a non-negligible amount of time counting parenthesis, grouping operators and searching arms of binary operators. The pretty-printers give a convenient solution to these problems, and required a limited implementation effort, roughly about two days spent in iterative improvements.
+
+\subsubsection{Error handling in SML and HOL4}
+% Present the problems specific to HOL4 that arise when debugging proofs and libs.
+% Introduce exception wrapping and explain how they help to locate the location of errors and can help interactive use of HOL4 by giving more precise information about what went wrong. Analogous to backtraces.
+
+Errors happen. This is a truth in engineering and software engineering is no exception to the rule. However, when handled successfully, errors can increase the reliability and usefulness of a system, because they can force invariants and provide insightful information.
+
+{SML} offers error handling via exceptions that can be raised and handled, raised on errors and handled at places where recovery is possible and desirable. Being deeply embedded in SML, HOL4 inherit this behavior. However, being a complex system on its own, HOL4 can raise exceptions at a lot of places. When used without attention, HOL4 can raise exceptions at unexpected and often distant (i.e. in dependencies of the functions that are directly used) locations. Hence, when some exceptions are raised, meaningless error messages are raised and dumped at the user. For example, a user incorrectly using some function could receive an exception saying ``\textit{Not a conjunction}'', whereas the function interface doesn't directly take logical expressions as arguments. Here, the implementation is leaking to the user that should not have to know anything about it.
+
+To answer this issue, there are two immediate possibilities (in addition to fixing the actual error): (a) code could handle possible exceptions of code that it uses and that could produce some, and either handle the issue (if possible) or raising another more meaningful error, and (b) HOL4 provides an exception wrapping mechanism in its \textit{Feedback} library that offers the possibility of adding information to an exception on the flight, producing a result analogous to backtrace in other programming languages.
+
+\subsubsection{LogLib, a logging library} \label{loglib}
+%Introduce tracing in HOL4 in general (levels, HOL4 warnings and error \textbf{messages}).
+
+A logging library, called \textit{logLib}, has been implemented. HOL4 provides a tracing system which allows registering \textit{traces}, i.e. references to an integer representing the verbosity level of some system that can be changed at runtime in order to adjust the desired level of debug information. However, HOL4 only provides the system for registering traces and some logging function, but it does not provide conditional logging functions on the current trace level.
+
+\textit{logLib} offers a convenient way to tracing: when given a trace variable, it returns four functions conditional on the value of the trace variable. The functions are named, in increasing verbosity level, \textit{trace}, \textit{debug}, \textit{info}, \textit{warn} and \textit{error}. Additionally, each function prints the given message with a specific header. This header is coloured depending on the log level, making reading long logs easier. Furthermore, each log line contains location information, facilitating the process of identifying where some error or warning happened. Figure \ref{loglib-ppexn-ppterm} shows an execution output with message from the \textit{trace} and \textit{debug} functions.
+
+\begin{figure}[t]
+	\includegraphics[width=\textwidth]{figures/loglib-ppexn-ppterm.png}
+	\centering
+	\caption{Extract of a script output, featuring \textit{trace} and \textit{debug} information from \textit{logLib} (Section \ref{loglib}), and an exception printed using the exception pretty-printer (Section \ref{pp_exn}). The original exception can be seen in white at the bottom of the image.}
+	\label{loglib-ppexn-ppterm}
+\end{figure}
+
+\subsubsection{SML exception pretty-printer} \label{pp_exn}
+
+As can be seen in Figure \ref{loglib-ppexn-ppterm}, default printing of HOL4 exceptions is not really easy to decipher. The is due to the fact that HOL4 has been designed as an \textbf{interactive} theorem prover to be used with \textit{Emacs}, which provides some layout and pretty-printing features. Therefore, a small pretty-printing library for SML exceptions has been implemented, called \textit{pretty\_exnLib}. It provides only two analogous functions that, given an exception as parameter, pretty-prints the exception and returns it unchanged. Listing \ref{pretty_exnLib_sig} presents the signature of the library, and Listing \ref{pretty_exnLib_usage} shows how it is used.
+
+
+\subsection{Best practices for a complex platform} \label{best-practices-complex-platform}
+
+When building complex systems, special care should be taken in order to ensure that it grows in good conditions. Despite providing the best capabilities, a system with poor usability will encounter a slow adoption, as shown in the previous section. But when a system gets used by an increasing number of users, a different working organization is needed. This section will first briefly introduce a critical concept that should be mastered for the successful growth of a software platform. Then, we will study the {CI} system that has been set up for HolBA.
+
+\subsubsection{Developing simple interfaces}
+
+In 1995, the Gang of Four published a book about design patterns for software design \cite{gamma_design_1995}. ``Program to an interface, not an implementation.'' is a key concept presented among the patterns. Since then, this sentence is considered as one of the most important design principles in software development.
+
+This section doesn't intend to give a thorough explanation of the concept. However, some key insights shall be provided:
+
+\begin{itemize}
+    \item An interface is a contract between a system (such as a function, a library, a platform) and its user. This contract states the behavior and guarantees that this system offers via its public components. It defines the interaction between the component, the system, and the user. But most importantly, the contract leaves out the implementation. An interface builds an abstraction over the implementation. Using explicit contracts is particularly useful when performing contract-based verification, as it can simplify reasoning about components and allow building a more resilient system.
+    \item Libraries provide features, which sometimes have a very complex implementation. This is particularly true for trustworthy binary code analysis. Building interfaces helps to abstract away complex implementations and helps to compose systems together.
+    \item Programming to an interface instead of an implementation makes the code more resilient to changes. Indeed, if an implementation must be changed in order to provide more features, fix critical bugs or deliver more performance, codes that are not aware of the implementation will not need to be modified.
+\end{itemize}
+
+\subsubsection{Continuous Integration: tests and static analysis}
+
+Continuous Integration ({CI}) is a development practice where developers of a project \textit{integrate} frequently their code and changes into a single shared source repository, hence the name of this practice. Each integration of any change into the shared repository should be automatically verified by automated builds and a full set of automated tests. This allows to immediately see if changes to the source repository break a feature or introduce a regression, thus allowing to fix it immediately. Since this practice imposes to run a whole battery of tests for each and every change, even the smallest one, automation is key. \cite{martin_fowler_continuous_nodate} gives a detailed introduction to this practice.
+
+A CI system has been added to the HolBA repository, and its practices are being adopted by the research team. For each change, the CI system recompiles the whole platform from scratch and runs all the tests and executes a set of example scripts. Additionally, the CI system also performs some static analysis of the source code in order to give developers some key insight of the state of the code. Two static analyzers have been implemented, showing respectively the \textit{cheats} used in the formal proofs and the ``\textit{TODO}'' comments indicating left work to be done \footnote{At the time of writing, this feature has not been added yet to the CI system because of time constraints. However, it is ready to be integrated.}.
+
+\section{Conclusions}
+
+\subsection{Discussion}
+
+The goal of this paper was to perform experiments about the automation of formal verification of devices at the binary level. The NIC model of \cite{haglund_formal_2016} has served as a central theme throughout the work. Work in this thesis has been divided in practice into three parts, in addition to the learning process due to the very steep learning curve of HOL4:
+
+\begin{enumerate}
+    \item \textbf{Implementation of the NIC BIR model}: the formal model of the NIC of \cite{haglund_formal_2016} has been partially implemented as a BIR program, and BSL has been added to the HolBA platform in order to make this task more convenient.
+    \item \textbf{Non-proof-producing automatic contract verification library}: a user-friendly (adjective rarely used to describe HOL4), convenient and automatized library for contract verification have been implemented. This library brings HolBA one step closer to ``one-button solutions'' for performing software verification. It features a non-proof-producing translation of BIR expressions to expressions that can be exported to SMT solvers, and an extension of HOL4's SMT library has been realized in order to add reasoning about BIR memories.
+    \item \textbf{Formal proof of a BIR program on a HOL4 state}: a novel usage of BIR and method for transferring properties from BIR program to formal HOL4 specification has been carried out. Additionally, while not automated, the work needed in order to implement automatic HOL4 tactics has been clearly identified. Every automation work should be preceded by a manual implementation of the task, that this proof intends to be.
+\end{enumerate}
+
+Throughout this work, a strong focus has been placed on ease of use and user-friendliness with BSL, the pretty-printer, the implementation of new logging utilities, guidelines about error handling in SML and with HOL4, and a friendly exception printer. We strongly believe that user experience of such complex platforms are of primary importance because it can dramatically reduce time spent in debugging and the need of exhaustive documentation. Furthermore, it can give users the desire to keep using the platform. If it is decided to put more work in HolBA in order to make it a powerful binary analysis platform, the research team is advised to consider this aspect while expanding HolBA capabilities.
+
+Some failed experiments have also been realized, including the DepGraph tool that revealed to not be adapted to its planned usage or which would have needed to much work for too few benefits (though DepGraph's design is future-proof and the tool can easily be extended later if new needs or novel ideas appear), and the former two implementation attempts of the NIC model using flowcharts or C which have been found to not be suitable for device models.
+
+\subsection{Future work}
+
+The topic of software verification, while being as old as Computer Science, still have a lot of work to be done and paths to be explored. This thesis opens some paths that should be considered by someone interested in the topic.
+
+The pretty-printer implemented in this work is only a small experiment only scratching the surface of what can be done in HOL4. Further work in this domain should follow the concrete needs that arise with extended usage of BIR. Current limitations and possible further work of the pretty-printer presented in this document include:
+
+\begin{itemize}
+    \item the generated output isn't parsable, which is against HOL4 conventions where every printed term should be parsable by HOL4 quoting system. A solution to this problem would be to implement a theory introducing definitions for the new abbreviations. However, some liberties taken in the pretty-printer cannot be parsed: (a) the flat printing of nested binary expressions of the same state, because they would need multiple arity functions which are not available in HOL4, and (b) \textbf{if-then-else} statements in the current representation.
+    \item the pretty-printer doesn't use infix operators, feature widely employed in custom syntax used in some theories, like \textit{wordsTheory}. Infix syntax for binary operators can dramatically reduce the verbosity of expressions, and give a more familiar representation that \textit{could} be simpler to work with.
+    \item the choice of colors could be reviewed in order to more closely follow HOL4 convention and usage. For example, BIR types are highlighted in the same color than free variables. While creating a very limited chance of ambiguities, users familiar with HOL4 conventions can be annoyed with this inconsistency.
+\end{itemize}
+
+The non-proof-producing contract verification library implemented in this work can be really useful for prototyping, but it cannot be used for trustful verification. The limitations it suffers could be reasonably fast to overcome, and they should be fixed especially if HolBA were to become a strong binary analysis platform. Limitations include (a) the impossibility to compose contract in order to reason about longer functions, to compose functions or to prove properties on not loop-free programs, and (b) the obvious limitation of not being proof-producing. Work is ongoing at the time of writing about weak-correctness and contract composition, answering to (a). The main blocker of (b) is the absence of a proof-producing ways of using SMT solvers for proving contracts (Equation \ref{eval_pre_imp_eval_wp}). The proof of Chapter \ref{trustful-nic-analysis} and its SML implementation identify what automatic procedures should be added to HolBA in order to perform step (b) and progress towards proof-producing automatic verification. Additionally, the signature of \texttt{prove\_contract} should be reworked in order to enable mixing it with proof-producing code, after both (a) and (b) are solved. For example, it should work with HOL4 definitions instead of raw terms.
 
 
 
@@ -797,6 +811,7 @@ Finally, using the deduction rule with Theorems \ref{proof_R_inj_thm}, \ref{proo
 
 \end{multicols}
 
+\renewcommand*{\bibfont}{\footnotesize}
 \printbibliography
 
 \newpage
