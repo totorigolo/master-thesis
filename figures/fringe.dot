@@ -1,0 +1,45 @@
+digraph g {
+    node[style=filled, fillcolor=green]
+    a b
+
+    node[style=filled, fillcolor=white]
+    c d e f g
+
+    node[style=filled, fillcolor=pink]
+    h i j k l m n o
+
+    node[style=filled, fillcolor=yellow]
+    tx rx state
+
+    a -> c
+    a -> d
+    a -> e
+    b -> e
+    b -> f
+    b -> g
+
+    c -> h
+    c -> i
+    c -> j
+    d -> i
+    d -> k
+    e -> k
+    f -> i
+    f -> l
+    f -> m
+    g -> m
+    g -> n
+    g -> o
+
+    h -> rx
+    i -> rx
+    j -> rx
+    k -> rx
+    l -> tx
+    m -> tx
+    n -> tx
+    o -> tx
+    k -> state
+    l -> state
+    m -> state
+}
