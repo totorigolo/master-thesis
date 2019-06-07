@@ -230,7 +230,7 @@ Previous work in the \acrshort{prosper} project achieved to formally verify a si
 A formal model of a \gls{NIC} device has already been produced, on
 which some security theorems have been proved
 \cite{haglund_formal_2016}. These theorems can be seen as high-level
-proofs relying on a layer of lower-level lemmas.
+proofs relying on a layer of lower-level lemmas (cf. Figure \ref{fringe}).
 \todo{Maybe you want to explain at this point what are the security
   issues related to a NIC}
 This layer provides an abstraction over the raw formal model. This is illustrated in the left-hand side of Figure \ref{hol-v-bir-nic-model-simple}.
@@ -378,11 +378,14 @@ In this contrived example, the two proofs are exact opposite of each other. In m
 In HOL4, a theory is a coherent set of theorems and definitions. Theories are written in \gls{SML} script files, then compiled into a theory file. A definition is the equivalent concept than when using the $\eqdef$ symbol: a symbol or function is defined to be a synonym of a more complex formula.
 
 \section{Overview of the formal NIC model} \label{overview-nic-model}
-\todo{This part is a bit dense. I do not know how much is it clear for
-a reader that has no previous knowledge about the NIC}
+
+% \todo{This part is a bit dense. I do not know how much is it clear for a reader that has no previous knowledge about the NIC}
+
 The formal NIC model of \cite{haglund_formal_2016} has been designed from reading the hardware specification of the device because no model nor device driver is freely available.
 
-The NIC model is designed as a transition system with four types of transitions: register read, register write, autonomous, and memory read request reply transitions. They are described by four functions which constitute its public interface: \texttt{read\_nic\_register}, \texttt{write\_nic\_register}, \texttt{nic\_transition\_autonomous} and \texttt{memory\_read\_reply}. Each of these functions update the given NIC state, simulating the real behavior of the NIC. To make the model sound, the state is marked \textit{dead} if the model is asked to describe any transition or operation that is not described by the specification. Dead states represent undefined states and cannot be left with further transitions.
+The NIC model is designed as a transition system with four types of transitions: register read, register write, autonomous, and memory read request reply transitions \footnotemark. They are described by four functions which constitute its public interface: \texttt{read\_nic\_register}, \texttt{write\_nic\_register}, \texttt{nic\_transition\_autonomous} and \texttt{memory\_read\_reply}. Each of these functions update the given NIC state, simulating the real behavior of the NIC. To make the model sound, the state is marked \textit{dead} if the model is asked to describe any transition or operation that is not described by the specification. Dead states represent undefined states and cannot be left with further transitions.
+
+\footnotetext{We will focus on autonomous transitions in this document, so the other types of transitions are not further described.}
 
 The model is composed of five finite state automata describing the inner transitions of the whole system, each automata describing a part of the NIC. The five automata are initialisation, transmission, transmission teardown, reception and reception teardown. The function \texttt{nic\_execute} performs one autonomous step of one of the five automata. The automaton that takes a step is decided by a scheduler, depending on the NIC inner state. If more than one automaton are in a ready state, their order is not deterministic \footnote{To reason about non-determinism, the notion of oracles has been introduced in \cite{haglund_formal_2016}. To put it simply, an oracle can be seen as a list of steps to perform, but where each element of the list is undefined. As we will not directly reason about the oracle, we will not explain how this works in more details. The reader can read a thorough explanation in \cite{haglund_formal_2016}.}. Each finite state automata is defined as a set of transitions working on NIC states. Each transition takes a NIC state and returns an update one, possibly dead.
 
