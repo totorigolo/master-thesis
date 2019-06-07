@@ -16,6 +16,7 @@
 \usepackage{float}
 \usepackage{pmboxdraw}
 \usepackage{textcomp} % for the apostrophe
+\usepackage{todonotes} % for the apostrophe
 
 % hyperref setup
 \definecolor{darkgreen}{RGB}{0,180,0}
@@ -209,7 +210,13 @@ The \gls{prosper} project \cite{noauthor_prosper:_nodate} aims to develop a secu
 
 Previous work in the \acrshort{prosper} project achieved to formally verify a simple separation kernel \cite{noauthor_prosper:_nodate-1,dam_formal_2013}, which later resulted into an implementation of a working hypervisor. Then, they achieved to run both Linux and \gls{FreeRTOS} on top of it. Finally, they formally verified memory isolation for virtualized applications \cite{nemati_trustworthy_2015}. Nowadays, among other projects, the PROSPER team is working on device virtualization, giving access to hardware devices to virtualized applications. \gls{NIC} devices are an interesting example, which enable network communication and give the ability to communicate through the Internet.
 
-A formal model of a \gls{NIC} device has already been produced, on which some security theorems have been proved \cite{haglund_formal_2016}. These theorems can be seen as high-level proofs relying on a layer of lower-level lemmas. This layer provides an abstraction over the raw formal model. This is illustrated in the left-hand side of Figure \ref{hol-v-bir-nic-model-simple}.
+A formal model of a \gls{NIC} device has already been produced, on
+which some security theorems have been proved
+\cite{haglund_formal_2016}. These theorems can be seen as high-level
+proofs relying on a layer of lower-level lemmas.
+\todo{Maybe you want to explain at this point what are the security
+  issues related to a NIC}
+This layer provides an abstraction over the raw formal model. This is illustrated in the left-hand side of Figure \ref{hol-v-bir-nic-model-simple}.
 
 \begin{figure}[ht]
 	\includegraphics[height=6cm]{figures/hol-v-bir-nic-model-simple.png}
@@ -222,7 +229,9 @@ The team is now developing a new framework for performing binary analysis in HOL
 
 \footnotetext{The machine-independent language used in the work is an implementation of \gls{bap}'s BIL \cite{noauthor_binary_2019}. This implementation will evolve later in \cite{lindner_trabin:_2019} into BIR that HolBA uses today.}
 
-While this kind of \glspl{transpiler} and \gls{proof-producing} weakest precondition tools already exist \footnote{See related discussion in \cite{lindner_trabin:_2019}.}, the novelty in this work is that the transpiler is proof-producing, i.e. it produces a formal proof that both binary representations are equivalent, under the simulation theory, with respect to the \gls{ISA} model \footnote{Several models of different ARM \gls{ISA} have been realized in multiple research institutions, such as ARMv3, ARMv4, ARMv7 \cite{noauthor_canonical_2019, hutchison_trustworthy_2010} and very recently ARMv8 \cite{armstrong_isa_2019}.}. With this method, you no longer need to trust the transpiler. Figure \ref{holba-overview} gives an overview of the HolBA framework.
+While this kind of \glspl{transpiler}\todo{Is it clear what is a transpiler?} and \gls{proof-producing}
+weakest precondition tools already exist\todo{Not proof-producing
+  weakest precondition} \footnote{See related discussion in \cite{lindner_trabin:_2019}.}, the novelty in this work is that the transpiler is proof-producing, i.e. it produces a formal proof that both binary representations are equivalent, under the simulation theory, with respect to the \gls{ISA} model \footnote{Several models of different ARM \gls{ISA} have been realized in multiple research institutions, such as ARMv3, ARMv4, ARMv7 \cite{noauthor_canonical_2019, hutchison_trustworthy_2010} and very recently ARMv8 \cite{armstrong_isa_2019}.}. With this method, you no longer need to trust the transpiler. Figure \ref{holba-overview} gives an overview of the HolBA framework.
 
 \begin{figure}[ht]
 	\includegraphics[height=5cm]{figures/holba-overview.png}
@@ -354,7 +363,8 @@ In this contrived example, the two proofs are exact opposite of each other. In m
 In HOL4, a theory is a coherent set of theorems and definitions. Theories are written in \gls{SML} script files, then compiled into a theory file. A definition is the equivalent concept than when using the $\eqdef$ symbol: a symbol or function is defined to be a synonym of a more complex formula.
 
 \section{Overview of the formal NIC model} \label{overview-nic-model}
-
+\todo{This part is a bit dense. I do not know how much is it clear for
+a reader that has no previous knowledge about the NIC}
 The formal NIC model of \cite{haglund_formal_2016} has been designed from reading the hardware specification of the device because no model nor device driver is freely available.
 
 The NIC model is designed as a transition system with four types of transitions: register read, register write, autonomous, and memory read request reply transitions. They are described by four functions which constitute its public interface: \texttt{read\_nic\_register}, \texttt{write\_nic\_register}, \texttt{nic\_transition\_autonomous} and \texttt{memory\_read\_reply}. Each of these functions update the given NIC state, simulating the real behavior of the NIC. To make the model sound, the state is marked \textit{dead} if the model is asked to describe any transition or operation that is not described by the specification. Dead states represent undefined states and cannot be left with further transitions.
@@ -408,7 +418,12 @@ The majority of the lemmas are phrased in the same way, that we shall see in Cha
 
 The model of the NIC consists of \num{1500} lines of HOL4 code and required around three man-months of work. The NIC invariant consists of \num{650} lines of HOL4 code and the proof consists of approximately \num{55000} lines of HOL4 code including comments. Identifying the invariant and implementing the proof in HOL4 required around one man-year of work \cite{haglund_trustworthy_nodate}.
 
-The proof being consequent, it is composed of a multitude of lemmas spread out in multiple layers. The ideal objective of this work being to prove again the base lemmas on a different but equivalent BIR program, we therefore need to identify the relevant lemmas to be replaced. The proof is divided into two major parts, reception, and transmission, and lemmas are scattered across a few files, each file being for a different part or abstraction level. Optimally, identifying the fringe of the dependency graph of the lemmas and theorems would give exactly the set of lemmas that all the other lemmas and theorems rely on, and therefore the smallest set of lemmas that are enough to prove in order to imply the security properties already proved in \cite{haglund_trustworthy_nodate} by using the existing proofs.
+The proof being consequent\todo{?}, it is composed of a multitude of
+lemmas spread out in multiple layers. The ideal objective of this work
+\todo{is to} being to prove again the base lemmas on a different but
+equivalent BIR program,\todo{.} we therefore need to identify the
+relevant lemmas to be replaced. The proof is divided into two major
+parts, reception,\todo{remove ,} and transmission, and lemmas are scattered across a few files, each file being for a different part or abstraction level. Optimally, identifying the fringe of the dependency graph of the lemmas and theorems would give exactly the set of lemmas that all the other lemmas and theorems rely on, and therefore the smallest set of lemmas that are enough to prove in order to imply the security properties already proved in \cite{haglund_trustworthy_nodate} by using the existing proofs.
 
 As an attempt to visualize this fringe, we developed a tool, called DepGraph \footnote{DepGraph's design is presented in Appendix \ref{appendix_depgraph}.}, that can extract the dependency structure of HOL4 proofs in the form of a dependency graph. DepGraph can extract dependencies between HOL theories, i.e. compiled \gls{SML} files containing proofs of lemmas and theorems, and between definitions, theorems, and lemmas. Figure \ref{depgraph-nic-tx-files} shows the dependencies between theories about the transmission part of the NIC proof, and Figure \ref{depgraph-nic-tx-thms} shows the dependencies between definitions, theorems and lemmas of the same part of the proof. However, as can be seen on Figures \ref{depgraph-nic-tx-files} and \ref{depgraph-nic-tx-thms}, this tool presents some critical shortcomings:
 
