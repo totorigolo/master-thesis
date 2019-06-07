@@ -28,6 +28,7 @@
 \usepackage{textcomp} % for the apostrophe
 \usepackage{float}
 \usepackage{comment}
+\usepackage{todonotes}
 
 % hyperref setup
 \definecolor{darkgreen}{RGB}{0,180,0}
@@ -70,7 +71,6 @@
 \definecolor{codepurple}{rgb}{0.58,0,0.82}
 \definecolor{codeblue}{rgb}{0.10,0,0.82}
 \definecolor{codebackcolour}{rgb}{0.95,0.95,0.92}
- 
 
 
 \title{Experiments on automation of formal verification of devices at the binary level}
@@ -135,6 +135,11 @@ INSA de Lyon}
 
 \begin{multicols}{2}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Introduction}
 \textit{This section serves as an introduction to the degree project and presents the background of the work along with this thesis objective. Delimitations to the project and the choice of the methodology are also discussed.}
 
@@ -146,8 +151,8 @@ The {PROSPER} project \cite{noauthor_prosper:_nodate-1} aims to develop a secure
 
 Previous work in the {PROSPER} project achieved to formally verify a simple separation kernel \cite{dam_formal_2013}, which later resulted into an implementation of a working hypervisor. Then, they achieved to run both Linux and {FreeRTOS} on top of it. Finally, they formally verified memory isolation for virtualized applications \cite{nemati_trustworthy_2015}. However, hardware devices were not included in the verification, so devices, like Network Interface Controller ({NIC}), cannot be used by the virtualized applications reducing the value of the hypervisor. In order to solve this issue, verification of hardware devices is being carried out.
 
-A formal model of a {NIC} device has already been produced, on which some security theorems have been proved \cite{haglund_formal_2016}. These theorems can be seen as high-level proofs relying on a layer of lower-level lemmas. This layer provides an abstraction over the raw formal model. This is illustrated in the left-hand side of Figure \ref{hol-v-bir-nic-model-simple}. However, there exist more devices that are of interest to verify, so it is very desirable to automate formal verification of devices and use a standard model for reasoning about them.
-
+A formal model of a {NIC} device has already been produced, on which some security theorems have been proved \cite{haglund_formal_2016,haglund_trustworthy_nodate}. These theorems can be seen as high-level proofs relying on a layer of lower-level lemmas. This layer provides an abstraction over the raw formal model. This is illustrated in the left-hand side of Figure \ref{hol-v-bir-nic-model-simple}. However, there exist more devices that are of interest to verify, so it is very desirable to automate formal verification of devices and use a standard model for reasoning about them.
+%
 \begin{figure}[H]
   \centering
 	\includegraphics[height=6cm]{figures/hol-v-bir-nic-model-simple.png}
@@ -155,7 +160,7 @@ A formal model of a {NIC} device has already been produced, on which some securi
 	\label{hol-v-bir-nic-model-simple}
 \end{figure}
 
-The team is now developing a new framework for performing binary analysis in HOL4, an interactive theorem prover, named {HolBA} \cite{noauthor_holba_2019}. This framework features a machine-independent Binary Intermediate Representation (BIR), a proof-producing transpiler from ARMv8 and Cortex-M0 assembly code to BIR, called the lifter, a proof-producing weakest precondition generator for loop-free programs, and supporting tools \cite{metere_sound_2017,lindner_trabin:_2019}.
+The team is now developing a new framework for performing binary analysis in HOL4, an interactive theorem prover, named {HolBA}. This framework features a machine-independent Binary Intermediate Representation (BIR), a proof-producing transpiler from ARMv8 and Cortex-M0 assembly code to BIR, called the lifter, a proof-producing weakest precondition generator for loop-free programs, and supporting tools \cite{metere_sound_2017,lindner_trabin:_2019}.
 
 The idea of this work is to translate the formal {NIC} model of \cite{haglund_formal_2016} using {BIR}, then use HolBA's proof-producing weakest precondition tool to prove the same lower-level lemmas than the formal model. With all the lemmas proved, the security properties are implied. Figure \ref{hol-v-bir-nic-model-simple} gives an overview of this idea: using the proof-producing weakest precondition tool to bind together a newly written BIR NIC model and the work done on the formal model.
 
@@ -169,7 +174,7 @@ This work being about exploration of techniques towards automation of verificati
 
 \subsection{Choice of methodology}
 
-This work has been carried out step-by-step toward an ideal goal, i.e. re-establishing all the security properties. On the road, needs have been identified and tools have been implemented in order to tackle them. This approach made sense in this particular work because the needs were not known in advance, and therefore needed to be identified. This thesis presents the steps taken during this work, the motivations of each tool that have been implemented, and discusses their limitations and future work in the conclusion.
+This work has been carried out step-by-step towards an ideal goal, i.e. re-establishing all the security properties. On the road, needs have been identified and tools have been implemented in order to tackle them. This approach made sense in this particular work because the needs were not known in advance, and therefore needed to be identified. This thesis presents the steps taken during this work, the motivations of each tool that have been implemented, and discusses their limitations and future work in the conclusion.
 
 \subsection{Related work}
 
@@ -177,32 +182,21 @@ This work has been carried out step-by-step toward an ideal goal, i.e. re-establ
 
 The {PROSPER} project isn't the only project focused on high-security execution platforms. Platforms such that seL4, Microsoft Hyper-V, INTEGRITY Multivisor or even MINIX 3 are examples of platforms used in production and providing strong security properties.
 
-\paragraph{seL4} is a recent L4-based microkernel created in 2006 with the goal to produce a completely formally verified implementation of an L4 microkernel. This has been achieved in 2009 \cite{klein_sel4:_2009}. At this time, seL4 consisted of \num{8700} lines of C code and \num{600} lines of assembler. The implementation of seL4 has been formally proved from its abstract specification down to its C implementation. Later, the validity of the generated assembly code has been proved, removing the need of trusting the compiler \cite{noauthor_what_nodate}.
-
-\paragraph{Microsoft Hyper-V} is Microsoft's hypervisor, widely used today within the Microsoft Azure cloud platform. It has been released in 2008. Hyper-V is a huge codebase, as we can read on VCC's website \footnote{\url{https://www.microsoft.com/en-us/research/project/vcc-a-verifier-for-concurrent-c/}}: ``Hyper-V consists of about 60 thousand lines of operating system-level C and x64 assembly code, it is therefore not a trivial target''. Microsoft has put a lot of work in formal verification\footnotemark of Hyper-V down to machine code \cite{leinenbach_verifying_2009}. However, they don't appear to include device drivers in their formal verification.
-
-\footnotetext{Microsoft has several formal verification projects, many of which are freely available for non-commercial use: \url{https://github.com/Microsoft?q=verifier}}
-
-\paragraph{INTEGRITY Multivisor} is a commercial real-time operating system and hypervisor developed by Green Hills Software. Although not much information seems to be publicly available, Green Hills Software has done considerable formal verification work \cite{richards_modeling_2010}. Multivisor has several certifications, including, for example, ISO 26262 ASIL D automotive electronics, NSA-certified secure mobile phones or FAA DO-178B Level A-certified avionics controlling life-critical functions on passenger and military aircraft \footnote{\url{https://ghs.com/products/rtos/integrity_virtualization.html}}.
-
-\paragraph{MINIX 3} is an operating system whose design is focused on high reliability and security. It is based on a tiny microkernel with the least responsibility possible, and the rest of the operating system is running an a number of isolated user processes. MINIX 3 has not been formally verified, but intends to provide strong security guarantees by design.
+Each of these projects intend to provide a secure hypervisor or operating system, but they all provide different level of guarantee. seL4 is an open-source microkernel that has been formally verified down to binary code. Microsoft Hyper-V, Microsoft's hypervisor, has also been verified down to its machine code, but with less trustworthy tools than seL4 because of its huge codebase. MINIX 3 rather intends to give security properties by design my leaving the least responsibilities to its microkernel. INTEGRITY Multivisor doesn't provide much public information, but has had considerable formal verification and has got several industry and military certifications. However, to the best of our knowledge, none of these platforms include hardware devices in there formal verification process other than by their design.
 
 \subsubsection{Binary analysis platforms}
 
-For this project, we will use the {HolBA} framework. However, several other binary analysis platforms have been created for various purposes, such as formal verification or static analysis. A common characteristic of these platforms is their use of an Intermediate Representation ({IR}). IRs are designed to be simpler to use for each platforms' end purpose. As an example, the HolBA platform has BIR as its intermediate representation.
+For this project, we used the {HolBA} framework. However, several other binary analysis platforms have been created for various purposes, such as formal verification or static analysis. A common characteristic of these platforms is their use of an Intermediate Representation ({IR}). IRs are designed to be simpler to use for each platforms' end purpose. As an example, the HolBA platform has BIR as its intermediate representation.
 
-\paragraph{Microsoft Boogie} is Microsoft's intermediate verification language. Boogie is the IR for multiple Microsoft tools, including VCC. Boogie as a tool can infer some invariants on the given Boogie program and then generate verification conditions that are passed to an SMT solver \footnote{\url{https://www.microsoft.com/en-us/research/project/boogie-an-intermediate-verification-language/}}.
-
-\paragraph{Valgrind} is a framework for building program supervision tools, such as memory checkers, cache profilers or data-race detectors \cite{nethercote_valgrind:_2003}. As its core, Valgrind is a JIT x86-to-x86 compiler, translating binary programs into its IR called UCode. Then, \textit{skins}---tools built using the Valgrind framework---are free to work with the IR in order to perform their analysis.
-
-\paragraph{LLVM} is a compiler infrastructure which supports a unique multi-stage optimization system \cite{lattner_llvm:_2002}. LLVM is built around its {IR}, LLVM Virtual Instruction Set, which can be described as a strict RISC architecture with high-level type information. This IR made LLVM successful because it is a pragmatic IR suitable for optimizations at multiple stages (link-, post-link, and run-time) and supporting a wide variety of transformations. Leveraging this IR, an ecosystem grew around LLVM, providing tools such as symbolic execution (LLVM KLEE), benchmarking environments or static and dynamic analyzers.
-
-\paragraph{Mayhem} is a system for automatically finding exploitable bugs in binary programs and generating working exploits as proof of the discovered vulnerabilities \cite{cha_unleashing_2012}. It leverages BAP, the Binary Analysis Platform from Carnegie Mellon University (CMU BAP) \cite{brumley_bap:_2011}, as its IR. It proceeds by fist JIT-ing each instruction to the BAP intermediate language (IL) and then performing a custom symbolic execution.
-\medskip
-
-There are several other tools, platforms, and frameworks, such as Angr. An interesting note though is that BIR's design is based upon CMU BAP's intermediate language.
+Microsoft has Boogie as both a tool and IR, which has been used for verification of Hyper-V. Valgrind is a popular tool for building program supervision tools, and uses a JIT x86-to-x86 compiler in order to transpile program in its IR. LLVM is a compiler infrastructure built around LLVM Virtual Instruction Set, its {IR}, that link together an ecosystem of tools at multiple stages of the compilation process, including verification and analysis. Mayhem is a system for automatically finding exploitable bugs in binary programs, and leverages Carnegie Mellon University Binary Analysis Platform (CMU BAP). An interesting note though is that BIR's design is based upon CMU BAP's intermediate language.
 
 The novelty introduced in HolBA, however, is that proofs are performed directly on the generated assembly code, not at the source code level. Therefore, proofs can be performed on programs without needing their source code, and regardless on the programming language used as long as it can be compiled in assembly code in an {ISA} supported by the platform.
+\todo{What about Mayhemn, it also works at the binary level (and CMU BAP)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Definitions and relevant theories}
 \textit{This section intends to provide brief introductions for concepts and the foundation of theories that are essential in order to understand the problem that this project aims to explore.}
@@ -212,7 +206,7 @@ The novelty introduced in HolBA, however, is that proofs are performed directly 
 Interactive theorem provers are software producing formal proofs, in an
 interactive fashion, i.e. a human can step through the proof interactively while the proof assistant provides some automation (like rewriting of terms, arithmetic evaluation, or integration with external tools like SMT solvers). Coq, HOL4 or Isabelle are such tools.
 
-HOL4 \cite{noauthor_hol_nodate} stands for Higher-Order Logic. It is a programming environment deeply embedded into the {SML} programming language enabling to prove theorems and write {proof-producing} programs. HOL4 uses a very small kernel in order to provide very high guarantees of correctness.
+HOL4 stands for Higher-Order Logic. It is a programming environment deeply embedded into the {SML} programming language enabling to prove theorems and write {proof-producing} programs. HOL4 uses a very small kernel in order to provide very high guarantees of correctness.
 
 
 \subsection{HolBA's BIR} \label{bir-presentation}
@@ -228,6 +222,7 @@ Among its supporting tools, HolBA features a tool to visualize the Control Flow 
 \subsection{Hoare Triples} \label{hoare-triples}
 
 For a given program $prog$ consisting of a list of instructions and two predicates $P$ and $Q$ called respectively pre- and postcondition, a Hoare Triple \htriple{P}{prog}{Q} states that when executing the program $prog$ from a state $S$ terminates in a state $S'$, if $P$ holds in $S$ then $Q$ will hold in $S'$ (Equation \ref{ht_def}). Hereafter, we assume programs and states to be well-typed. A Hoare Triple is also called \textit{a contract}.
+%
 \begin{multline}
   \htriple{P}{prog}{Q} \eqdef\\
   S' = exec(S, prog) \land P(S) \implies Q(S')
@@ -239,6 +234,7 @@ For example, \htriple{P}{\varnothing}{P} holds because an empty program doesn't 
 \subsection{Weakest preconditions}
 
 While Hoare logic introduces sufficient preconditions, Dijkstra introduced the concept of necessary and sufficient preconditions, called ``weakest'' preconditions \cite{dijkstra_guarded_1975}. Such weakest preconditions (WP) can be automatically derived from a program $prog$ and a postcondition $Q$. Let's call $\WP(prog, Q)$ such a WP. Then, from Equation \ref{ht_def} follows:
+%
 \begin{equation}
   \forall (prog, Q),
   \htriple{\WP(prog,Q)}{prog}{Q}
@@ -251,6 +247,10 @@ For a triple \htriple{P}{prog}{Q} to hold, $P$ must be stronger than the WP, i.e
 
 {HolBA} provides a {proof-producing} tool for automatically deriving WP on loop-free {BIR} programs whose control flow can be statically identified \cite{lindner_trabin:_2019}. However, SMT solvers had never been used before this work.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Overview of the formal proof of the NIC model} \label{overview-nic-proof}
 \textit{This section will present the formal verification of \cite{haglund_formal_2016} and present an attempt that have been made about visualization of the proofs.}
@@ -264,12 +264,14 @@ Being designed as a transition system, the whole model is loop free, which is co
 The state of the NIC is defined as a nested data type containing registers and a memory called \textit{CPPI\_RAM}.
 
 The low-level lemmas of the verification (cf. Figure \ref{hol-v-bir-nic-model-simple}) are stated as Hoare Triples using invariants (Equation \ref{nic-proof-invariant-shape}) that must hold for every possible transition:
+%
 \begin{small}
   \begin{equation}
     \label{nic-proof-invariant-shape}
     I_{NIC} \eqdef \neg dead~\land~I_{init}~\land~I_{tx}~\land~I_{rx}~\land~\cdots
   \end{equation}
 \end{small}
+\vspace{-8pt}
 
 \subsection{Visualizing proof dependencies}
 
@@ -285,6 +287,11 @@ DepGraph features two frontends that can extract dependencies between HOL4 theor
 \end{itemize}
 
 \noindent DepGraph's frontend for theory dependencies is still useful for documentation purpose, and has been used to visualize HolBA's architecture.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{The BIR NIC model} \label{nic-model}
 \textit{This section presents the three different approaches made in order to implement an equivalent BIR model from the formal NIC model. Tools that have been implemented in order to build it will also be introduced.}
@@ -335,53 +342,10 @@ From the knowledge gained in \ref{alice-bob-toy}, a set of helper functions has 
 
 Because of time constraints, not every transition of the formal NIC model have been implemented in this new model. Instead, we decided to focus on only some transitions in two automata: initialization and transmission. This focus is pragmatic for two reasons: (a) we decided to write the model along with the proof, only needed transitions for the current proof, in order to grow the model at a reasonable pace and to no clutter it with unneeded features or at the contrary missing critical aspects during the first sketch (b) as the verification was performed at the same time, we decided to start with easier, but not obvious, transitions, hence the choice to postpone verification of the more complex reception automaton to later in the work.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Non-proof-producing automatic contract verification} \label{impl-non-pp-wp-lib}
 \textit{This section presents the library that has been implemented in this work for automatic contract verification, after discussing about the problems that have been solved in order to build it.}
@@ -427,7 +391,7 @@ Generated WP grow in size quickly with the number of statements in a program, li
 \subsection{Implementing a convenient interface} \label{impl_convenient_ht_interface}
 
 In order to perform a high number of proofs on the {NIC} model, we want to hide as much as possible the implementation details of the contract verification procedure. Ideally, we want a function ``\texttt{prove\_contract}'' taking a program fragment, a pre- and a postcondition as parameters, and producing a proof about the Hoare triple if the contract holds or a comprehensive and useful error message if it doesn't.
-
+%
 \begin{lstlisting}[
     language=Caml,
     backgroundcolor=\color{codebackcolour},
@@ -456,6 +420,7 @@ For each of those tests, we also experimented with other pre- and postconditions
 Since the base lemmas of the formal NIC proof are phrased in terms of invariants holding in each transition of the model, representable as Hoare Triple, they can be proved using the non-proof-producing contract verification library that has been implemented in this project, as long as the pre- and postconditions can be represented using BIR.
 
 We used \texttt{prove\_contract} in order to successfully verify two Hoare Triples (Equations \ref{nonpp-goal-1} and \ref{nonpp-goal-2}). Those two Hoare Triple respectively represent that, stating from a non-dead initial NIC state, performing one autonomous transition of the transmission automaton doesn't end in an undefined state (i.e. a dead state) and performing one non-autonomous transition of the initialization automaton does end in an undefined state.
+%
 \begin{multline}
   \{\neg NIC.dead~\land\\
   NIC.tx.state \in \{tx2,tx3,tx5,tx6,tx7\}\}\\
@@ -479,43 +444,10 @@ While being convenient and working well for simple contracts, the contract verif
 
 The following Section \ref{trustful-nic-analysis} explores a new proof-producing approach for performing contract-based verification on the BIR model that gives an answer to these issues.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{A new approach for trustful analysis} \label{trustful-nic-analysis}
 \textit{In this section, we will perform a proof on a BIR program and then lift it to an abstract model.}
@@ -598,7 +530,7 @@ Then, we defined the equivalent pre- and postcondition on BIR, and proved Theore
   P_{NIC}~nic) \implies P_{BIR}~bir\_state
   \end{split}
 \end{equation}
-  
+
 \paragraph{Limitation} $Q_{BIR}$ is a function of the end state only. Hence, in order to reason about the initial state, we need in general to introduce ghost variables postcondition. In this proof, since the contract that we are proving is simple, using the actual value of $nic.x$ is enough. However, this may pose a problem if we want to generalize the proof.
 
 For step (d), we proved Theorem \ref{proof_d_thm}. We introduced $bir\_state$ and $P_{BIR}$ in order to reason about both the initial and final state in the postcondition (cf. Remark \ref{remark_Q_nic_intial_final}).
@@ -613,7 +545,7 @@ For step (d), we proved Theorem \ref{proof_d_thm}. We introduced $bir\_state$ an
 \end{equation}
 
 Finally, we proved that the Hoare Triple holds on the BIR program:
-
+%
 \begin{equation} \label{proof_ht_thm}
 \vdash~\htriple{P^{exp}_{BIR}}{bir\_prog}{Q^{exp}_{BIR}}
 \end{equation}
@@ -630,48 +562,13 @@ To that end, we used HolBA's proof-producing WP tool to generate the implication
 Finally, we were able to rewrite the goal using the full set of BIR semantic theorems and some rewriting rules into a form that \textit{HolSmtLib} can handle.
 
 To complete the proof of Theorem \ref{proof_goal}, we used the deduction rule with the injectivity theorem, Theorem \ref{proof_b_thm}, the definition of $R$, and Theorems \ref{proof_ht_thm}, \ref{proof_eq_thm} and \ref{proof_d_thm}, in that order.
-  
+
 \end{proof}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{User experience and good practices} \label{user-friendliness}
 \textit{This chapter will present the care that has been put into user experience and good practices throughout this work.}
@@ -687,36 +584,25 @@ Throughout our design and implementation process, great care has been put into h
 \paragraph{Error handling in SML and HOL4} offers a robust way of handling failure. However, sometimes some exceptions are raised in a hidden implementation of some function call and their message convey few information. To answer this issue, there are two immediate possibilities (in addition to fixing the actual error): (a) code could handle possible exceptions of code that it uses and that could produce some, and either handle the issue (if possible) or raising another more meaningful error, and (b) wrap the exceptions using HOL4's \textit{Feedback} library in order to add context information and produce a result analogous to backtrace in other programming languages. We took great care to use both solutions during our implementations.s
 
 \vspace{-8pt}
-\paragraph{A logging library}, called \textit{logLib}, has been implemented. It aims to provide a unified use of HOL4 tracing capabilities which it uses in order to manage verbosity level at runtime. It then gives five functions, one for each level, that log a message along with the location where it is issued and the message level of importance (\textit{trace}, \textit{debug}, \textit{info}, \textit{warn} and \textit{error}).
+\paragraph{A logging library} called \textit{logLib} has been implemented. It aims to provide a unified use of HOL4 tracing capabilities which it uses in order to manage verbosity level at runtime. It then gives five functions, one for each level, that log a message along with the location where it is issued and the message level of importance (\textit{trace}, \textit{debug}, \textit{info}, \textit{warn} and \textit{error}).
 
 \vspace{-8pt}
 \paragraph{An SML exception pretty-printer} has been implemented, called \textit{pretty\_exnLib}, in order to format exceptions in an easily readable way other: exception are otherwise just dumped on the output with bad formatting. It provides only two analogous functions that, given an exception as parameter, pretty-print the exception and return it unchanged.
 
-
 \subsection{Best practices for a complex platform} \label{best-practices-complex-platform}
 
+Binary analysis platforms are complex software systems, and should as such follow well-known best practices in order to make them last and develop serenely. This section presents some best practices that have been adopted in HolBA.
 
-% Additionally, binary analysis platforms are complex software systems, and should as such follow well-known best practices in order to make it last and develop serenely. Therefore, Section \ref{best-practices-complex-platform} presents some best practices that have been adopted in HolBA.
+\vspace{-8pt}
+\paragraph{Simple interfaces} have been used for every library that has been implemented. This is important for at least three reasons: (a) interfaces hide implementations, providing a higher and easier abstraction to users and (b) making dependent code more resilient to changes; (c) interfaces provide a contract between a system and the user, representable as a Hoare Triple, making verification simpler, which makes a lot of sense for a platform about formal verification.
 
-When building complex systems, special care should be taken in order to ensure that it grows in good conditions. Despite providing the best capabilities, a system with poor usability will encounter a slow adoption, as shown in the previous section. But when a system gets used by an increasing number of users, a different working organization is needed. This section will first briefly introduce a critical concept that should be mastered for the successful growth of a software platform. Then, we will study the {CI} system that has been set up for HolBA.
+\vspace{-8pt}
+\paragraph{Continuous Integration (CI)} has been adopted, with adoption of Github's Pull Requests, faster merge-to-master practices and a new automated CI server that runs all the tests on every Pull Requests. Since there are no support for SML or HOL4 in existing CI systems, new conventions have been adopted and scripts developed in order to define the test framework. Additionally, two static analyzers have been implemented, showing respectively the \textit{cheats} used in the formal proofs and the ``\textit{TODO}'' comments indicating left work to be done.
 
-\subsubsection{Developing simple interfaces}
-
-In 1995, the Gang of Four published a book about design patterns for software design \cite{gamma_design_1995}. ``Program to an interface, not an implementation.'' is a key concept presented among the patterns. Since then, this sentence is considered as one of the most important design principles in software development.
-
-This section doesn't intend to give a thorough explanation of the concept. However, some key insights shall be provided:
-
-\begin{itemize}
-    \item An interface is a contract between a system (such as a function, a library, a platform) and its user. This contract states the behavior and guarantees that this system offers via its public components. It defines the interaction between the component, the system, and the user. But most importantly, the contract leaves out the implementation. An interface builds an abstraction over the implementation. Using explicit contracts is particularly useful when performing contract-based verification, as it can simplify reasoning about components and allow building a more resilient system.
-    \item Libraries provide features, which sometimes have a very complex implementation. This is particularly true for trustworthy binary code analysis. Building interfaces helps to abstract away complex implementations and helps to compose systems together.
-    \item Programming to an interface instead of an implementation makes the code more resilient to changes. Indeed, if an implementation must be changed in order to provide more features, fix critical bugs or deliver more performance, codes that are not aware of the implementation will not need to be modified.
-\end{itemize}
-
-\subsubsection{Continuous Integration: tests and static analysis}
-
-Continuous Integration ({CI}) is a development practice where developers of a project \textit{integrate} frequently their code and changes into a single shared source repository, hence the name of this practice. Each integration of any change into the shared repository should be automatically verified by automated builds and a full set of automated tests. This allows to immediately see if changes to the source repository break a feature or introduce a regression, thus allowing to fix it immediately. Since this practice imposes to run a whole battery of tests for each and every change, even the smallest one, automation is key. \cite{martin_fowler_continuous_nodate} gives a detailed introduction to this practice.
-
-A CI system has been added to the HolBA repository, and its practices are being adopted by the research team. For each change, the CI system recompiles the whole platform from scratch and runs all the tests and executes a set of example scripts. Additionally, the CI system also performs some static analysis of the source code in order to give developers some key insight of the state of the code. Two static analyzers have been implemented, showing respectively the \textit{cheats} used in the formal proofs and the ``\textit{TODO}'' comments indicating left work to be done \footnote{At the time of writing, this feature has not been added yet to the CI system because of time constraints. However, it is ready to be integrated.}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Conclusions}
 
@@ -724,11 +610,14 @@ A CI system has been added to the HolBA repository, and its practices are being 
 
 The goal of this paper was to perform experiments about the automation of formal verification of devices at the binary level. The NIC model of \cite{haglund_formal_2016} has served as a central theme throughout the work. Work in this thesis has been divided in practice into three parts, in addition to the learning process due to the very steep learning curve of HOL4:
 
-\begin{enumerate}
-    \item \textbf{Implementation of the NIC BIR model}: the formal model of the NIC of \cite{haglund_formal_2016} has been partially implemented as a BIR program, and BSL has been added to the HolBA platform in order to make this task more convenient.
-    \item \textbf{Non-proof-producing automatic contract verification library}: a user-friendly (adjective rarely used to describe HOL4), convenient and automatized library for contract verification have been implemented. This library brings HolBA one step closer to ``one-button solutions'' for performing software verification. It features a non-proof-producing translation of BIR expressions to expressions that can be exported to SMT solvers, and an extension of HOL4's SMT library has been realized in order to add reasoning about BIR memories.
-    \item \textbf{Formal proof of a BIR program on a HOL4 state}: a novel usage of BIR and method for transferring properties from BIR program to formal HOL4 specification has been carried out. Additionally, while not automated, the work needed in order to implement automatic HOL4 tactics has been clearly identified. Every automation work should be preceded by a manual implementation of the task, that this proof intends to be.
-\end{enumerate}
+\vspace{-8pt}
+\paragraph{1. Implementation of the NIC BIR model}: the formal model of the NIC of \cite{haglund_formal_2016} has been partially implemented as a BIR program, and BSL has been added to the HolBA platform in order to make this task more convenient.
+
+\vspace{-8pt}
+\paragraph{2. Non-proof-producing automatic contract verification library}: a user-friendly (adjective rarely used to describe HOL4), convenient and automatized library for contract verification have been implemented. This library brings HolBA one step closer to ``one-button solutions'' for performing software verification. It features a non-proof-producing translation of BIR expressions to expressions that can be exported to SMT solvers, and an extension of HOL4's SMT library has been realized in order to add reasoning about BIR memories.
+
+\vspace{-8pt}
+\paragraph{3. Formal proof of a BIR program on a HOL4 state}: a novel usage of BIR and method for transferring properties from BIR program to formal HOL4 specification has been carried out. Additionally, while not automated, the work needed in order to implement automatic HOL4 tactics has been clearly identified. Every automation work should be preceded by a manual implementation of the task, that this proof intends to be.
 
 Throughout this work, a strong focus has been placed on ease of use and user-friendliness with BSL, the pretty-printer, the implementation of new logging utilities, guidelines about error handling in SML and with HOL4, and a friendly exception printer. We strongly believe that user experience of such complex platforms are of primary importance because it can dramatically reduce time spent in debugging and the need of exhaustive documentation. Furthermore, it can give users the desire to keep using the platform. If it is decided to put more work in HolBA in order to make it a powerful binary analysis platform, the research team is advised to consider this aspect while expanding HolBA capabilities.
 
@@ -748,44 +637,10 @@ The pretty-printer implemented in this work is only a small experiment only scra
 
 The non-proof-producing contract verification library implemented in this work can be really useful for prototyping, but it cannot be used for trustful verification. The limitations it suffers could be reasonably fast to overcome, and they should be fixed especially if HolBA were to become a strong binary analysis platform. Limitations include (a) the impossibility to compose contract in order to reason about longer functions, to compose functions or to prove properties on not loop-free programs, and (b) the obvious limitation of not being proof-producing. Work is ongoing at the time of writing about weak-correctness and contract composition, answering to (a). The main blocker of (b) is the absence of a proof-producing ways of using SMT solvers for proving contracts (Equation \ref{eval_pre_imp_eval_wp}). The proof of Chapter \ref{trustful-nic-analysis} and its SML implementation identify what automatic procedures should be added to HolBA in order to perform step (b) and progress towards proof-producing automatic verification. Additionally, the signature of \texttt{prove\_contract} should be reworked in order to enable mixing it with proof-producing code, after both (a) and (b) are solved. For example, it should work with HOL4 definitions instead of raw terms.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \end{multicols}
 
@@ -819,26 +674,3 @@ The non-proof-producing contract verification library implemented in this work c
 \end{figure}
 
 \end{document}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
