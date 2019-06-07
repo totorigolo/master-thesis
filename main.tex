@@ -490,11 +490,20 @@ As an attempt to visualize this fringe, we developed a tool, called DepGraph \fo
 
 \chapter{The BIR NIC model} \label{nic-model}
 \vspace{-1cm}
-\textit{This chapter discusses the different ways of implementing an equivalent BIR model from the formal NIC model. After an introduction of BIR, it will present different possible ways of doing this translation and present three approaches. Then, the final BIR model will be introduced along with the new tools that have been implemented in order to build it.}
+\textit{This chapter discusses the different ways of implementing an
+  equivalent BIR model from the formal NIC model.
+  \todo{This chapter compares different approaches of implementing a
+    BIR model that is equivalent to the formal NIC model}
+  After an introduction of BIR, it will present different possible ways of doing this translation and present three approaches. Then, the final BIR model will be introduced along with the new tools that have been implemented in order to build it.}
 
 \section{HolBA's Binary Intermediate Representation (BIR)} \label{bir-presentation}
 
-HolBA's Binary Intermediate Representation (BIR) \cite{lindner_trabin:_2019}, introduced in the Introduction, is a machine independent binary representation. It aims to be the simplest possible while still being able to represent all possible binary programs but self-modifying programs. It does so by having a limited syntax---introduced in Table \ref{bir-syntax}---and forbidding implicit side-effects. A statement can only have explicit state changes and can only affect one variable.
+HolBA's Binary Intermediate Representation (BIR)
+\cite{lindner_trabin:_2019}, introduced in the Introduction
+\todo{remove}, is a machine independent binary representation. It aims
+to be the simplest\todo{remove} possible while still being able to
+represent all possible binary programs but self-modifying
+programs\todo{too long sentence}. It does so by having a limited syntax---introduced in Table \ref{bir-syntax}---and forbidding implicit side-effects. A statement can only have explicit state changes and can only affect one variable.
 
 \begin{table}[h!]
 	\begin{align*}
@@ -510,17 +519,28 @@ HolBA's Binary Intermediate Representation (BIR) \cite{lindner_trabin:_2019}, in
     % exp: string~|~ ??
 	\caption{BIR's syntax. Valid BIR programs must be well-typed. $integer$s represent bounded N-bit integers. $\diamond_{u}$ and $\diamond_{b}$ represent respectively unary and binary operators. BIR blocks are tuples, with the first element being its label, the second a list of statements and the third the end statement. BIR syntax contains some other statements that won't be used in this work and that have been omitted. For more information, see \cite{lindner_trabin:_2019}.}
 	\label{bir-syntax}
-\end{table}
+      \end{table}
+      \todo{I would extend this with at least description of statements}
 
-This representation allows producing proofs more easily that with classical binary representations, whose design are focused on execution speed rather than offline analysis. Moreover, BIR doesn't have unspecified behavior.
+This representation allows producing proofs more easily that with
+classical binary representations, whose design are focused on
+execution speed rather than offline analysis. Moreover, BIR doesn't
+have unspecified behavior.\todo{Unclear what unspecified behaviors are}
 
-BIR is implemented as a set of HOL4 \textit{datatypes}, and possesses a completely defined semantic. Section \ref{bir-memories-with-smt-solvers} contains a more thorough discussion of the BIR semantic. Section \ref{alice-bob-toy} implements a toy BIR program and presents the concrete BIR syntax.
+BIR is implemented as a set of HOL4 \textit{datatypes}, and possesses
+a completely defined semantic.\todo{This can be rephrased}
+Section \ref{bir-memories-with-smt-solvers} contains a more thorough
+discussion of the BIR semantic. Section \ref{alice-bob-toy} implements
+a toy BIR program
+and presents the concrete BIR syntax.
 
 Among its supporting tools, HolBA features a tool to visualize the \gls{CFG} of BIR programs.
 
 \section{Exploring multiple approaches to translating the formal NIC model}
 
-Multiple approaches to the translation of the formal NIC model described in Section \ref{overview-nic-model} to an equivalent BIR program have been considered:
+Multiple approaches to the translation of the formal NIC model
+described in Section \ref{overview-nic-model} to an equivalent BIR
+program have been considered: \todo{IN general, active forms are better}
 
 \begin{itemize}
     \item \textbf{handwritten BIR program}: The most straightforward way would be to directly write the BIR program by hand by looking at the actual formal model and directly converting it to BIR. This is easily feasible because of the limited set of statement used in the implementation of the NIC model which are all representable in the BIR syntax. However, this does not seem optimal if more than one such translation need to be performed. One remedy of this problem would be to implement a set of tools that facilitate the implementation of device models and reduce the boilerplate. This idea is explored in the following Sections \ref{alice-bob-toy} to \ref{impl-real-model}.
@@ -574,7 +594,8 @@ For those reasons, it has been decided to try using BIR directly to write the NI
 
 \subsection{Implementing a toy BIR model} \label{alice-bob-toy}
 % BIR toy model
-
+\todo{I'm not sure that these examples with Alice and Bob are a good
+  idea. These are probably too abstract}
 Before writing the whole NIC model by hand, we shall identify the structure of the model and develop tools that facilitate its implementation. Using well-designed tools can reduce the boilerplate work of the implementation, helping to focus only on the meaningful content of the implementation, and can also reduce the chance of introducing bugs as the code is factored and mechanically shorter.
 
 It has been decided to implement a transition system similar to the one of the NIC model, with two inner independent automata: Alice and Bob. The two automata feature a simple linear transition system, and each of them has a non-autonomous transition, that is performed respectively by two external functions \texttt{bus\_arrived} and \texttt{taxi\_arrived} that represent memory accesses from the CPU in the NIC model. The function \texttt{autonomous\_step} performs one autonomous transition via the scheduler. Figure \ref{alice-bob-automata-overview} gives an overview of the two automata, Figure \ref{alice-bob-entrypoints} shows the role of the three functions and Figure \ref{alice-bob-alice_autonomous_transitions} describes in details Alice's automaton. (Flowcharts from the previous Section \ref{flowchart-attempt} have been used in this section in order to facilitate designing the toy model. However, no effort has been made to come up with a coherent and formalized language.)
