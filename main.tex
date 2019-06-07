@@ -35,6 +35,7 @@
 % Bib setup
 \usepackage{csquotes} % Recommended by biblatex
 \usepackage[style=numeric,sorting=none,backend=biber]{biblatex}
+\DeclareBibliographyAlias{software}{online}
 \addbibresource{references.bib} % The file containing our references, in BibTeX format
 
 \title{Experiments on automation of formal verification of devices at the binary level}
@@ -91,7 +92,7 @@
 }
 \newglossaryentry{BSL} {
     name={BSL},
-    description={BIR Simple Language. It is also a word play with DSL (Domain Specific Language) which are languages specialized to a particular application domain. HTML and SQL are famous examples of DSL.}
+    description={BIR Simple Language. It is also a word play with DSL (Domain Specific Language) which are languages specialized to a particular application domain. HTML and SQL are famous examples of DSL}
 }
 \newacronym{ISA}{ISA}{Instruction Set Architecture}
 \newacronym{SMT}{SMT}{Satisfiability Modulo Theories}
@@ -181,6 +182,20 @@
     \textit{Mot-clés} : binary analysis, formal verification, proof producing analysis, theorem proving
   \end{abstract}
 \end{otherlanguage}
+
+% ACKNOLEDGMENTS
+%
+% Mads: confiance + opportunity to work with them
+% Pierre-\'Edouard Portier: 
+% Roberto: 
+
+% Toute l'équipe avec qui j'ai travaillé
+% Andreas: abundant and invaluable help throughout the project, sharing his lunchtime and listening to my nonsense
+% Pablo: long and precise explanations about HOL4 and type systems
+% Jonas: 
+
+% Pauline: my girlfriend
+% my parents: for their support
 
 \begingroup
 \hypersetup{linkcolor=black}
@@ -542,11 +557,11 @@ While this visual representation was useful to get to know the formal NIC model,
     \item It is hard to design a textual representation of this visual language other than conventional programming languages, so using such representation would require a substantial implementation effort in order to implement all the tools needed to use it. Developing visualization tools for a conventional language appears to be a more reasonable approach than developing a visual language.
 \end{itemize}
 
-For those reasons, it has been decided to not go further with this visual representation, and to focus instead of existing tools of the HolBA platform. However, as we shall see in the rest of this thesis, we will explore other visualization tools, and flowcharts will be used as a visual help while designing the model using other methods.
+For those reasons, it has been decided to not go further with this visual representation, and to focus instead on existing tools of the HolBA platform. However, as we shall see in the rest of this thesis, we will explore other visualization tools, and flowcharts will be used as a visual help while designing the model using other methods.
 
 \subsection{Writing the model in C} \label{c-model}
 
-One-to-one translation of the transmission automaton, scheduler, state, and \textit{CPPI\_RAM} related definitions of the formal model have been realized in C. This translation has been quite easy to perform and has been completed in roughly one day, and no difficulty arose during this translation. Regarding the NIC state, C has all types needed to represent it. An array has been used to represent the function type of \textit{CPPI\_RAM}. Enumerations have been used in order to represent HOL4 enumerations. While not optimal because of their non-restricted usage allowed by the C language---they can be freely modified as integers without checking their validity in C, while HOL4 and functional languages in general are restrictive and force to use correct values---enumerations are enough if used correctly while being well-aware of those shortcomings.
+One-to-one translation of the definitions related to the transmission automaton, scheduler, state, and \textit{CPPI\_RAM} of the formal model have been realized in C. This translation has been quite easy to perform and has been completed in roughly one day, and no difficulty arose during this translation. Regarding the NIC state, C has all types needed to represent it. An array has been used to represent the function type of \textit{CPPI\_RAM}. Enumerations have been used in order to represent HOL4 enumerations. While not optimal because of their non-restricted usage allowed by the C language---they can be freely modified as integers without checking their validity in C, while HOL4 and functional languages in general are restrictive and force to use correct values---enumerations are enough if used correctly while being well-aware of those shortcomings.
 
 When studying the compiled assembly code and lifted BIR program, we noticed that all the convenient naming that we can use in the formal or the C model is lost and replaced with abundant usage of the stack. While this is completely normal behaviour for a C compiler, this is not convenient when performing later proofs on the model: we would first need to rename them in the proof using some definitions, and this process would be lengthy and cumbersome (if not automated), resulting in more code than if the model had been directly written in BIR in the first place. This experiment made us realize that writing the model is a rapid operation and that we should rather focus on making the verification step as smooth as possible because it is the most difficult one to perform.
 
@@ -587,7 +602,7 @@ It has been decided to implement a transition system similar to the one of the N
 	\label{alice-bob-alice_autonomous_transitions}
 \end{figure}
 
-From the design presented in Figures \ref{alice-bob-automata-overview}, \ref{alice-bob-entrypoints} and \ref{alice-bob-alice_autonomous_transitions}, writing the BIR program is a repetitive but straightforward step. The resulting BIR program is 450 lines of code long. The following issues have been identified:
+From the design presented in Figures \ref{alice-bob-automata-overview}, \ref{alice-bob-entrypoints} and \ref{alice-bob-alice_autonomous_transitions}, writing the BIR program is a repetitive but straightforward step. The resulting BIR program is \num{450} lines of code long. The following issues have been identified:
 
 \begin{itemize}
     \item BIR, as a HOL4 embedded language, is very verbose. Simple operations like additions or assignments require long constructions, as shown in Listing \ref{alice-bob-bir-verbose}. Section \ref{bsl} presents BSL, a less verbose way of writing BIR programs.
@@ -599,32 +614,29 @@ From the design presented in Figures \ref{alice-bob-automata-overview}, \ref{ali
     stringstyle=\color{codepurple},
     label=alice-bob-bir-verbose,caption=BIR ,
     frame=tb,basicstyle=\tiny\ttfamily]
-(* A1. Eating *)                                                                                                                     
-<|bb_label := BL_Label "alice_automaton.step.1";                                                                                     
-  bb_statements := [                                                                                                                 
-    (* state.alice.hunger -= 20 *)                                                                                                   
-    BStmt_Assign (BVar "state.alice.hunger" (BType_Imm Bit32))                                                                       
-      (BExp_BinExp BIExp_Minus                                                                                                       
-        (BExp_Den (BVar "state.alice.hunger" (BType_Imm Bit32)))                                                                   
-        (BExp_Const (Imm32 20w)));                                                                                                 
-    (* state.alice.step := 2 *)                                                                                                      
-    BStmt_Assign (BVar "state.alice.step" (BType_Imm Bit32))                                                                         
-      (BExp_Const (Imm32 2w))                                                                                                        
-  ];                                                                                                                                 
-  bb_last_statement := BStmt_Jmp (BLE_Label (BL_Label "alice_automaton.end"))                                                        
-|>;                                                                                                                                  
+(* A1. Eating *)
+<|bb_label := BL_Label "alice_automaton.step.1";
+  bb_statements := [
+    (* state.alice.hunger -= 20 *)
+    BStmt_Assign (BVar "state.alice.hunger" (BType_Imm Bit32))
+      (BExp_BinExp BIExp_Minus
+        (BExp_Den (BVar "state.alice.hunger" (BType_Imm Bit32)))
+        (BExp_Const (Imm32 20w)));
+    (* state.alice.step := 2 *)
+    BStmt_Assign (BVar "state.alice.step" (BType_Imm Bit32))
+      (BExp_Const (Imm32 2w))
+  ];
+  bb_last_statement := BStmt_Jmp (BLE_Label (BL_Label "alice_automaton.end"))
+|>;
 \end{lstlisting}
     \item BIR features only one conditional statement controlling the control flow of a program: conditional jumps. Hence, BIR is not convenient for representing \textbf{if-then-else} statements with more than two branches. Section \ref{impl-real-model} presents some helper functions that have been implemented in order to be able to abstract the raw BIR code and work at a higher level.
 \end{itemize}
 
-%\subsection{Visualizing the CFG} \label{visualizing-cfg}
-% Moved to the introduction
-
 \subsection{BSL: BIR Simple Language} \label{bsl}
 
-Because of its extreme verbosity, BIR is not a language convenient to manually use. Its primary use has been as an output from the \gls{proof-producing} lifter and as a machine-independent intermediate representation with a very limited feature-set convenient to reason about. A less verbose and more convenient method for producing BIR code is needed in order to open this language to other uses. Therefore, a library has been written that offers the same expressiveness than BIR but with shorter constructs. This library has been kept simple and will serve as the base layer of possible later abstractions. As such, it has been decided that no feature other than pure syntactic construct, such that type inference, would be included. This library has been named BIR Simple Language (BSL) and is implemented in the file \textit{bslSyntax.sml} \footnote{This file has been named in order to follow the HOL4 conventions: \textit{*Syntax.sml} files contain functions that create, destruct and check HOL4 terms. \textit{bslSyntax.sml} is a library for creating only BIR terms, and should, therefore, follow this convention.}.
+Because of its extreme verbosity, BIR is not a language convenient to manually use. Its primary use has been as an output from the \gls{proof-producing} lifter and as a machine-independent intermediate representation with a very limited feature-set convenient to reason about. A less verbose and more convenient method for producing BIR code is needed in order to open this language to other uses. Therefore, a library has been written that offers the same expressiveness as BIR but with shorter constructs. This library has been kept simple and will serve as the base layer of possible later abstractions. As such, it has been decided that no feature other than pure syntactic construct, such that type inference, would be included. This library has been named BIR Simple Language (BSL) and is implemented in the file \textit{bslSyntax.sml} \footnote{This file has been named in order to follow the HOL4 conventions: \textit{*Syntax.sml} files contain functions that create, destruct and check HOL4 terms. \textit{bslSyntax.sml} is a library for creating only BIR terms, and should, therefore, follow this convention.}.
 
-BSL is composed of a set of functions with short names and a coherent interface. Since this library will be directly included in every \gls{SML} script file in order to avoid usage of the lengthy \texttt{bslSyntax.function\_name} SML construction, we decided to prefix every function with the letter \texttt{b}. As BSL doesn't feature type inference, types must be explicitly given when necessary. For every such function, such as \texttt{bconst}, implementations for every possible type have been added, in addition to general functions taking the size as an argument. Thanks to partial function application in SML, composing functions is easy and scripts can create the set of functions that they need. However, in practice, a BIR program uses a very limited set of types and it is often enough in scripts to statically define the needed set of sized functions (as shown in Listing \ref{bsl-static-funcs}). Finally, BSL has been designed to be fully interoperable with HOL4 terms; it exists for every BIR operation a related BSL function taking a HOL4 term as a parameter, and every BSL function return a HOL4 term. Scripts can therefore not be limited by the restricted feature-set of BSL.
+BSL is composed of a set of functions with short names and a coherent interface. Since this library will be directly included in every \gls{SML} script file in order to avoid usage of the lengthy \texttt{bslSyntax.function\_name} SML construction, we decided to prefix every function with the letter \texttt{b}. As BSL doesn't feature type inference, types must be explicitly given when necessary. For every such function, such as \texttt{bconst}, implementations for every possible type have been added, in addition to general functions taking the size as an argument. Thanks to partial function application in SML, composing functions is easy and scripts can create the set of functions that they need. However, in practice, a BIR program uses a very limited set of types and it is often enough in scripts to statically define the needed set of sized functions (as shown in Listing \ref{bsl-static-funcs}). Finally, BSL has been designed to be fully interoperable with HOL4 terms; it exists for every BIR operation a related BSL function taking a HOL4 term as a parameter, and every BSL function return a HOL4 term. Therefore, scripts cannot be limited by the restricted feature-set of BSL.
 
 \begin{lstlisting}[
     language=Caml,
@@ -647,7 +659,7 @@ val bjmplabel_str = (bjmp o belabel_str)
 \subsection{Implementing the real model} \label{impl-real-model}
 % model not-complete model (focus on key parts)
 
-From the knowledge gained in the previous section \ref{alice-bob-toy}, a set of helper functions has been implemented, mainly in order to facilitate reasoning about the state machine. Listings \ref{impl-real-tx_state} and \ref{impl-real-tx_bstate_cases} show the SML code respectively used to represent the transmission automaton and to generate the BIR blocks that jumps to the right label of the program depending on the current step of the automaton (analogous to a \textit{case} or \textit{switch} construct in higher-level languages).
+From the knowledge gained in the previous section \ref{alice-bob-toy}, a set of helper functions has been implemented, mainly in order to facilitate reasoning about the state machine. Listings \ref{impl-real-tx_state} and \ref{impl-real-tx_bstate_cases} show the SML code respectively used to represent the transmission automaton and to generate the BIR blocks that jump to the right label of the program depending on the current step of the automaton (analogous to a \textit{case} or \textit{switch} construct in higher-level languages).
 
 \begin{lstlisting}[
     language=Caml,
@@ -689,7 +701,7 @@ val tx_state = gen_state_helpers "tx" [
 ]
 \end{lstlisting}
 %
-Because of time constraints, not every transition of the formal NIC model have been implemented in this new model. Instead, we decided to focus on only some transitions in two automata: initialization and transmission. This focus is pragmatic for two reasons: (a) we decided to write the model along with the proof, only needed transitions for the current proof, in order to grow the model at a reasonable pace and to no clutter it with unneeded features or at the contrary missing critical aspects during the first sketch (b) as the verification was performed at the same time, we decided to start with easier, but not obvious, transitions, hence the choice to postpone verification of the more complex reception automaton to later in the work.
+Because of time constraints, not every transition of the formal NIC model have been implemented in this new model. Instead, we decided to focus on only some transitions in two automata: initialization and transmission. This focus is pragmatic for two reasons: (a) we decided to write the model along with the proof, only needed transitions for the current proof, in order to grow the model at a reasonable pace and to no clutter it with unneeded features or at the contrary missing critical aspects during the first sketch (b) as the verification was performed at the same time, we decided to start with easier transitions, but not obvious ones, hence the choice to postpone verification of the more complex reception automaton to later in the work.
 
 When visualizing the \gls{CFG} of the BIR NIC model (Figure \ref{nic-bir-model-cfg}), we notice that it has the shape of a tree, rejoining the idea introduced in Section \ref{overview-nic-model}: each node of the tree is a BIR block, each edge a jump. Since every jump in the NIC model go to a static target, a jump can only have one or two destinations. Hence, nodes can only have one or two outgoing edges. In the model, each node represents either an empty jump block (possibly conditional) or a mutation of the state.
 
@@ -737,10 +749,10 @@ The static and loop-free control-flow of this BIR program is very suitable for u
 
 \section{Hoare triples} \label{hoare-triples}
 
-Contract-based verification is a powerful approach for verifying programs. For a given program $prog$ consisting of a list of instructions and two predicates $P$ and $Q$ called respectively pre- and postcondition, a Hoare triple \htriple{P}{prog}{Q} states that when executing the program $prog$ from a state $S$ terminates in a state $S'$, if $P$ holds in $S$ then $Q$ will hold in $S'$ (Equation \ref{ht_def}). Hereafter, we assume programs and states to be well-typed.
+Contract-based verification is a powerful approach for verifying programs. For a given program $prog$ consisting of a list of instructions and two predicates $P$ and $Q$ called respectively pre- and postcondition, a Hoare triple \htriple{P}{prog}{Q} states that when executing the program $prog$ from a state $S$ terminates in a state $S'$, if $P$ holds in $S$ then $Q$ will hold in $S'$ (Equation \ref{ht_def}). Hereafter, we assume programs and states to be well-typed. A Hoare Triple is also called \textit{a contract}.
 
 \begin{equation}
-  \htriple{P}{prog}{Q} \triangleq S' = exec(S, prog) \implies P(S) \implies Q(S')
+  \htriple{P}{prog}{Q} \eqdef S' = exec(S, prog) \implies P(S) \implies Q(S')
   \label{ht_def}
 \end{equation}
 
@@ -757,7 +769,7 @@ In order to perform the verification, the Hoare logic introduces a set of axioms
 
 \section{Weakest precondition derivation}
 
-While Hoare logic introduces sufficient preconditions, Dijkstra introduced the concept of necessary and sufficient preconditions, called ``weakest'' preconditions. Such weakest preconditions can be automatically derived from a program $prog$ and a postcondition $Q$. Let's call $\WP(prog, Q)$ such a weakest precondition. Then, from Equation \ref{ht_def} follows:
+While Hoare logic introduces sufficient preconditions, Dijkstra introduced the concept of necessary and sufficient preconditions, called ``weakest'' preconditions \cite{dijkstra_guarded_1975}. Such weakest preconditions can be automatically derived from a program $prog$ and a postcondition $Q$. Let's call $\WP(prog, Q)$ such a weakest precondition. Then, from Equation \ref{ht_def} follows:
 
 \begin{equation}
   \forall (prog, Q),
@@ -907,7 +919,7 @@ unsat
 \end{equation}
 \end{small}
 
-It is to be noted that this tool doesn't produce a theorem stating that the generated expression is actually \textit{the} weakest precondition. However, this theorem isn't needed to perform contract-based verification if the generated ``weakest'' precondition is weak enough so that our precondition can imply it. However, without this theorem, it is impossible to prove that a given precondition $P$ isn't strong enough to establish the postcondition. We will still use the term ``weakest precondition'' as it is in practice how we are using this tool.
+It is to be noted that this tool doesn't produce a theorem stating that the generated expression is actually \textit{the} weakest precondition. Nevertheless, in practice, this theorem isn't needed to perform contract-based verification if the generated ``weakest'' precondition is weak enough so that our precondition can imply it. However, without this theorem, it is impossible to prove that a given precondition $P$ isn't strong enough to establish the postcondition. We will still use the term ``weakest precondition'' as it is in practice how we are using this tool.
 
 Definitions \ref{holba_wp_ht_thm} introduces additional conditions about well-typedness and initialization that are needed in BIR today\footnotemark, as well as the notion of ``Block Program Counter'' for multi-statement blocks. %However, those can easily be proved and we are then left with the Hoare triple definition expressed in terms of evaluating the pre- and post-conditions in the initial and final state.
 
@@ -915,7 +927,7 @@ Definitions \ref{holba_wp_ht_thm} introduces additional conditions about well-ty
 
 This tool doesn't provide a simple interface to compute weakest preconditions for a given program and postcondition, nor does it provide and support for proving the relation between the precondition and the weakest precondition. Then, in order to prove that the Hoare triple holds from this generated Theorem \ref{triple_wp_thm}, we need to prove:
 
-\begin{equation} 
+\begin{equation}
     bir\_exec\_to\_labels\_triple~p~entry\_l~end\_ls~\mathbf{pre}~post
     \label{triple_pre_thm}
 \end{equation}
@@ -941,17 +953,19 @@ In Equation \ref{eval_pre_imp_eval_wp} we can recognize Equation \ref{p_imp_wp} 
 % \textbf{TODO}: Mention SMT-LIB logics?
 % \textbf{TODO}: Mention proof reconstruction?
 
-HOL4 features a library for interfacing \gls{SMT} solvers and HOL4, called \textit{HolSmtLib}. This library supports Yices 1 and Z3 as external provers. Yices 1 being an abandoned project that doesn't support SMT-LIB 2.0, we will focus on Z3 and the standard format SMT-LIB 2.0 \cite{barrett_satisfiability_2016}. While \textit{HolSmtLib} supports export for some SMT-LIB 2.0 theories, it doesn't support the \textit{ArraysEx} theory and doesn't know about BIR. In Section \ref{contract-verif-holba}, we discussed the translation from BIR expressions to \textit{wordsTheory}. However, this theory doesn't contain anything about memories or arrays in general. Therefore, some modifications are needed.
+HOL4 features a library for interfacing \gls{SMT} solvers and HOL4, called \textit{HolSmtLib}. This library supports Yices 1 and Z3 as external provers. Yices 1 being an abandoned project that doesn't support SMT-LIB 2.0, we will focus on Z3 and the standard format SMT-LIB 2.0 \cite{barrett_satisfiability_2016}. While \textit{HolSmtLib} supports export for some SMT-LIB 2.0 theories, it doesn't support the \textit{ArraysEx} theory and doesn't know about BIR. In Section \ref{contract-verif-holba}, we discussed the translation from BIR expressions to \textit{wordsTheory} \footnotemark. However, this theory doesn't contain anything about memories or arrays in general. Therefore, some modifications are needed.
 
-BIR memories are semantically defined as functions from addresses to values. 
+\footnotetext{This theory contains definitions and theorems about words, i.e. $N$-bits bounded integers.}
 
-There exist five types of BIR expressions operating directly on memories (cf. Listing \ref{bir_bin_exp_def} for the list of BIR expressions, and Section \ref{exporting-bir-to-smt} for a more precise discussion of the BIR semantic):
+BIR memories are semantically defined as functions from addresses to values. HOL4's \textit{combinTheory} contains definitions and theorems about functions and function composition, that we need in order to reason about BIR memories.
+
+There exist four types of BIR expressions operating directly on memories (cf. Listing \ref{bir_bin_exp_def} for the list of BIR expressions, and Section \ref{exporting-bir-to-smt} for a more precise discussion of the BIR semantic):
 
 \begin{itemize}
     \item \texttt{BExp\_Den}: this operation enables reading values from the environment. It is analogous to reading registers or the memory in assembly programs. This operation is semantically equivalent to free variables that \textit{HolSmtLib} already support.
     \item \texttt{BExp\_MemEq}: this operation is the equality binary operation on BIR memories. This operation is semantically equivalent to equality between its operands. \textit{HolSmtLib} already supports this operation.
     \item \texttt{BExp\_Store}: this operation is used to represent memory writes. It is semantically defined as successive function updates of consecutive segments of the word being stored because the length of the memory value-type can be less or equal than the length of values stored in the memory. A function update in \textit{combinTheory} is defined with Definition \ref{combin_UPDATE_def}. \textit{HolSmtLib} cannot currently export function update operations.
-    \item \texttt{BExp\_Load}: this operation is used to read from memories. BIR memories are semantically defined as functions from addresses to values. A function application in \textit{combinTheory} is defined with Definition \ref{combin_APP_def}. Then, a memory load operation is the concatenation of multiple function application of consecutive addresses. \textit{HolSmtLib} supports function application of uninterpreted functions only.
+    \item \texttt{BExp\_Load}: this operation is used to read from memories. As a reminder, BIR memories are semantically defined as functions from addresses to values. A function application in \textit{combinTheory} is defined with Definition \ref{combin_APP_def}. Then, a memory load operation is the concatenation of multiple function application of consecutive addresses. \textit{HolSmtLib} supports function application of uninterpreted functions only.
 \end{itemize}
 
 \begin{equation}
@@ -1013,7 +1027,7 @@ Since this translation is sound, it has been added in \textit{HolSmtLib}. The tr
 
 \section{Exporting BIR expressions to SMT solvers} \label{exporting-bir-to-smt}
 
-As an intermediate language for formal verification, \gls{BIR} possesses a precise semantic. The semantic of BIR expressions is expressed as a set of definitions describing what are the equivalent operations using \textit{wordsTheory} and \textit{combinTheory}. These theories contain definitions and theorems about ``words'', i.e. bounded $N$-bit integers that are used to reason about integer types in programming languages and hardware memory in general, and function application and update used for BIR memories as already discussed in Section \ref{bir-memories-with-smt-solvers}. For example, the semantic of binary operators in BIR is defined with the following theorems\footnotemark:
+As an intermediate language for formal verification, \gls{BIR} possesses a precise semantic. The semantic of BIR expressions is expressed as a set of definitions describing what are the equivalent operations using \textit{wordsTheory} and \textit{combinTheory}. For example, the semantic of binary operators in BIR is defined with the following theorems\footnotemark:
 
 \footnotetext{Theorems \ref{bir_bin_exp_GET_OPER_def} and \ref{bir_bin_exp_def} have been reduced to only two operators and well-typed 64-bit expressions.}
 
@@ -1035,7 +1049,7 @@ As an intermediate language for formal verification, \gls{BIR} possesses a preci
     \end{equation}
 \end{small}
 
-Similarly, a set of definitions and theorems describe the semantic of operations on BIR memories. However, correct handling of endianness, alignment, and genericity over the size of memories cells and addresses, these definitions and theorems are pretty complicated to work with. The same is true for the semantic of operations on BIR variables, because of well-typedness and initialization.
+Similarly, a set of definitions and theorems describe the semantic of operations on BIR memories. However, correct handling of endianness, alignment, and genericity over the size of memories cells and addresses, are pretty complicated to work with. The same is true for the semantic of operations on BIR variables, because of well-typedness and initialization.
 
 For this reason---i.e. writing \gls{proof-producing} code is costly---, we decided to write a non-proof producing function \texttt{bir\_exp\_to\_words} that translates BIR expressions to the equivalent words expression. The obvious downside of such a function is that we now have to trust the translation to be sound because we no longer get any guarantee from the theorem prover. However, the development time is dramatically decreased and offers more time for experimenting. Moreover, this function can later be implemented in a proof-producing way for more trustful verification. Then, in order to have high confidence of correctness, software engineering practices apply:
 
@@ -1197,7 +1211,7 @@ Interface in Listing \ref{ideal_interface_prove_contract} leverages the general 
 
 When implementing this function, high attention has been paid to provide useful and comprehensive feedback in the case of failure. To that end, extensive use of exception wrapping has been made in order to give precise context to exceptions, and a logging library has been implemented (cf. Chapter \ref{user-friendliness}).
 
-When using \gls{BSL} to express pre- and post-conditions, this function provides an automatic solution to prove contracts. In the following sections, we will then see usage of this function, first to test it and then to perform proofs on the NIC model.
+When used with \gls{BSL} to express pre- and post-conditions, this function provides a convenient and automatic solution to prove contracts. In the following sections, we will then see usage of this function, first to test it and then to perform proofs on the NIC model.
 
 \section{Testing the automatic proof procedure}
 
@@ -1251,7 +1265,7 @@ val thm = prove_contract "cjmp"
   )
 \end{lstlisting}
 
-Figure \ref{test_cjmp_bir} shows the auto-generated BIR $P \implies \WP$ expression, and Equation \ref{test_cjmp_words} shows the same expression after translation to a \textit{wordsTheory} expression. This expression can be trivially simplified to $\top$, which SMT solvers can very efficiently do. Hence, this invocation to \texttt{prove\_contract} succeeds.
+Figure \ref{test_cjmp_bir} shows the auto-generated BIR $P \implies \WP$ expression, and Equation \ref{test_cjmp_words} shows the same expression after translation to a \textit{wordsTheory} expression. This expression can be trivially simplified to $\top$, what SMT solvers can very efficiently do. Hence, this invocation to \texttt{prove\_contract} succeeds.
 
 \begin{figure}[!h]
 	\includegraphics[width=\textwidth]{figures/test_cjmp_bir.png}
@@ -1268,7 +1282,7 @@ Figure \ref{test_cjmp_bir} shows the auto-generated BIR $P \implies \WP$ express
 
 \subsection{Load and store test} \label{addreq_test}
 
-The \gls{NIC} manipulating a buffer descriptor queue, represented in BIR using memories, we need to ensure that \texttt{prove\_contract} works with programs containing memories. In this test, we will store a number $N$ in memory at address \textit{A}, then load a number into $x$ from address \textbf{B}. We want to check the following Hoare Triple: \htriple{A=B}{prog}{x=N}. Listing \ref{test_addreq_pseudocode} shows the equivalent pseudocode of the test program, Figure \ref{test_addreq_bir} the auto-generated $P \implies \WP$ expression, Figure \ref{test_addreq_words} the same expression translated in \textit{wordsTheory} and Listing \ref{test_addreq_smtlib} the auto-generated SMT-LIB 2.0 instance featuring \texttt{select} and \texttt{store} operations.
+The \gls{NIC} manipulating a buffer descriptor queue, represented in BIR using memories, we need to ensure that \texttt{prove\_contract} works with programs containing memories. In this test, we will store a number $N$ in memory at address $A$, then load a number into $x$ from address $B$. We want to check the following Hoare Triple: \htriple{A=B}{prog}{x=N}. Listing \ref{test_addreq_pseudocode} shows the equivalent pseudocode of the test program, Figure \ref{test_addreq_bir} the auto-generated $P \implies \WP$ expression, Figure \ref{test_addreq_words} the same expression translated in \textit{wordsTheory} and Listing \ref{test_addreq_smtlib} the auto-generated SMT-LIB 2.0 instance featuring \texttt{select} and \texttt{store} operations.
 
 \begin{lstlisting}[
     language=C,
@@ -1407,16 +1421,13 @@ val _ = if !level_log >= logLib.INFO
   else ();
 \end{lstlisting}
 
-% TODO: Mention time constraints? -> Intro
-
-
 \subsection{Limitations of this approach}
 
 While being convenient and working well for simple contracts, the contract verification library implemented in this chapter suffers from two limitations:
 
 \begin{itemize}
-	\item The first one is straightforward: this library isn't proof-producing. Using HOL4 requires a significant learning effort, and easier non-proof producing tools exist. Hence, when using HOL4, one usually wants to reason about proofs, and this library is not proof-producing and could, therefore, introduce subtle bugs or inconsistencies. Moreover, this library doesn't offer the possibility to compose Hoare Triples because it doesn't output any related theorem. If one wanted to do so, an oracle would have to be used in order to generate such theorems and enabling theorem composition and further reasoning. Nevertheless, as already explained, proof-producing code is more costly. The desired level of trustworthiness should be carefully decided, and this library offers a pragmatic solution.
-	\item Secondly, this library and its approach of contract-based verification is limited by the expressiveness of BIR, since the pre- and post-conditions are BIR terms. BIR doesn't have quantifiers, and it is, therefore, impossible to prove contracts containing existential quantifiers. The existing formal proof on the NIC of \cite{haglund_formal_2016} requires existential quantifiers in order to reason about the buffer descriptor queue in the \textit{CPPI\_RAM} memory of the NIC, and this part of the proof can therefore not be replaced by using \texttt{prove\_contract}. Moreover, as explained in the first point of this list, composing verification produced with this library with raw HOL4 proofs is not straightforward. The following Chapter \ref{trustful-nic-analysis} explores a new proof-producing approach for performing contract-based verification on the BIR model that answer to this issue.
+	\item The first one is straightforward: this library isn't \gls{proof-producing}. Using HOL4 requires a significant learning effort, and easier non proof-producing tools exist. Hence, when using HOL4, one usually wants to reason about proofs, and this library is not proof-producing and could, therefore, introduce subtle bugs or inconsistencies. Moreover, this library doesn't offer the possibility to compose Hoare Triples because it doesn't output any related theorem. If one wanted to do so, an oracle would have to be used in order to generate such theorems and enabling theorem composition and further reasoning. Nevertheless, as already explained, proof-producing code is more costly. The desired level of trustworthiness should be carefully decided, and this library offers a pragmatic solution.
+	\item Secondly, this library, with its approach to contract-based verification, is limited by the expressiveness of BIR, since the pre- and post-conditions are BIR terms. BIR doesn't have quantifiers, and it is, therefore, impossible to prove contracts containing existential quantifiers. The existing formal proof on the NIC of \cite{haglund_formal_2016} requires existential quantifiers in order to reason about the buffer descriptor queue in the \textit{CPPI\_RAM} memory of the NIC, and this part of the proof can therefore not be replaced by using \texttt{prove\_contract}. Moreover, as explained in the first point of this list, composing verification produced with this library with raw HOL4 proofs is not straightforward. The following Chapter \ref{trustful-nic-analysis} explores a new proof-producing approach for performing contract-based verification of the BIR model that answers this issue.
 \end{itemize}
 
 \chapter{Trustful analysis on the NIC model} \label{trustful-nic-analysis}
@@ -1425,7 +1436,7 @@ While being convenient and working well for simple contracts, the contract verif
 
 %bisimulation and lifting are recurring ideas in trustful binary verification.
 
-In order to prove the feasibility of this approach, we will prove a simple property. Listing \ref{proof_nic_state} contains the NIC state on which we want to prove a property, Equations \ref{proof_nic_P_def}, \ref{proof_nic_Q_def} and \ref{proof_goal} present the property that we want to prove, and Listing \ref{proof_prog} contains a pseudocode representation of the BIR program on which we will perform the verification. Figure \ref{proof_schema} represents visually the structure of the verification and the steps that we will take during the proof. 
+In order to prove the feasibility of this approach, we will prove a simple property. Listing \ref{proof_nic_state} contains the NIC state on which we want to prove a property, Equations \ref{proof_nic_P_def}, \ref{proof_nic_Q_def} and \ref{proof_goal} present the property that we want to prove, and Listing \ref{proof_prog} contains a pseudocode representation of the BIR program on which we will perform the verification. Figure \ref{proof_schema} gives a visualization of the structure of the verification and the steps that we will take during the proof. 
 
 \begin{lstlisting}[
     language={},
@@ -1478,7 +1489,7 @@ if nic.x > 10:
 $Q_{NIC}~nic~nic'$ is defined on both initial and final states, in order to be able to reason about the initial state in the postcondition. This allows us to write $nic'.x = nic.x + 1w$ instead of $nic'.x = 1w$ for example.
 \end{remark}
 
-Equation \ref{proof_goal} uses a relation $exec\_prog$ that we shall define now. As we want to make a proof on an undefined HOL4 definition (a), we must establish an equivalence between the HOL4 definition (a) and the BIR program (c). In real proofs, this can either be produced by a lifter which generates the BIR program from a given input program and gives a ``certificate'', i.e. a theorem stating the equivalence, or be a definition which would then mean that we trust that the BIR program is equivalent to the HOL4 definition. In this proof, we will use a definition. This definition shall state that $exec\_prog~nic~bir\_prog~nic'$ (a) is equivalent to executing the BIR program from a state $bir\_state$ to a state $bir\_state'$ (c), where $nic$ is somehow equivalent to $bir\_state$ (b) and $nic'$ somehow equivalent to $bir\_state'$ (d). To express an equivalence between HOL4 states ("NIC") and BIR states, we introduce a relation $R$. The relation $R~nic~bir\_state$ is defined as a simple mapping between the BIR state and the NIC state, as shown in Listing \ref{proof_R_def}. Then, we define the relation $exec\_prog$ as shown in Equation \ref{proof_eq_thm}\footnotemark.
+Equation \ref{proof_goal} uses a relation $exec\_prog$ that we shall define now. As we want to make a proof on an undefined HOL4 definition (a), we must establish an equivalence between the HOL4 definition (a) and the BIR program (c). In real proofs, this can either be produced by a lifter which generates the BIR program from a given input program and gives a ``certificate'', i.e. a theorem stating the equivalence, or be a definition which would then mean that we trust that the BIR program is equivalent to the HOL4 definition. In this proof, we will use a definition. This definition shall state that $exec\_prog~nic~bir\_prog~nic'$ (a) is equivalent to executing the BIR program from a state $bir\_state$ to a state $bir\_state'$ (c), where $nic$ is somehow equivalent to $bir\_state$ (b) and $nic'$ somehow equivalent to $bir\_state'$ (d). To express an equivalence between HOL4 states (``$nic$'') and BIR states, we introduce a relation $R$. The relation $R~nic~bir\_state$ is defined as a simple mapping between the BIR state and the NIC state, as shown in Listing \ref{proof_R_def}. Then, we define the relation $exec\_prog$ as shown in Equation \ref{proof_eq_thm}\footnotemark.
 
 \footnotetext{Definition \ref{proof_eq_thm} has been annotated to visualize how it is connected to the structure of the proof on Figure \ref{proof_schema}. In addition, the $BIR\_exec$ relation is used as a shorthand for $bir\_exec\_to\_labels$ in order to simplify the proof.}
 
@@ -1608,7 +1619,7 @@ We will now prove that the Hoare Triple holds on the BIR program.
 \end{theorem}
 
 \begin{proof}
-To prove this Hoare Triple, we used the proof-producing procedure implemented in \gls{holba} in order to generate the weakest precondition. The automatically derived weakest precondition is shown in Figure \ref{proof_wp_exp}. Section \ref{contract-verif-holba} already discussed how to perform this proof: we have to prove Equation \ref{eval_pre_imp_eval_wp} with $\mathbf{wp}$ being the expression in Figure \ref{proof_wp_exp} and $\mathbf{pre}$ being $P^{exp}_{BIR}$. Because we want to use a \gls{SMT} solver, we need to turn the goal of the backward proof into a \textit{wordsTheory} expression. \textit{combinTheory} isn't needed in this case since BIR memories are not used. Equation \ref{eval_pre_imp_eval_wp} uses $bir\_eval\_exp$ which evaluates an expression in the given BIR state. Therefore, to translate the goal into a \textit{wordsTheory} expression, we need to use BIR's semantic. The semantic needs well-typedness and initialization of the variables. At the time of writing, HolBA offers no support for automatic rewriting with the semantic definitions, so multiple lemmas about initialization, well-typedness, and type equality must be manually proved for every variable. Those are not shown here because they consist of simple rewriting and simplification.
+To prove this Hoare Triple, we used the proof-producing procedure implemented in \gls{holba} in order to generate the weakest precondition. The automatically derived weakest precondition is shown in Figure \ref{proof_wp_exp}. Section \ref{contract-verif-holba} already discussed how to perform this proof: we have to prove Equation \ref{eval_pre_imp_eval_wp} with $\mathbf{wp}$ being the expression in Figure \ref{proof_wp_exp} and $\mathbf{pre}$ being $P^{exp}_{BIR}$. Because we want to use an \gls{SMT} solver, we need to turn the goal of the backward proof into a \textit{wordsTheory} expression. \textit{combinTheory} isn't needed in this case since BIR memories are not used. Equation \ref{eval_pre_imp_eval_wp} uses $bir\_eval\_exp$ which evaluates an expression in the given BIR state. Therefore, to translate the goal into a \textit{wordsTheory} expression, we need to use BIR's semantic. The semantic needs well-typedness and initialization of the variables. At the time of writing, HolBA offers no support for automatic rewriting with the semantic definitions, so multiple lemmas about initialization, well-typedness, and type equality must be manually proved for every variable. Those are not shown here because they consist of simple rewriting and simplification.
 
 \begin{figure}[!h]
 	\includegraphics[scale=.65]{figures/proof_wp_exp.png}
@@ -1684,7 +1695,7 @@ Additionally, binary analysis platforms are complex software systems, and should
 
 Already presented in details in Sections \ref{bsl} and \ref{pretty-printers} respectively, BSL and BIR pretty-printers are two successful attempts to simplify HolBA users manipulation of BIR, respectively writing and reading BIR code.
 
-BSL is, as the name suggests, a really simple library that enables less verbose writing of BIR terms. There was no strict need for this library, since HOL4 features a powerful quoting system that can already parse raw BIR code. However, the raw BIR syntax is (a) cumbersome to use and arguably becomes hard to maintain as the code grows in size and (b) isn't easy to mix with SML code. BSL offers a convenient solution to both these problems, and the time spent in order to implement it has been very limited, roughly about two days.
+BSL is, as the name suggests, a really simple library that enables less verbose writing of BIR terms. There was no strict need for this library, since HOL4 features a powerful quoting system that can already parse raw BIR code. However, the raw BIR syntax is (a) cumbersome to use and arguably becomes hard to maintain as the code grows in size and (b) isn't easy to mix with SML code. BSL offers a convenient solution to both problems, and the time spent in order to implement it has been very limited, roughly about two days.
 
 Similarly, BIR pretty-printers were not a hard need, but rather a welcomed feature. When debugging large BIR expressions, we spent a non-negligible amount of time counting parenthesis, grouping operators and searching arms of binary operators. The pretty-printers give a convenient solution to these problems, and required a limited implementation effort, roughly about two days spent in iterative improvements.
 
@@ -1696,7 +1707,7 @@ Errors happen. This is a truth in engineering and software engineering is no exc
 
 \gls{SML} offers error handling via exceptions that can be raised and handled, raised on errors and handled at places where recovery is possible and desirable. Being deeply embedded in SML, HOL4 inherit this behavior. However, being a complex system on its own, HOL4 can raise exceptions at a lot of places. When used without attention, HOL4 can raise exceptions at unexpected and often distant (i.e. in dependencies of the functions that are directly used) locations. Hence, when some exceptions are raised, meaningless error messages are raised and dumped at the user. For example, a user incorrectly using some function could receive an exception saying ``\textit{Not a conjunction}'', whereas the function interface doesn't directly take logical expressions as arguments. Here, the implementation is leaking to the user that should not have to know anything about it.
 
-To answer to this issue, there are two immediate possibilities (in addition to fixing the actual error): (a) code could handle possible exceptions of code that it uses and that could produce some, and either handle the issue (if possible) or raising another more meaningful error, and (b) HOL4 provides an exception wrapping mechanism in its \textit{Feedback} library that offers the possibility of adding information to an exception on the flight, producing a result analogous to backtrace in other programming languages.
+To answer this issue, there are two immediate possibilities (in addition to fixing the actual error): (a) code could handle possible exceptions of code that it uses and that could produce some, and either handle the issue (if possible) or raising another more meaningful error, and (b) HOL4 provides an exception wrapping mechanism in its \textit{Feedback} library that offers the possibility of adding information to an exception on the flight, producing a result analogous to backtrace in other programming languages.
 
 \subsection{LogLib, a logging library} \label{loglib}
 %Introduce tracing in HOL4 in general (levels, HOL4 warnings and error \textbf{messages}).
@@ -1752,7 +1763,7 @@ handle e => raise pp_exn "Failed to perform A, check that B." e;
 
 \section{Best practices for a complex platform} \label{best-practices-complex-platform}
 
-When building complex systems, special care should be taken in order to ensure that it grows in good conditions. Despite providing the best capabilities, a system with poor usability will encounter a slow adoption, as shown in the previous section. But when a system gets used by an increasing number of users, a different working organization is needed. This section will first briefly a critical concept that should be mastered for the successful growth of a software platform. Then, we will study the \gls{CI} system that has been set up for HolBA.
+When building complex systems, special care should be taken in order to ensure that it grows in good conditions. Despite providing the best capabilities, a system with poor usability will encounter a slow adoption, as shown in the previous section. But when a system gets used by an increasing number of users, a different working organization is needed. This section will first briefly introduce a critical concept that should be mastered for the successful growth of a software platform. Then, we will study the \gls{CI} system that has been set up for HolBA.
 
 \subsection{Developing simple interfaces}
 
@@ -1790,7 +1801,7 @@ The goal of this paper was to perform experiments about the automation of formal
     \item \textbf{Formal proof of a BIR program on a HOL4 state}: a novel usage of BIR and method for transferring properties from BIR program to formal HOL4 specification has been carried out. Additionally, while not automated, the work needed in order to implement automatic HOL4 tactics has been clearly identified. Every automation work should be preceded by a manual implementation of the task, that this proof intends to be.
 \end{enumerate}
 
-Throughout this work, a strong focus has been placed on ease of use and user-friendliness with BSL, the pretty-printer, the implementation of new logging utilities, guidelines about error handling in SML and with HOL4, and a friendly exception printer. I strongly believe that user experience of such complex platforms are of primary importance because it can dramatically reduce time spent in debugging and the need of exhaustive documentation, and give to users to desire to keep using the platform. If it is decided to put more work in HolBA in order to make it a powerful binary analysis platform, the research team is advised to consider this aspect while expanding HolBA capabilities.
+Throughout this work, a strong focus has been placed on ease of use and user-friendliness with BSL, the pretty-printer, the implementation of new logging utilities, guidelines about error handling in SML and with HOL4, and a friendly exception printer. We strongly believe that user experience of such complex platforms are of primary importance because it can dramatically reduce time spent in debugging and the need of exhaustive documentation. Furthermore, it can give users the desire to keep using the platform. If it is decided to put more work in HolBA in order to make it a powerful binary analysis platform, the research team is advised to consider this aspect while expanding HolBA capabilities.
 
 Some failed experiments have also been realized, including the DepGraph tool that revealed to not be adapted to its planned usage or which would have needed to much work for too few benefits (though DepGraph's design is future-proof and the tool can easily be extended later if new needs or novel ideas appear), and the former two implementation attempts of the NIC model using flowcharts or C which have been found to not be suitable for device models.
 
@@ -1802,12 +1813,13 @@ The pretty-printer implemented in this work is only a small experiment only scra
 
 \begin{itemize}
     \item the generated output isn't parsable, which is against HOL4 conventions where every printed term should be parsable by HOL4 quoting system. A solution to this problem would be to implement a theory introducing definitions for the new abbreviations. However, some liberties taken in the pretty-printer cannot be parsed: (a) the flat printing of nested binary expressions of the same state, because they would need multiple arity functions which are not available in HOL4, and (b) \textbf{if-then-else} statements in the current representation.
-    \item the pretty-printer doesn't use infix operators, feature widely used in custom syntax used in some theories, like \textit{wordsTheory}. Infix syntax for binary operators can dramatically reduce the verbosity of expressions, and give a more familiar representation that \textit{could} be simpler to work with.
+    \item the pretty-printer doesn't use infix operators, feature widely employed in custom syntax used in some theories, like \textit{wordsTheory}. Infix syntax for binary operators can dramatically reduce the verbosity of expressions, and give a more familiar representation that \textit{could} be simpler to work with.
     \item the choice of colors could be reviewed in order to more closely follow HOL4 convention and usage. For example, BIR types are highlighted in the same color than free variables. While creating a very limited chance of ambiguities, users familiar with HOL4 conventions can be annoyed with this inconsistency.
 \end{itemize}
 
 The non-proof-producing contract verification library implemented in this work can be really useful for prototyping, but it cannot be used for trustful verification. The limitations it suffers could be reasonably fast to overcome, and they should be fixed especially if HolBA were to become a strong binary analysis platform. Limitations include (a) the impossibility to compose contract in order to reason about longer functions, to compose functions or to prove properties on not loop-free programs, and (b) the obvious limitation of not being proof-producing. Work is ongoing at the time of writing about weak-correctness and contract composition, answering to (a). The main blocker of (b) is the absence of a proof-producing ways of using SMT solvers for proving contracts (Equation \ref{eval_pre_imp_eval_wp}). The proof of Chapter \ref{trustful-nic-analysis} and its SML implementation identify what automatic procedures should be added to HolBA in order to perform step (b) and progress towards proof-producing automatic verification. Additionally, the signature of \texttt{prove\_contract} should be reworked in order to enable mixing it with proof-producing code, after both (a) and (b) are solved. For example, it should work with HOL4 definitions instead of raw terms.
 
+% TODO: SMT: axioms for faster reasoning about memory + exponential problem
 
 % Left out:
 % - During binary verification, we work with ASM instead of clean C code. Therefore, pre-postconditions are harder to define. Hence, this one-button solution would need more support to easily define those expressions.
