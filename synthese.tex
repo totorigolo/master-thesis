@@ -676,49 +676,27 @@ To complete the proof of Theorem \ref{proof_goal}, we used the deduction rule wi
 \section{User experience and good practices} \label{user-friendliness}
 \textit{This chapter will present the care that has been put into user experience and good practices throughout this work.}
 
-In this work, we took the role of a user of the HolBA platform, and of HOL4 by necessity. HOL4 learning curve is quite steep, and very few efforts have been invested towards beginner friendliness because this topic can become really time-consuming and its perceived importance greatly depends on one's experience. Throughout our design and implementation process, great care has been put into having a good user experience while keeping time spent on this issue reasonably low. Section \ref{towards-user-exp} will briefly present what has been done in order to increase user experience.
-
-Additionally, binary analysis platforms are complex software systems, and should as such follow well-known best practices in order to make it last and develop serenely. Therefore, Section \ref{best-practices-complex-platform} presents some best practices that have been adopted in HolBA.
-
 \subsection{Towards better user experience} \label{towards-user-exp}
-\subsubsection{BSL and the pretty-printer}
 
-Already presented in details in Sections \ref{bsl} and \ref{pretty-printers} respectively, BSL and BIR pretty-printers are two successful attempts to simplify HolBA users manipulation of BIR, respectively writing and reading BIR code.
+Throughout our design and implementation process, great care has been put into having a good user experience.
 
-BSL is, as the name suggests, a really simple library that enables less verbose writing of BIR terms. There was no strict need for this library, since HOL4 features a powerful quoting system that can already parse raw BIR code. However, the raw BIR syntax is (a) cumbersome to use and arguably becomes hard to maintain as the code grows in size and (b) isn't easy to mix with SML code. BSL offers a convenient solution to both problems, and the time spent in order to implement it has been very limited, roughly about two days.
+\vspace{-8pt}
+\paragraph{BSL and the pretty-printer} are two successful attempts to simplify HolBA users manipulation of BIR, respectively writing and reading BIR code. While HOL4 provides powerful quotation and printing systems, these are verbose by default. Those two libraries were not a hard need, but do offer a some relieve to users.
 
-Similarly, BIR pretty-printers were not a hard need, but rather a welcomed feature. When debugging large BIR expressions, we spent a non-negligible amount of time counting parenthesis, grouping operators and searching arms of binary operators. The pretty-printers give a convenient solution to these problems, and required a limited implementation effort, roughly about two days spent in iterative improvements.
+\vspace{-8pt}
+\paragraph{Error handling in SML and HOL4} offers a robust way of handling failure. However, sometimes some exceptions are raised in a hidden implementation of some function call and their message convey few information. To answer this issue, there are two immediate possibilities (in addition to fixing the actual error): (a) code could handle possible exceptions of code that it uses and that could produce some, and either handle the issue (if possible) or raising another more meaningful error, and (b) wrap the exceptions using HOL4's \textit{Feedback} library in order to add context information and produce a result analogous to backtrace in other programming languages. We took great care to use both solutions during our implementations.s
 
-\subsubsection{Error handling in SML and HOL4}
-% Present the problems specific to HOL4 that arise when debugging proofs and libs.
-% Introduce exception wrapping and explain how they help to locate the location of errors and can help interactive use of HOL4 by giving more precise information about what went wrong. Analogous to backtraces.
+\vspace{-8pt}
+\paragraph{A logging library}, called \textit{logLib}, has been implemented. It aims to provide a unified use of HOL4 tracing capabilities which it uses in order to manage verbosity level at runtime. It then gives five functions, one for each level, that log a message along with the location where it is issued and the message level of importance (\textit{trace}, \textit{debug}, \textit{info}, \textit{warn} and \textit{error}).
 
-Errors happen. This is a truth in engineering and software engineering is no exception to the rule. However, when handled successfully, errors can increase the reliability and usefulness of a system, because they can force invariants and provide insightful information.
-
-{SML} offers error handling via exceptions that can be raised and handled, raised on errors and handled at places where recovery is possible and desirable. Being deeply embedded in SML, HOL4 inherit this behavior. However, being a complex system on its own, HOL4 can raise exceptions at a lot of places. When used without attention, HOL4 can raise exceptions at unexpected and often distant (i.e. in dependencies of the functions that are directly used) locations. Hence, when some exceptions are raised, meaningless error messages are raised and dumped at the user. For example, a user incorrectly using some function could receive an exception saying ``\textit{Not a conjunction}'', whereas the function interface doesn't directly take logical expressions as arguments. Here, the implementation is leaking to the user that should not have to know anything about it.
-
-To answer this issue, there are two immediate possibilities (in addition to fixing the actual error): (a) code could handle possible exceptions of code that it uses and that could produce some, and either handle the issue (if possible) or raising another more meaningful error, and (b) HOL4 provides an exception wrapping mechanism in its \textit{Feedback} library that offers the possibility of adding information to an exception on the flight, producing a result analogous to backtrace in other programming languages.
-
-\subsubsection{LogLib, a logging library} \label{loglib}
-%Introduce tracing in HOL4 in general (levels, HOL4 warnings and error \textbf{messages}).
-
-A logging library, called \textit{logLib}, has been implemented. HOL4 provides a tracing system which allows registering \textit{traces}, i.e. references to an integer representing the verbosity level of some system that can be changed at runtime in order to adjust the desired level of debug information. However, HOL4 only provides the system for registering traces and some logging function, but it does not provide conditional logging functions on the current trace level.
-
-\textit{logLib} offers a convenient way to tracing: when given a trace variable, it returns four functions conditional on the value of the trace variable. The functions are named, in increasing verbosity level, \textit{trace}, \textit{debug}, \textit{info}, \textit{warn} and \textit{error}. Additionally, each function prints the given message with a specific header. This header is coloured depending on the log level, making reading long logs easier. Furthermore, each log line contains location information, facilitating the process of identifying where some error or warning happened. Figure \ref{loglib-ppexn-ppterm} shows an execution output with message from the \textit{trace} and \textit{debug} functions.
-
-\begin{figure}[t]
-	\includegraphics[width=\textwidth]{figures/loglib-ppexn-ppterm.png}
-	\centering
-	\caption{Extract of a script output, featuring \textit{trace} and \textit{debug} information from \textit{logLib} (Section \ref{loglib}), and an exception printed using the exception pretty-printer (Section \ref{pp_exn}). The original exception can be seen in white at the bottom of the image.}
-	\label{loglib-ppexn-ppterm}
-\end{figure}
-
-\subsubsection{SML exception pretty-printer} \label{pp_exn}
-
-As can be seen in Figure \ref{loglib-ppexn-ppterm}, default printing of HOL4 exceptions is not really easy to decipher. The is due to the fact that HOL4 has been designed as an \textbf{interactive} theorem prover to be used with \textit{Emacs}, which provides some layout and pretty-printing features. Therefore, a small pretty-printing library for SML exceptions has been implemented, called \textit{pretty\_exnLib}. It provides only two analogous functions that, given an exception as parameter, pretty-prints the exception and returns it unchanged. Listing \ref{pretty_exnLib_sig} presents the signature of the library, and Listing \ref{pretty_exnLib_usage} shows how it is used.
+\vspace{-8pt}
+\paragraph{An SML exception pretty-printer} has been implemented, called \textit{pretty\_exnLib}, in order to format exceptions in an easily readable way other: exception are otherwise just dumped on the output with bad formatting. It provides only two analogous functions that, given an exception as parameter, pretty-print the exception and return it unchanged.
 
 
 \subsection{Best practices for a complex platform} \label{best-practices-complex-platform}
+
+
+% Additionally, binary analysis platforms are complex software systems, and should as such follow well-known best practices in order to make it last and develop serenely. Therefore, Section \ref{best-practices-complex-platform} presents some best practices that have been adopted in HolBA.
 
 When building complex systems, special care should be taken in order to ensure that it grows in good conditions. Despite providing the best capabilities, a system with poor usability will encounter a slow adoption, as shown in the previous section. But when a system gets used by an increasing number of users, a different working organization is needed. This section will first briefly introduce a critical concept that should be mastered for the successful growth of a software platform. Then, we will study the {CI} system that has been set up for HolBA.
 
