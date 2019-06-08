@@ -227,13 +227,10 @@ The \gls{prosper} project \cite{noauthor_prosper:_nodate} aims to develop a secu
 
 Previous work in the \acrshort{prosper} project achieved to formally verify a simple separation kernel \cite{noauthor_prosper:_nodate-1,dam_formal_2013}, which later resulted into an implementation of a working hypervisor. Then, they achieved to run both Linux and \gls{FreeRTOS} on top of it. Finally, they formally verified memory isolation for virtualized applications \cite{nemati_trustworthy_2015}. Nowadays, among other projects, the PROSPER team is working on device virtualization, giving access to hardware devices to virtualized applications. \gls{NIC} devices are an interesting example, which enable network communication and give the ability to communicate through the Internet.
 
-A formal model of a \gls{NIC} device has already been produced, on
-which some security theorems have been proved
-\cite{haglund_formal_2016}. These theorems can be seen as high-level
-proofs relying on a layer of lower-level lemmas (cf. Figure \ref{fringe}).
-\todo{Maybe you want to explain at this point what are the security
-  issues related to a NIC}
-This layer provides an abstraction over the raw formal model. This is illustrated in the left-hand side of Figure \ref{hol-v-bir-nic-model-simple}.
+A formal model of a \gls{NIC} device has been produced, on which some security theorems have been proved \cite{haglund_formal_2016}.
+Indeed, NIC devices are directly connected to the Internet and use \gls{DMA} controllers (cf. Section \ref{dma-mem-sharing}) to access the main memory. Then, rogue virtualized applications could use misconfigured NIC in order to gain access to private information contained in the main memory or even take control of the system. \cite{haglund_formal_2016} showed how to enforce configuration on the NIC in order to prevent rogue behaviors.
+
+These theorems can be seen as high-level proofs relying on a layer of lower-level lemmas (cf. Figure \ref{fringe}). This layer provides an abstraction over the raw formal model. This is illustrated in the left-hand side of Figure \ref{hol-v-bir-nic-model-simple}.
 
 \begin{figure}[ht]
 	\includegraphics[height=6cm]{figures/hol-v-bir-nic-model-simple.png}
@@ -279,11 +276,11 @@ This work has been carried out step-by-step toward an ideal goal, i.e. re-establ
 \vspace{-1cm}
 \textit{This chapter will present the related work in the domain of secure execution platforms and binary analysis. After briefly introducing memory sharing between \gls{CPU} and devices, it will explain the need for secure execution platforms, present existing binary analysis platforms and explain the novelty of \gls{holba}, the platform used in this work.}
 
-\section{Memory sharing between CPU and devices}
+\section{Memory sharing between CPU and devices} \label{dma-mem-sharing}
 
-Figure \ref{cpu-memory-schema} represents how the \gls{CPU} and devices can share the main memory using \gls{DMA}. To read from/write to the main memory, the CPU passes through the \gls{MMU}, which is responsible for virtual/physical address translation. In a nutshell, when an operating system is used, every process uses addresses mapped in a virtual address space. The virtual address spaces are set up by the operating system. When a process wants to access the memory, e.g. for reading its value, the request goes through the MMU that translates the virtual address to a concrete physical address. Then, processes run in apparent isolation and can not access other processes memory without permission from the operating system. This architecture provides strong security guarantees, providing the soudness of the operating system (i.e. absence of bugs).
+Figure \ref{cpu-memory-schema} represents how the \gls{CPU} and devices can share the main memory using \acrfull{DMA}. To read from/write to the main memory, the CPU passes through the \gls{MMU}, which is responsible for virtual/physical address translation. In a nutshell, when an operating system is used, every process uses addresses mapped in a virtual address space. The virtual address spaces are set up by the operating system. When a process wants to access the memory, e.g. for reading its value, the request goes through the MMU that translates the virtual address to a concrete physical address. Then, processes run in apparent isolation and can not access other processes memory without permission from the operating system. This architecture provides strong security guarantees, providing the soudness of the operating system (i.e. absence of bugs).
 
-Similarly, devices can directly access the main memory using DMA. This technique enables to offload the CPU from copying each byte of memory by setting the DMA controller to do so. DMA controllers also give devices direct access to the main memory. While fast and convenient, DMA creates a whole new range of vulnerabilities. Indeed, if misconfigured, the DMA controller can give complete access to the main memory to devices, like kernel private memory, page table or executable memory \cite{schwarz_formal_2014}.
+Similarly, devices can directly access the main memory using DMA. This technique enables to offload the CPU from copying each byte of memory by setting the DMA controller to do so. DMA controllers also give devices direct access to the main memory. While fast and convenient, DMA creates a whole new range of vulnerabilities. Indeed, if misconfigured, DMA controllers can give complete access to the main memory to devices, like kernel private memory, page table or executable memory \cite{schwarz_formal_2014}.
 
 \begin{figure}[!t]
 	\includegraphics[height=5cm]{figures/cpu-memory-schema.png}
