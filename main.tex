@@ -1314,7 +1314,7 @@ x = load(MEM, ADDR2)
 \begin{figure}[!h]
 	\includegraphics[width=\textwidth]{figures/test_addreq_words.png}
 	\centering
-	\caption{$P \implies \WP$ expression translated in \textit{wordsTheory} for the \textit{load and store} test. \texttt{><} is the bitwise extraction operation, \texttt{@@} the word concatenation operation, \texttt{|+} the memory update operation and \texttt{\textquotesingle} the memory load operation. Bit extraction and concatenation is needed because we are working with 16-bit words in a 8-bit memory.}
+	\caption{$P \implies \WP$ expression translated in \textit{wordsTheory} for the \textit{load and store} test. \texttt{><} is the bitwise extraction operation, \texttt{@@} the word concatenation operation, \texttt{=+} the memory update operation and \texttt{:>} the memory load operation (cf. Section \ref{bir-memories-with-smt-solvers}). Bit extraction and concatenation is needed because we are working with 16-bit words in a 8-bit memory.}
 	\label{test_addreq_words}
 \end{figure}
 

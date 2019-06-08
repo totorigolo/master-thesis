@@ -1,0 +1,17 @@
+
+
+
+
+    ⊢ ¬(if ADDR1 = ADDR2 then 1w else 0w) ‖
+      ¬(if
+         MEM_wp_0 =
+         ((ADDR1 + 0w) =+ (7 >< 0) 42w) (((ADDR1 + 1w) =+ (15 >< 8) 42w) MEM)
+       then
+         1w
+       else 0w) ‖
+      (if (ADDR2 + 1w) :> MEM_wp_0 @@ (ADDR2 + 0w) :> MEM_wp_0 = 42w then 1w
+       else 0w) =
+      1w
+
+
+
