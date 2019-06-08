@@ -213,9 +213,11 @@ This representation allows producing proofs more easily that with classical bina
 
 BIR is implemented as a set of HOL4 data types, and possesses a completely defined semantic. Section \ref{bir-memories-with-smt-solvers} contains a more thorough discussion of the BIR semantic.
 
+% Among its supporting tools, HolBA features a tool to visualize the Control Flow Graph ({CFG}) of BIR programs.
+
 \subsubsection{Hoare Triples} \label{hoare-triples}
 
-For a given program $prog$ consisting of a list of instructions, and two predicates $P$ and $Q$ called respectively pre- and postcondition, a Hoare Triple \htriple{P}{prog}{Q} states that when executing the program $prog$ from a state $S$ terminates in a state $S'$, if $P$ holds in $S$ then $Q$ will hold in $S'$. A Hoare Triple is also called \textit{a contract}.
+For a given program $prog$ consisting of a list of instructions, and two predicates $P$ and $Q$ called respectively pre- and postcondition, a Hoare Triple \htriple{P}{prog}{Q} states that when executing the program $prog$ from a state $S$ terminates in a state $S'$, if $P$ holds in $S$ then $Q$ will hold in $S'$ (Equation \ref{ht_def}. A Hoare Triple is also called \textit{a contract}.
 %
 \begin{multline}
   \htriple{P}{prog}{Q} \eqdef\\
@@ -283,7 +285,7 @@ DepGraph's frontend for theory dependencies is still useful for documentation pu
 
 \section{The BIR NIC model} \label{nic-model}
 
-Three approaches to the translation of the formal NIC model to an equivalent BIR program have been considered, from handwritting a BIR program (Sections \ref{alice-bob-toy} to \ref{impl-real-model}), lifting a C program (Section \ref{c-model}) to developing a device-model-specific IR (Section \ref{flowchart-attempt}).
+Three approaches to the translation of the formal NIC model to an equivalent BIR program have been considered, from handwritting a BIR program (Sections \ref{alice-bob-toy} to \ref{impl-real-model}), lifting a C program (Section \ref{c-model}) to developing a new device-model-specific IR (Section \ref{flowchart-attempt}).
 
 \subsection{Using flowcharts as IR} \label{flowchart-attempt}
 
@@ -319,7 +321,7 @@ This toy model has first been designed using the flowchart representation. Then,
 
 \subsection{BSL: BIR Simple Language} \label{bsl}
 
-A library, BSL, offering the same expressiveness than BIR but with shorter constructs, has been implemented. This library has been kept simple and will serve as the base layer of possible later abstractions. As such, it has been decided that no feature other than pure syntactic construct, such that type inference, would be included.
+A library, named BSL, offering the same expressiveness than BIR but with shorter constructs, has been implemented. This library has been kept simple and will serve as the base layer of possible later abstractions. As such, it has been decided that no feature other than pure syntactic construct, such that type inference, would be included.
 
 BSL is composed of a set of functions with short names (prefixed with the letter \textit{b} in order to not clash with names in the global namespace), a coherent interface offering interoperability with HOL4 quotation system, and smart use of partial function application (e.g. for BIR types).
 
