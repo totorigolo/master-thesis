@@ -158,11 +158,11 @@
 \titlepage
 
 \begin{abstract}
-  With the advent of virtualization, more and more work is put into the verification of hypervisors. Being low-level softwares, such verification should preferably be performed at binary level. Binary analysis platforms are being developed to help perform these proofs, but a lot of the work has to be carried out manually.
+  With the advent of virtualization, more and more work is being dedicated to the verification of hypervisors. As these are low-level software, such verification should preferably be carried out at the binary level. Binary analysis platforms are being developed to help achieve this evidence, but much of the work still needs to be carried out manually.
 
-  In this thesis, we focus on the formal verification of a Network Interface Controller (NIC), more specifically we look at how to automate and reduce the boilerplate work from an existing verification. We base our work on the HolBA platform, its hardware-independent intermediate representation language BIR and supporting tools, and we experiment on how to perform this proof by leveraging existing tools.
+  In this thesis, we focus on the formal verification of a Network Interface Controller (NIC). For this purpose, we use the HolBA platform and its intermediate representation language BIR. The objective is to automate and reduce the repetitive work of an existing proof.
 
-  We first replaced the existing NIC model written in HOL4 to an equivalent one written using BIR, enabling the use of HolBA tools. Secondly, we developed some visualization tools to help navigate and gain some insight into the existing proof and its structure. Thirdly, we experimented the use of Hoare Triples in conjunction with an SMT solver to perform contract verification. Finally, we proved a simple contract written in terms of the formal NIC model on the BIR implementation of this model, unlocking the way of performing more complex proofs using the HolBA platform.
+  We first replaced the formal NIC model with an equivalent model written in BIR, thus allowing the use of HolBA tools. Then, we used Hoare Triples in conjunction with an SMT solver to perform contract-based verification. Finally, we formaly proved a simple contract written in terms of the NIC's formal model on its implementation in BIR, paving the way for more complex proofs to be performed with the HolBA platform. Visualization tools have also been implemented when required.
 
   \textit{Keywords}: binary analysis, formal verification, proof producing analysis, theorem proving
 \end{abstract}
@@ -175,9 +175,9 @@
   \begin{abstract}
     Avec la démocratisation de la virtualisation, de plus en plus d'efforts sont consacrés à la vérification des hyperviseurs. S'agissant de logiciels de bas niveau, une telle vérification devrait de préférence être effectuée au niveau binaire. Des plates-formes d'analyse binaire sont en cours de développement pour aider à réaliser ces preuves, mais une grande partie du travail doit encore être effectuée manuellement.
 
-    Dans cette thèse, nous nous concentrons sur la vérification formelle d'un Contrôleur d'Interface Réseau (NIC), plus spécifiquement sur la manière d'automatiser et de réduire le travail répétitif d'une preuve existante. Nous nous basons sur la plate-forme HolBA, son langage de représentation intermédiaire indépendant du matériel, BIR et ses outils de support, et nous nous intéressons à la manière de réaliser cette preuve en utilisant des outils existants.
+    Dans cette thèse, nous nous concentrons sur la vérification formelle d'un Contrôleur d'Interface Réseau (NIC). Pour cela, nous utilisons la plate-forme HolBA et son langage de représentation intermédiaire BIR. L'objectif est d'automatiser et de réduire le travail répétitif d'une preuve existante.
 
-    Nous avons d'abord remplacé le modèle NIC existant écrit en HOL4 par un modèle équivalent écrit en BIR, permettant ainsi l'utilisation des outils de HolBA. Deuxièmement, nous avons développé des outils de visualisation pour nous aider à naviguer et à mieux comprendre la preuve existante et sa structure. Troisièmement, nous avons expérimenté l'utilisation des triplets de Hoare en conjonction avec un solveur SMT pour effectuer une vérification par contrat. Enfin, nous avons prouvé un contrat simple écrit en termes du modèle formel du NIC sur l'implémentation de ce modèle en BIR, ouvrant la voie à la réalisation de preuves plus complexes avec la plate-forme HolBA.
+    Nous avons d'abord remplacé le modèle formel du NIC par un modèle équivalent écrit en BIR, permettant ainsi l'utilisation des outils de HolBA. Ensuite, nous avons utilisé des triplets de Hoare en conjonction avec un solveur SMT pour effectuer des vérifications par contrat. Enfin, nous avons prouvé formellement un contrat simple écrit en termes du modèle formel du NIC sur l'implémentation de ce modèle en BIR, ouvrant la voie à la réalisation de preuves plus complexes avec la plate-forme HolBA. Des outils de visualisation ont également été implémentés selon les besoins rencontrés.
 
     \textit{Mot-clés} : binary analysis, formal verification, proof producing analysis, theorem proving
   \end{abstract}
