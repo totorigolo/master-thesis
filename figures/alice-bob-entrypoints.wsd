@@ -1,0 +1,26 @@
+@startuml alice-bob-entrypoints
+skinparam defaultTextAlignment center
+
+split
+start
+#80f085:Autonomous step|
+:Use scheduler to perform\none autonomous step;
+stop
+
+split again
+start
+#80f085:Memory write|
+:Assert that the reception\nautomaton is waiting the\nmemory write.}
+:Rx.state := State4;
+stop
+
+split again
+start
+#80f085:Memory read|
+:Assert that the transmission\nautomaton is waiting the\nmemory read.}
+:Tx.state := State6;
+stop
+
+end split
+
+@enduml

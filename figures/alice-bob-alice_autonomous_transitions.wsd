@@ -1,0 +1,35 @@
+@startuml alice-bob-alice_autonomous_transitions
+skinparam defaultTextAlignment center
+
+start
+#ffff80:state.rx.step}
+split
+#ffff80:State1|
+:s.rx.bd_addr1 += 16;
+:s.rx.db_addr2 += 4;
+:s.rx.step := State2;
+split again
+#ffff80:State2|
+:s.rx.db_addr2 -= 16;
+:s.rx.step := Waiting\nmemory write;
+split again
+#ffff80:Waiting\nmemory write|
+#Red:abort;
+split again
+#ffff80:State4|
+:s.rx.bd_addr1 -= 8;
+:s.rx.db_addr2 += 4;
+:s.rx.step := State5;
+split again
+#ffff80:State5|
+:s.rx.bd_addr1 -= 4;
+:s.rx.db_addr2 += 8;
+:s.rx.step := State6;
+split again
+#ffff80:State6|
+:s.rx.bd_addr1 -= 4;
+:s.rx.step := State1;
+end split
+stop
+
+@enduml

@@ -1,0 +1,40 @@
+@startuml alice-bob-automata-overview
+skinparam defaultTextAlignment center
+
+split
+#80ff80:Reception|
+repeat
+:State1;
+-[#green]->
+:State2;
+-[#green]->
+:Waiting\nmemory write;
+-[#red]-> No autonomous\ntransition;
+:State4;
+-[#green]->
+:State5;
+-[#green]->
+:State6;
+-[#green]->
+repeat while
+detach
+split again
+#80ff80:Transmission|
+repeat
+:State1;
+-[#green]->
+:State2;
+-[#green]->
+:State3;
+-[#green]->
+:State4;
+-[#green]->
+:Waiting\nmemory read;
+-[#red]-> No autonomous\ntransition;
+:State6;
+-[#green]->
+repeat while
+detach
+end split
+
+@enduml

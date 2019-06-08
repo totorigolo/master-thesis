@@ -494,7 +494,7 @@ As an attempt to visualize this fringe, we developed a tool, called DepGraph \fo
 
 \section{HolBA's Binary Intermediate Representation (BIR)} \label{bir-presentation}
 
-HolBA's Binary Intermediate Representation (BIR) \cite{lindner_trabin:_2019} is a  machine-independent binary representation. It aims to be the simple while still being able to represent all possible binary programs but self-modifying programs\todo{too long sentence}. It does so by having a limited syntax---introduced in Table \ref{bir-syntax}---and forbidding implicit side-effects. A statement can only have explicit state changes and can only affect one variable.
+HolBA's Binary Intermediate Representation (BIR) \cite{lindner_trabin:_2019} is a  machine-independent binary representation. It aims to be the simple while still being able to represent all possible binary programs except self-modifying programs. It does so by having a limited syntax---introduced in Table \ref{bir-syntax}---and forbidding implicit side-effects. A statement can only have explicit state changes and can only affect one variable.
 
 \begin{table}[ht]
 	\begin{align*}
@@ -539,21 +539,21 @@ We considered multiple approaches to translate the formal NIC model to an equiva
 
 As already discussed in the previous Section, the structure of the formal model looks like a tree. Therefore, using flowcharts can be a convenient way to represent such structures. An attempt has been made to design a flowchart representation. Figures \ref{flowchart-scheduler}, \ref{flowchart-tx} and \ref{flowchart-tx_fetch_next_bd} show respectively a preview of the scheduler, transmission automaton and particular transition of this automaton.
 
-\begin{figure}[h]
+\begin{figure}[p]
 	\includegraphics[width=\textwidth]{figures/flowchart-scheduler.png}
 	\centering
 	\caption{Flowchart of the scheduler of the NIC model. Green nodes represent condition statements, here they represent the value of the popped action from the oracle. The full dot represents the entry point, and the other point the exit point.}
 	\label{flowchart-scheduler}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[p]
 	\includegraphics[width=\textwidth]{figures/flowchart-tx.png}
 	\centering
 	\caption{Flowchart of the transmission automaton of the NIC model. Green nodes are similar to the ones of Figure \ref{flowchart-scheduler}. Red nodes represent non autonomous transitions leading to dead states.}
 	\label{flowchart-tx}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[p]
 	\includegraphics[width=\textwidth]{figures/flowchart-tx_fetch_next_bd.png}
 	\centering
 	\caption{Flowchart of the \texttt{fetch\_next\_bd} transition of the transmission automaton of the NIC model. The full dot represent the entry point, $\bigotimes$ represents the exit point and the other dots are shorthands to represent dead transitions (the symbols have been changed because of technical limitations of the tool used to draw the diagram).}
@@ -580,37 +580,35 @@ For those reasons, it has been decided to try using BIR directly to write the NI
 
 \subsection{Implementing a toy BIR model} \label{alice-bob-toy}
 
-\todo{I'm not sure that these examples with Alice and Bob are a good idea. These are probably too abstract}
-
 Before writing the whole NIC model by hand, we shall identify the structure of the model and develop tools that facilitate its implementation. Using well-designed tools can reduce the boilerplate work of the implementation, helping to focus only on the meaningful content of the implementation, and can also reduce the chance of introducing bugs as the code is factored and mechanically shorter.
 
-We decided to implement a transition system similar to the one of the NIC model, with two inner independent automata: Alice and Bob. The two automata feature a simple linear transition system, and each of them has a non-autonomous transition, that is performed respectively by two external functions \texttt{bus\_arrived} and \texttt{taxi\_arrived} that represent memory accesses from the CPU in the NIC model. The function \texttt{autonomous\_step} performs one autonomous transition via the scheduler. Figure \ref{alice-bob-automata-overview} gives an overview of the two automata, Figure \ref{alice-bob-entrypoints} shows the role of the three functions and Figure \ref{alice-bob-alice_autonomous_transitions} describes in details Alice's automaton. (Flowcharts from the previous Section \ref{flowchart-attempt} have been used in this section in order to facilitate designing the toy model. However, no effort has been made to come up with a coherent and formalized language.)
+We decided to implement a simplified version of the NIC transition system, with only two automata: reception and transmission. In this simplified model, the two automata feature a simple linear transition system, and each of them has one non-autonomous transition, that is performed respectively by two external functions \texttt{memory\_read} and \texttt{memory\_write} that represent memory accesses from the CPU. The function \texttt{autonomous\_step} performs one autonomous transition via the scheduler (Figure \ref{alice-bob-scheduler-oracle}). Figure \ref{alice-bob-automata-overview} gives an overview of the two automata, Figure \ref{alice-bob-entrypoints} shows the role of the three functions and Figure \ref{alice-bob-alice_autonomous_transitions} describes in details the contrived reception automaton. (Flowcharts from the previous Section \ref{flowchart-attempt} have been used in this section in order to facilitate designing the toy model. However, no effort has been made to come up with a coherent and formalized language.)
 
 \begin{figure}[p]
 	\includegraphics[height=10cm]{figures/alice-bob-automata-overview.png}
 	\centering
-	\caption{Overview of the two independent automata. The green arrow represent the autonomous transitions and the red ones the non-autonomous. As in Section \ref{flowchart-attempt}, the green nodes represent conditional statements depending on the scheduler's oracle, as shown in Figure \ref{alice-bob-sheduler-oracle}.}
+	\caption{Overview of the two independent automata. The green arrow represent the autonomous transitions and the red ones the non-autonomous. As in Section \ref{flowchart-attempt}, the green nodes represent conditional statements depending on the scheduler's oracle, as shown in Figure \ref{alice-bob-scheduler-oracle}. The states and transitions have no particular meaning in this model.}
 	\label{alice-bob-automata-overview}
 \end{figure}
 
 \begin{figure}[p]
-	\includegraphics[height=5cm]{figures/alice-bob-sheduler-oracle.png}
+	\includegraphics[height=4cm]{figures/alice-bob-scheduler-oracle.png}
 	\centering
 	\caption{Scheduler of the toy BIR model. We can see how the oracle decides which automaton takes a step. If an automaton is in a state whose transition isn't autonomous, the automaton state is returned unchanged.}
-	\label{alice-bob-sheduler-oracle}
+	\label{alice-bob-scheduler-oracle}
 \end{figure}
 
 \begin{figure}[p]
-	\includegraphics[height=6cm]{figures/alice-bob-entrypoints.png}
+	\includegraphics[height=5.5cm]{figures/alice-bob-entrypoints.png}
 	\centering
-	\caption{The three entrypoints of the toy program: \texttt{autonomous\_step}, \texttt{bus\_arrived} and \texttt{taxi\_arrived}.}
+	\caption{The three entrypoints of the toy program: \texttt{autonomous\_step}, \texttt{memory\_read} and \texttt{memory\_write}.}
 	\label{alice-bob-entrypoints}
 \end{figure}
 
 \begin{figure}[p]
 	\includegraphics[width=\textwidth]{figures/alice-bob-alice_autonomous_transitions.png}
 	\centering
-	\caption{The six transitions of Alice's automaton. Each transition only updates the state. Conditional statements hasn't been added in this toy model because it already features conditional statements in the scheduler. The third transition is a non-autonomous transition; \texttt{bus\_arrived} is in charge of updating Alice's state from \textit{WaitingBus} to \textit{Working}.}
+	\caption{The six transitions of the reception automaton. Each transition only updates the state. Conditional statements hasn't been added in this toy model because it already features conditional statements in the scheduler. The third transition is a non-autonomous transition; \texttt{memory\_write} is in charge of updating the reception automaton's state from \textit{WaitingMemoryWrite} to \textit{State4}.}
 	\label{alice-bob-alice_autonomous_transitions}
 \end{figure}
 
@@ -626,19 +624,19 @@ From the design presented in Figures \ref{alice-bob-automata-overview}, \ref{ali
     stringstyle=\color{codepurple},
     label=alice-bob-bir-verbose,caption=BIR ,
     frame=tb,basicstyle=\tiny\ttfamily]
-(* A1. Eating *)
-<|bb_label := BL_Label "alice_automaton.step.1";
+(* RX. State2 *)
+<|bb_label := BL_Label "rx_automaton.step.2";
   bb_statements := [
-    (* state.alice.hunger -= 20 *)
-    BStmt_Assign (BVar "state.alice.hunger" (BType_Imm Bit32))
+    (* state.rx.bd_addr2 -= 16 *)
+    BStmt_Assign (BVar "state.rx.bd_addr2" (BType_Imm Bit32))
       (BExp_BinExp BIExp_Minus
-        (BExp_Den (BVar "state.alice.hunger" (BType_Imm Bit32)))
-        (BExp_Const (Imm32 20w)));
-    (* state.alice.step := 2 *)
-    BStmt_Assign (BVar "state.alice.step" (BType_Imm Bit32))
-      (BExp_Const (Imm32 2w))
+        (BExp_Den (BVar "state.rx.bd_addr2" (BType_Imm Bit32)))
+        (BExp_Const (Imm32 16w)));
+    (* state.rx.step := 3 *)
+    BStmt_Assign (BVar "state.rx.step" (BType_Imm Bit32))
+      (BExp_Const (Imm32 3w))
   ];
-  bb_last_statement := BStmt_Jmp (BLE_Label (BL_Label "alice_automaton.end"))
+  bb_last_statement := BStmt_Jmp (BLE_Label (BL_Label "rx_automaton.end"))
 |>;
 \end{lstlisting}
     \item BIR features only one conditional statement controlling the control flow of a program: conditional jumps. Hence, BIR is not convenient for representing \textbf{if-then-else} statements with more than two branches. Section \ref{impl-real-model} presents some helper functions that have been implemented in order to be able to abstract the raw BIR code and work at a higher level.

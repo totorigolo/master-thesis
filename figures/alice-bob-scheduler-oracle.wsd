@@ -1,0 +1,12 @@
+@startuml alice-bob-scheduler-oracle
+skinparam defaultTextAlignment center
+
+start
+if (oracle) then (0)
+    :Reception\nautonomous\nstep;
+else (1)
+    :Transmission\nautonomous\nstep;
+endif
+stop
+
+@enduml
