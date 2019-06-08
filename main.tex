@@ -238,20 +238,20 @@ This layer provides an abstraction over the raw formal model. This is illustrate
 \begin{figure}[ht]
 	\includegraphics[height=6cm]{figures/hol-v-bir-nic-model-simple.png}
 	\centering
-	\caption{HOL4 v. BIR NIC models. The left hand side already exists. This project consists in the dashed elements. The dotted lines represent the work done during this project.}
+	\caption{HOL4 vs. BIR NIC models. The left hand side already exists. This project consists in the dashed elements. The dotted lines represent the work done during this project.}
 	\label{hol-v-bir-nic-model-simple}
 \end{figure}
 
-The team is now developing a new framework for performing binary analysis in HOL4, an interactive theorem prover, named \gls{holba} \cite{noauthor_holba_2019}. This framework is based on two papers written in the team. The first one introduces sound \gls{transpilation} from binary to machine-independent code \footnotemark \cite{metere_sound_2017}. The second paper, ``TrABin: Trustworthy Analyses of Binaries'' \cite{lindner_trabin:_2019}, lays the foundations of the \gls{holba} platform: it formally models \gls{BIR}, introduces various supporting tools, implements two \gls{proof-producing} \glspl{transpiler} (ARMv8 and Cortex-M0), named lifters, and a proof-producing weakest precondition generator for loop-free programs.
+The team is now developing a new platform for performing binary analysis in HOL4, an interactive theorem prover, named \gls{holba} \cite{noauthor_holba_2019}. This platform is based on two papers written in the team. The first one introduces sound \gls{transpilation} from binary to machine-independent code \footnotemark \cite{metere_sound_2017}. The second paper, ``TrABin: Trustworthy Analyses of Binaries'' \cite{lindner_trabin:_2019}, lays the foundations of the \gls{holba} platform: it formally models \gls{BIR}, introduces various supporting tools, implements two \gls{proof-producing} \glspl{transpiler} (ARMv8 and Cortex-M0), named lifters, and a proof-producing weakest precondition generator for loop-free programs.
 
 \footnotetext{The machine-independent language used in the work is an implementation of \gls{bap}'s BIL \cite{noauthor_binary_2019}. This implementation will evolve later in \cite{lindner_trabin:_2019} into BIR that HolBA uses today.}
 
-While this kind of \glspl{transpiler} and weakest precondition tools already exist \footnote{See related discussion in \cite{lindner_trabin:_2019}.}, the novelty in this work is that the transpiler is proof-producing, i.e. it produces a formal proof that both binary representations are equivalent, under the simulation theory, with respect to the \gls{ISA} model \footnote{Several models of different ARM \gls{ISA} have been realized in multiple research institutions, such as ARMv3, ARMv4, ARMv7 \cite{noauthor_canonical_2019, hutchison_trustworthy_2010} and very recently ARMv8 \cite{armstrong_isa_2019}.}. With this method, you no longer need to trust the transpiler. Figure \ref{holba-overview} gives an overview of the HolBA framework.
+While this kind of \glspl{transpiler} and weakest precondition tools already exist \footnote{See related discussion in \cite{lindner_trabin:_2019}.}, the novelty in this work is that the transpiler is proof-producing, i.e. it produces a formal proof that both binary representations are equivalent, under the simulation theory, with respect to the \gls{ISA} model \footnote{Several models of different ARM \gls{ISA} have been realized in multiple research institutions, such as ARMv3, ARMv4, ARMv7 \cite{noauthor_canonical_2019, hutchison_trustworthy_2010} and very recently ARMv8 \cite{armstrong_isa_2019}.}. With this method, you no longer need to trust the transpiler. Figure \ref{holba-overview} gives an overview of the HolBA platform.
 
 \begin{figure}[ht]
 	\includegraphics[height=5cm]{figures/holba-overview.png}
 	\centering
-	\caption{The HolBA framework. The lifter generates a BIR program and an equivalence proof from an ARMv8 program. The equivalence proof establishes a simulation property between the ARMv8 binary program and the generated BIR binary program, showing that they have the same behavior with respect to the ARMv8 \gls{ISA} specification and the BIR specification. HolBA also support the Cortex-M0 ISA.}
+	\caption{The HolBA platform. The lifter generates a BIR program and an equivalence proof from an ARMv8 program. The equivalence proof establishes a simulation property between the ARMv8 binary program and the generated BIR binary program, showing that they have the same behavior with respect to the ARMv8 \gls{ISA} specification and the BIR specification. HolBA also support the Cortex-M0 ISA.}
 	\label{holba-overview}
 \end{figure}
 
@@ -308,7 +308,7 @@ The \acrshort{prosper} project isn't the only project focused on high-security e
 
 \section{Binary analysis platforms}
 
-For this project, we will use the \gls{holba} framework. However, several other binary analysis platforms have been created for various purposes, such as formal verification or static analysis. A common characteristic of these platforms is to use an \gls{IR}. IRs are designed to be simpler to use for each platforms' end purpose. As an example, the HolBA platform has BIR as its intermediate representation.
+For this project, we will use the \gls{holba} platform. However, several other binary analysis platforms have been created for various purposes, such as formal verification or static analysis. A common characteristic of these platforms is to use an \gls{IR}. IRs are designed to be simpler to use for each platforms' end purpose. As an example, the HolBA platform has BIR as its intermediate representation.
 
 \paragraph{Microsoft Boogie} is Microsoft's intermediate verification language. Boogie is the IR for multiple Microsoft tools, including VCC. Boogie as a tool can infer some invariants on the given Boogie program and then generate verification conditions that are passed to an SMT solver \footnote{\url{https://www.microsoft.com/en-us/research/project/boogie-an-intermediate-verification-language/}}.
 
@@ -1000,11 +1000,9 @@ SMT-LIB 2.0 \cite{barrett_satisfiability_2016} defines the \textit{ArraysEx} the
     frame=tb,basicstyle=\footnotesize\ttfamily]
 (forall ((a (Array s1 s2)) (i s1) (e s2))
   (= (select (store a i e) i) e)) 
-
 (forall ((a (Array s1 s2)) (i s1) (j s1) (e s2))
   (=> (distinct i j)
       (= (select (store a i e) j) (select a j))))
-
 (forall ((a (Array s1 s2)) (b (Array s1 s2)))
   (=> (forall ((i s1)) (= (select a i) (select b i)))
       (= a b)))
@@ -1118,12 +1116,12 @@ Datatype `bir_exp_t =
 
 \section{Pretty-printing to visualize BIR expressions} \label{pretty-printers}
 
-When working with complex constructs, the need for visualization techniques often arise. Generated weakest preconditions grow quickly with the number of statements in a program, linearly or exponentially depending on the type of statements---control flow statements produce exponential growth. While clever techniques can be implemented to keep their size reasonable \cite{lindner_trabin:_2019}, we often need to read and analyze them.
+When working with complex constructs, the need for visualization techniques often arises. Generated weakest preconditions quickly grow with the number of statements in a program, linearly or exponentially depending on the type of statements---control flow statements produce exponential growth. While clever techniques can be implemented to keep their size reasonable \cite{lindner_trabin:_2019}, we often need to read and analyze them.
 
 Printing of BIR terms in general is very verbose. For example, the expression \ref{pp_ex_math_exp} with a 64-bit $x$ integer defined using the BSL code in Listing \ref{pp_ex_bsl_code} yields the printing in Figure \ref{pp_ex_default_printing} using HOL4's default printing capabilities.
 
 \begin{equation}
-    \text{if}~~(x \leq 100) \lor (y + 1 > 10) \lor (x + y \leq 20)~~\text{then}~~2 \times x~~\text{else}~~3 \times y + 1
+    \textbf{if}~~(x \leq 100) \lor (y + 1 > 10) \lor (x + y \leq 20)~~\textbf{then}~~2 \times x~~\textbf{else}~~3 \times y + 1
     \label{pp_ex_math_exp}
 \end{equation}
 
@@ -1162,12 +1160,12 @@ This expression is relatively small and yet the printed term is 17 lines long. C
 
 \footnotetext{8 lines correspond to the length in documents where line length is limited to 100 characters, instead of the 60 in the report. 100 characters are the usual setting for maximum line lengths and correspond more closely to reality.}
 
-To answer to these kinds of issues, HOL4 provides the ability to implement ``pretty-printers'', which are custom printing functions for a given type. Four pretty-printers have been implemented to shorten the verbosity of the printed representation and to add colors to the output. Figure \ref{pp_ex_pretty_printing} shows the same expression printed with the pretty-printers enabled.
+To answer to these kinds of issues, HOL4 provides the ability to implement ``pretty-printers'', which are custom printing functions for a given type. We implemented four pretty-printers in order to shorten the verbosity of the printed representation and to add colors to the output. Figure \ref{pp_ex_pretty_printing} shows the same expression printed with the pretty-printers enabled.
 
 \begin{figure}[!h]
 	\includegraphics[width=\textwidth]{figures/pp_ex_pretty_printing.png}
 	\centering
-	\caption{Same expression printed with the pretty-printers enabled}
+	\caption{Same expression printed with the pretty-printers enabled.}
 	\label{pp_ex_pretty_printing}
 \end{figure}
 
@@ -1180,7 +1178,7 @@ The pretty-printers introduce a set of features:
     \item Highlighting of types, facilitating debugging when the expression isn't well-typed.
     \item Highlighting of all strings, facilitating reading labels and variable names.
     \item Gathering of nested binary expressions of the same type on the same level. We can see this feature in Figure \ref{pp_ex_pretty_printing} with the two nested \textbf{or} binary operators, where the three operands are printed on the same level.
-    \item Rainbow parenthesis, i.e. matching pairs of parenthesis are printed in the same color. This feature is really useful when reading long expressions in order to quickly identify where a sub-expression ends.
+    \item Rainbow parenthesis, i.e. matching pairs of parenthesis are printed in the same color. This feature is useful when reading long expressions in order to quickly identify where a sub-expression ends.
 \end{itemize}
 
 % TODO: Mention the Lisp printing attempt?
@@ -1194,8 +1192,7 @@ In order to perform a high number of proofs on the \gls{NIC} model, we want to h
     backgroundcolor=\color{codebackcolour},
     keywordstyle=\color{magenta},
     label=ideal_interface_prove_contract,caption=Ideal interface for ``\texttt{prove\_contract}'',
-    frame=tb,basicstyle=\footnotesize\ttfamily,
-    float,floatplacement=H]
+    frame=tb,basicstyle=\footnotesize\ttfamily]
 fun prove_contract contract_name prog_def
     (precond_lbl, precond_bir_exp)
     postcond_lbl_and_bir_exp_list
@@ -1206,8 +1203,7 @@ fun prove_contract contract_name prog_def
     backgroundcolor=\color{codebackcolour},
     keywordstyle=\color{magenta},
     label=interface_prove_contract,caption=Actual interface for ``\texttt{prove\_contract}'',
-    frame=tb,basicstyle=\footnotesize\ttfamily,
-    float,floatplacement=H]
+    frame=tb,basicstyle=\footnotesize\ttfamily]
 fun prove_contract contract_name prog_def
     (precond_lbl, precond_bir_exp)
     (postcond_lbl_list, postcond_bir_exp)
@@ -1223,7 +1219,7 @@ When used with \gls{BSL} to express pre- and post-conditions, this function prov
 
 \section{Testing the automatic proof procedure}
 
-Performing simple proofs is needed in order to test that the proof procedure works. The following examples introduce two of the tests that have been implemented, focusing on the critical parts of each of them. To this end, some liberties have been taken in order to reduce the complexity for the reader. Moreover, even if the test on conditional jumps has been the last one introduced in chronological order \footnotemark, it will be presented first because of its relative simplicity.
+We need to perform simple proofs in order to test that the proof procedure works. The following examples introduce two of the tests that have been implemented, focusing on the critical parts of each of them. To this end, some liberties have been taken in order to reduce the complexity for the reader. Moreover, even if the test on conditional jumps has been the last one introduced in chronological order \footnotemark, it will be presented first because of its relative simplicity.
 
 \footnotetext{The test on conditional jumps has been introduced in order to fix a bug in the weakest precondition simplification library.}
 
@@ -1238,8 +1234,7 @@ Here we are interested in testing the \texttt{prove\_contract} function in the p
     keywordstyle=\color{magenta},
     stringstyle=\color{codepurple},
     label=cjmp_test_pseudocode,caption=Equivalent pseudocode of the \textit{cjmp} test.,
-    frame=tb,basicstyle=\footnotesize\ttfamily,
-    float,floatplacement=H]
+    frame=tb,basicstyle=\footnotesize\ttfamily]
 entry:
   x = 1;
   goto (if x=1 then assign_y_100 else assign_y_200)
@@ -1371,7 +1366,7 @@ Copyright (c) 2011 Tjark Weber. All rights reserved.|)
 
 This expression is harder to prove manually. However, SMT solvers can report very efficiently that the negated expression is unsatisfiable, proving the contract. Therefore, we see that contracts involving BIR memories can be proved, thanks to the work of Section \ref{bir-memories-with-smt-solvers}.
 
-Other preconditions have been tested to verify that \texttt{prove\_contract} doesn't prove false contracts and succeeds to prove true ones. With the current program, the precondition $load(MEM,B=N) \land B=A+2$ can establish the postcondition. The second conjunct is important because $N$ is stored in two consecutive 8-bit memory locations. Interestingly, the precondition $\bot$ works for all contracts, because $\forall x.~\bot \implies x$, and it works in this particular case.
+Other preconditions have been tested to verify that \texttt{prove\_contract} doesn't prove false contracts and succeeds to prove true ones. With the current program, the precondition $load(MEM,B=N)~\land~B=A+2$ can establish the postcondition. The second conjunct is important because $N$ is stored in two consecutive 8-bit memory locations. Interestingly, the precondition $\bot$ works for all contracts, because $\forall x.~\bot \implies x$, and it works in this particular case.
 
 % TODO? \subsubsection{Gauss}
 % If yes, change "two" to "three" in the subsection intro
@@ -1380,7 +1375,7 @@ Other preconditions have been tested to verify that \texttt{prove\_contract} doe
 
 Chapter \ref{nic-model} presented the implementation of parts of the NIC model using BIR. The previous sections of this chapter presented the non \gls{proof-producing} contract verification library that has been implemented. This section will present some of the properties that have been proved on the NIC BIR model. However, as we shall see, \texttt{prove\_contract} has some intrinsic limitations that prevent verifying some contracts.
 
-Section \ref{overview-nic-proof} presents an overview of the formal HOL4 proof made in \cite{haglund_formal_2016} on the formal NIC model. We saw that the properties are phrased in terms of invariants holding in each transition of the model. Such properties can be represented as Hoare Triple and therefore can be proved using this chapter's non proof-producing contract verification library as long as the pre- and post-conditions can be represented using BIR.
+Section \ref{overview-nic-proof} presents an overview of the formal HOL4 proof made in \cite{haglund_formal_2016} on the formal NIC model. We saw that the properties are phrased in terms of invariants holding in each transition of the model. Such properties can be represented as Hoare Triples and therefore can be proved using this chapter's non proof-producing contract verification library as long as the pre- and post-conditions can be represented using BIR.
 
 In this section, we will see that the non proof-producing function \texttt{prove\_contract} is able to verify some invariants on the NIC BIR model. We will perform the verification of the Hoare Triples shown in Equations \ref{nonpp-goal-1} and \ref{nonpp-goal-2}. Those two Hoare Triple respectively represent that, stating from a non-dead initial NIC state, performing one autonomous transition of the transmission automaton doesn't end in an undefined state (i.e. a dead state) and performing one non-autonomous transition of the initialization automaton does end in an undefined state.
 
@@ -1559,6 +1554,7 @@ After rewriting the relation $R$, we prove theorem \ref{proof_R_inj_thm} by exhi
 
 In possession of a $bir\_state$ in relation with a $nic$, we now need to lift the precondition $P_{NIC} nic$ on this $bir\_state$. First, we need to introduce equivalent pre- ---and post- ---conditions on the BIR states, then we shall prove that the precondition lifts.
 
+\medskip
 \begin{lstlisting}[
     language=C,
     backgroundcolor=\color{codebackcolour},

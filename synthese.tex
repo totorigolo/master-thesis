@@ -154,11 +154,11 @@ A formal model of a {NIC} device has been produced, on which some security theor
 \begin{figure}[H]
   \centering
 	\includegraphics[height=6cm]{figures/hol-v-bir-nic-model-simple.png}
-	\caption{Formal v. BIR NIC models. The left hand side already exists. The dashed elements represent the work done during this project.}
+	\caption{Formal vs. BIR NIC models. The left hand side already exists. The dashed elements represent the work done during this project.}
 	\label{hol-v-bir-nic-model-simple}
 \end{figure}
 
-The team is now developing a new framework named {HolBA} for performing binary analysis in HOL4, an interactive theorem prover. This framework features a machine-independent Binary Intermediate Representation (BIR), a proof-producing transpiler from ARMv8 and Cortex-M0 assembly code to BIR, called the ``lifter'', a proof-producing weakest precondition generator for loop-free programs, and some supporting tools \cite{metere_sound_2017,lindner_trabin:_2019}.
+The team is now developing a new platform named {HolBA} for performing binary analysis in HOL4, an interactive theorem prover. This platform features a machine-independent Binary Intermediate Representation (BIR), a proof-producing transpiler from ARMv8 and Cortex-M0 assembly code to BIR, called the ``lifter'', a proof-producing weakest precondition generator for loop-free programs, and some supporting tools \cite{metere_sound_2017,lindner_trabin:_2019}.
 
 The idea of this work is to translate the formal {NIC} model of \cite{haglund_formal_2016} using {BIR}, then use HolBA's proof-producing weakest precondition tool to prove the same lower-level lemmas than the formal model. With all the lemmas proved, the security properties are implied. Figure \ref{hol-v-bir-nic-model-simple} gives an overview of this idea.
 
@@ -184,11 +184,11 @@ Each of these projects intend to provide a secure hypervisor or operating system
 
 \subsubsection{Binary analysis platforms}
 
-For this project, we used the {HolBA} framework. However, several other binary analysis platforms have been created for various purposes, such as formal verification or static analysis. A common characteristic of these platforms is their use of an Intermediate Representation ({IR}). IRs are designed to be simpler to use for each platforms' end purpose. HolBA has BIR as its intermediate representation.
+For this project, we used the {HolBA} platform. However, several other binary analysis platforms have been created for various purposes, such as formal verification or static analysis. A common characteristic of these platforms is their use of an Intermediate Representation ({IR}). IRs are designed to be simpler to use for each platforms' end purpose. HolBA has BIR as its intermediate representation.
 
 Microsoft has Boogie as both a tool and IR, which has been used for verification of {Hyper\nobreakdash-\hspace{0pt}V}. Valgrind is a popular tool for building program supervision tools, and uses a JIT x86-to-x86 compiler in order to transpile program to its IR. LLVM is a compiler infrastructure built around LLVM Virtual Instruction Set, its {IR}, that links together an ecosystem of tools at multiple stages of the compilation process, including verification and analysis. Mayhem is a system for automatically finding exploitable bugs in binary programs, and leverages Carnegie Mellon University Binary Analysis Platform (CMU BAP). An interesting note though is that BIR's design is based upon CMU BAP's IR.
 
-The novelty introduced in HolBA, however, is that proofs are performed, directly on the generated assembly code, not at the source code level. Therefore, programs can be analyzed without their source code, and regardless on the programming language used as long as it can be compiled in assembly code in an {ISA} supported by the platform.
+The novelty introduced in HolBA, however, is that proofs are performed, directly on the generated assembly code, not at the source code level. Therefore, programs can be analyzed without their source code, and regardless on the programming language used as long as it can be compiled in assembly code in an Instruction Set Architecture ({ISA}) supported by the platform.
 \todo{What about Mayhemn, it also works at the binary level (and CMU BAP)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -209,7 +209,7 @@ HOL4 stands for Higher-Order Logic. It is a programming environment deeply embed
 
 BIR is a machine independent binary representation. It aims to be simple while still being able to represent all possible binary programs except self-modifying programs. It does so by having a limited syntax and by forbidding implicit side-effects. A statement can only have explicit state changes and can only affect one variable.
 
-This representation allows producing proofs more easily that with classical binary representations, whose design are focused on execution speed rather than offline analysis.
+This representation makes producing proofs easier that with classical binary representations, whose design are focused on execution speed rather than offline analysis.
 
 BIR is implemented as a set of HOL4 data types, and possesses a completely defined semantics. Section \ref{bir-memories-with-smt-solvers} contains a more thorough discussion of the BIR semantics.
 
@@ -217,7 +217,7 @@ BIR is implemented as a set of HOL4 data types, and possesses a completely defin
 
 \subsubsection{Hoare Triples} \label{hoare-triples}
 
-For a given program $prog$ consisting of a list of instructions, and two predicates $P$ and $Q$ called respectively pre- and postcondition, a Hoare Triple \htriple{P}{prog}{Q} states that when executing the program $prog$ from a state $S$ terminates in a state $S'$, if $P$ holds in $S$ then $Q$ will hold in $S'$ (Equation \ref{ht_def}. A Hoare Triple is also called \textit{a contract}.
+For a given program $prog$ consisting of a list of instructions, and two predicates $P$ and $Q$ called respectively pre- and postcondition, a Hoare Triple \htriple{P}{prog}{Q} states that when executing the program $prog$ from a state $S$ terminates in a state $S'$, if $P$ holds in $S$ then $Q$ will hold in $S'$ (Equation \ref{ht_def}). A Hoare Triple is also called \textit{a contract}.
 %
 \begin{multline}
   \htriple{P}{prog}{Q} \eqdef\\
@@ -268,9 +268,9 @@ The low-level lemmas of the verification (cf. Figure \ref{hol-v-bir-nic-model-si
 
 The model of the NIC consists of \num{1500} lines of HOL4 code and required around three man-months of work. The NIC invariant consists of \num{650} lines of HOL4 code and the proof consists of approximately \num{55000} lines of HOL4 code including comments. Identifying the invariant and implementing the proof in HOL4 required around one man-year of work \cite{haglund_trustworthy_nodate}.
 
-The proof being consequent and divided into several script files, it is difficult to identify what are the low-level lemmas to be reproved in this work. Therefore, a tool, called DepGraph, has been implemented in order to extract the dependency structure from proof files in the form of a graph. Then, the fringe of the graph represents the smallest set of lemmas that is enough to prove in order to imply the security properties by using the rest of the proofs unchanged.
+The proof being large and divided into several script files, it is difficult to identify what are the low-level lemmas to be reproved in this work. Therefore, a tool, called DepGraph, has been implemented in order to extract the dependency structure from proof files in the form of a graph. Then, the fringe of the graph represents the smallest set of lemmas that is enough to prove in order to imply the security properties by using the rest of the proofs unchanged.
 
-DepGraph features two frontends that can extract dependencies between HOL4 theories (i.e. compiled {SML} files containing proofs of lemmas and theorems) and between definitions, theorems, and lemmas. However, this tool presents some critical shortcomings:
+DepGraph features two frontends that can extract dependencies between HOL4 theories (i.e. compiled {SML} files containing proofs of lemmas and theorems), and between definitions, theorems, and lemmas. However, this tool presents some critical shortcomings:
 
 \paragraph{The theory dependencies frontend} uses files generated by Holmake, the HOL4 compile system, in order to get the dependencies between theories. However, those files don't really represent dependencies but the files to be loaded before this script can be loaded, in a recursive fashion. Therefore, they represent the transitive reduction of the dependency graph. Because of this, precious knowledge is lost and cannot be recovered by using this method: edges representing direct dependencies can be removed if the remaining edges still account for this dependency. Therefore, we are still able to tell which nodes depend on some node $n$, but we cannot identify the aforementioned fringe. In order to solve this problem, different approaches exist, such as implementing a simplified SML parser that looks only at dependencies, or injecting code inside the dependency resolution of an existing SML compiler. However, this would involve too much work that isn't the direct focus of this thesis.
 
