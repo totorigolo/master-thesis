@@ -490,57 +490,43 @@ As an attempt to visualize this fringe, we developed a tool, called DepGraph \fo
 
 \chapter{The BIR NIC model} \label{nic-model}
 \vspace{-1cm}
-\textit{This chapter discusses the different ways of implementing an
-  equivalent BIR model from the formal NIC model.
-  \todo{This chapter compares different approaches of implementing a
-    BIR model that is equivalent to the formal NIC model}
-  After an introduction of BIR, it will present different possible ways of doing this translation and present three approaches. Then, the final BIR model will be introduced along with the new tools that have been implemented in order to build it.}
+\textit{This chapter compares different approaches of implementing a BIR model that is equivalent to the formal NIC model. After an introduction of BIR, it will present different possible ways of doing this translation and present three approaches. Then, the final BIR model will be introduced along with the new tools that have been implemented in order to build it.}
 
 \section{HolBA's Binary Intermediate Representation (BIR)} \label{bir-presentation}
 
-HolBA's Binary Intermediate Representation (BIR)
-\cite{lindner_trabin:_2019}, introduced in the Introduction
-\todo{remove}, is a machine independent binary representation. It aims
-to be the simplest\todo{remove} possible while still being able to
-represent all possible binary programs but self-modifying
-programs\todo{too long sentence}. It does so by having a limited syntax---introduced in Table \ref{bir-syntax}---and forbidding implicit side-effects. A statement can only have explicit state changes and can only affect one variable.
+HolBA's Binary Intermediate Representation (BIR) \cite{lindner_trabin:_2019} is a  machine-independent binary representation. It aims to be the simple while still being able to represent all possible binary programs but self-modifying programs\todo{too long sentence}. It does so by having a limited syntax---introduced in Table \ref{bir-syntax}---and forbidding implicit side-effects. A statement can only have explicit state changes and can only affect one variable.
 
-\begin{table}[h!]
+\begin{table}[ht]
 	\begin{align*}
 		prog   & :=~block^{\ast}                                                             \\
 		block  & :=~(string~|~integer,~stmt^{\ast},~estmt)                                   \\
-		stmt   & :=~\textbf{assign}~(string, exp)~|~\textbf{assert}~(exp)                    \\
+		stmt   & :=~\textbf{assign}~(string, exp)~|~\textbf{assert}~(exp)~|~\textbf{assume}~(exp)  \\
         estmt  & :=~\textbf{jmp}~(exp)~|~\textbf{cjmp}~(exp,~exp,~exp)~|~\mathbf{halt}~(exp) \\
 		exp    & :=~integer~|~\textbf{var}~string                                            \\
 		       & ~~~~|~\textbf{if-then-else}~(exp,~exp,~exp)                                 \\
 		       & ~~~~|~\diamond_{u}~exp~|~exp~\diamond_{b}~exp~                              \\
 		       & ~~~~|~\textbf{load}~(exp,~exp,~\tau)~|~\textbf{store}~(exp,~exp,~exp,~\tau) 
 	\end{align*}
-    % exp: string~|~ ??
-	\caption{BIR's syntax. Valid BIR programs must be well-typed. $integer$s represent bounded N-bit integers. $\diamond_{u}$ and $\diamond_{b}$ represent respectively unary and binary operators. BIR blocks are tuples, with the first element being its label, the second a list of statements and the third the end statement. BIR syntax contains some other statements that won't be used in this work and that have been omitted. For more information, see \cite{lindner_trabin:_2019}.}
+  \caption{BIR's syntax. Valid BIR programs must be well-typed. $integer$s represent bounded N-bit integers. $\diamond_{u}$ and $\diamond_{b}$ represent respectively unary and binary operators. BIR blocks are tuples, with the first element being its label, the second a list of statements and the third the end statement.
+  \textbf{assign} is the only statement that can mutate the execution state, and can only affect one variable at a time. \textbf{assert} and \textbf{assume} allow imposing conditions on programs, respectively asserting that an expression is true (or abort otherwise) and assuming that an expression is true. This is useful for analysis. \textbf{jmp} and \textbf{cjmp} allow to control the Control Flow of programs using respectively direct and conditional jumps. \textbf{halt} represents termination of programs.
+  BIR syntax contains some other statements that won't be used in this work and that have been omitted. See \cite{lindner_trabin:_2019} for more information.}
 	\label{bir-syntax}
-      \end{table}
-      \todo{I would extend this with at least description of statements}
+\end{table}
 
 This representation allows producing proofs more easily that with
 classical binary representations, whose design are focused on
-execution speed rather than offline analysis. Moreover, BIR doesn't
-have unspecified behavior.\todo{Unclear what unspecified behaviors are}
+execution speed rather than offline analysis.
 
-BIR is implemented as a set of HOL4 \textit{datatypes}, and possesses
-a completely defined semantic.\todo{This can be rephrased}
-Section \ref{bir-memories-with-smt-solvers} contains a more thorough
-discussion of the BIR semantic. Section \ref{alice-bob-toy} implements
-a toy BIR program
-and presents the concrete BIR syntax.
+% BIR is implemented as a set of HOL4 data types. Since HOL4 is a theorem prover, definitions are theorems stating formal definitions. As such, it is fully described in terms of both syntax and semantics.
+% \todo{This can be rephrased}
+% Section \ref{bir-memories-with-smt-solvers} contains a more thorough discussion of the BIR semantics. Section \ref{alice-bob-toy} implements a toy BIR program and presents the concrete BIR syntax.
+% This is not very useful at this point, I think.
 
 Among its supporting tools, HolBA features a tool to visualize the \gls{CFG} of BIR programs.
 
 \section{Exploring multiple approaches to translating the formal NIC model}
 
-Multiple approaches to the translation of the formal NIC model
-described in Section \ref{overview-nic-model} to an equivalent BIR
-program have been considered: \todo{IN general, active forms are better}
+We considered multiple approaches to translate the formal NIC model to an equivalent BIR program:
 
 \begin{itemize}
     \item \textbf{handwritten BIR program}: The most straightforward way would be to directly write the BIR program by hand by looking at the actual formal model and directly converting it to BIR. This is easily feasible because of the limited set of statement used in the implementation of the NIC model which are all representable in the BIR syntax. However, this does not seem optimal if more than one such translation need to be performed. One remedy of this problem would be to implement a set of tools that facilitate the implementation of device models and reduce the boilerplate. This idea is explored in the following Sections \ref{alice-bob-toy} to \ref{impl-real-model}.
@@ -593,12 +579,12 @@ When studying the compiled assembly code and lifted BIR program, we noticed that
 For those reasons, it has been decided to try using BIR directly to write the NIC model. The following Section \ref{alice-bob-toy} presents a first prototype that has been realized in order to visualize the shape of a BIR program representing the NIC model, and identify the tools that would be needed in order to reduce the boilerplate of such implementation in BIR.
 
 \subsection{Implementing a toy BIR model} \label{alice-bob-toy}
-% BIR toy model
-\todo{I'm not sure that these examples with Alice and Bob are a good
-  idea. These are probably too abstract}
+
+\todo{I'm not sure that these examples with Alice and Bob are a good idea. These are probably too abstract}
+
 Before writing the whole NIC model by hand, we shall identify the structure of the model and develop tools that facilitate its implementation. Using well-designed tools can reduce the boilerplate work of the implementation, helping to focus only on the meaningful content of the implementation, and can also reduce the chance of introducing bugs as the code is factored and mechanically shorter.
 
-It has been decided to implement a transition system similar to the one of the NIC model, with two inner independent automata: Alice and Bob. The two automata feature a simple linear transition system, and each of them has a non-autonomous transition, that is performed respectively by two external functions \texttt{bus\_arrived} and \texttt{taxi\_arrived} that represent memory accesses from the CPU in the NIC model. The function \texttt{autonomous\_step} performs one autonomous transition via the scheduler. Figure \ref{alice-bob-automata-overview} gives an overview of the two automata, Figure \ref{alice-bob-entrypoints} shows the role of the three functions and Figure \ref{alice-bob-alice_autonomous_transitions} describes in details Alice's automaton. (Flowcharts from the previous Section \ref{flowchart-attempt} have been used in this section in order to facilitate designing the toy model. However, no effort has been made to come up with a coherent and formalized language.)
+We decided to implement a transition system similar to the one of the NIC model, with two inner independent automata: Alice and Bob. The two automata feature a simple linear transition system, and each of them has a non-autonomous transition, that is performed respectively by two external functions \texttt{bus\_arrived} and \texttt{taxi\_arrived} that represent memory accesses from the CPU in the NIC model. The function \texttt{autonomous\_step} performs one autonomous transition via the scheduler. Figure \ref{alice-bob-automata-overview} gives an overview of the two automata, Figure \ref{alice-bob-entrypoints} shows the role of the three functions and Figure \ref{alice-bob-alice_autonomous_transitions} describes in details Alice's automaton. (Flowcharts from the previous Section \ref{flowchart-attempt} have been used in this section in order to facilitate designing the toy model. However, no effort has been made to come up with a coherent and formalized language.)
 
 \begin{figure}[p]
 	\includegraphics[height=10cm]{figures/alice-bob-automata-overview.png}
@@ -972,7 +958,7 @@ Assuming well-typedness and initialization, after rewriting the definition of $b
 
 In Equation \ref{eval_pre_imp_eval_wp} we can recognize Equation \ref{p_imp_wp} that we discussed how to prove using \gls{SMT} solvers in Section \ref{using-smt-to-prove-contracts}. However, the expressions are expressed as BIR expressions. We then have to find a way to use an SMT solver \footnotemark. This is the focus of the following of this thesis. Section \ref{impl-non-pp-wp-lib} will use a non \gls{proof-producing} method for translating those BIR expressions into an equivalent formula that SMT solvers can work on, then focus on automating the whole verification process. Chapter \ref{trustful-nic-analysis} will complete this proof and use it to lift properties that have been proved on the BIR implementation to the \gls{NIC} model. The following Section \ref{bir-memories-with-smt-solvers} will discuss how to make proofs about BIR memories using \gls{SMT} solvers.
 
-\footnotetext{HOL4 \textit{computeLib} provides a convenient way for turning expressions of this form into a non-BIR expressions using BIR's semantic, via its \texttt{EVAL} function. However, this approach stops working as soon as the BIR expression contains BIR memories, that are crucial for contract verification with HolBA. As such, this method will not be further mentioned in this document.}
+\footnotetext{HOL4 \textit{computeLib} provides a convenient way for turning expressions of this form into a non-BIR expressions using BIR's semantics, via its \texttt{EVAL} function. However, this approach stops working as soon as the BIR expression contains BIR memories, that are crucial for contract verification with HolBA. As such, this method will not be further mentioned in this document.}
 
 \section{BIR memories and SMT solvers} \label{bir-memories-with-smt-solvers}
 
@@ -985,7 +971,7 @@ HOL4 features a library for interfacing \gls{SMT} solvers and HOL4, called \text
 
 BIR memories are semantically defined as functions from addresses to values. HOL4's \textit{combinTheory} contains definitions and theorems about functions and function composition, that we need in order to reason about BIR memories.
 
-There exist four types of BIR expressions operating directly on memories (cf. Listing \ref{bir_bin_exp_def} for the list of BIR expressions, and Section \ref{exporting-bir-to-smt} for a more precise discussion of the BIR semantic):
+There exist four types of BIR expressions operating directly on memories (cf. Listing \ref{bir_bin_exp_def} for the list of BIR expressions, and Section \ref{exporting-bir-to-smt} for a more precise discussion of the BIR semantics):
 
 \begin{itemize}
     \item \texttt{BExp\_Den}: this operation enables reading values from the environment. It is analogous to reading registers or the memory in assembly programs. This operation is semantically equivalent to free variables that \textit{HolSmtLib} already support.
@@ -1053,7 +1039,7 @@ Since this translation is sound, it has been added in \textit{HolSmtLib}. The tr
 
 \section{Exporting BIR expressions to SMT solvers} \label{exporting-bir-to-smt}
 
-As an intermediate language for formal verification, \gls{BIR} possesses a precise semantic. The semantic of BIR expressions is expressed as a set of definitions describing what are the equivalent operations using \textit{wordsTheory} and \textit{combinTheory}. For example, the semantic of binary operators in BIR is defined with the following theorems\footnotemark:
+As an intermediate language for formal verification, \gls{BIR} possesses a precise semantics. The semantics of BIR expressions is expressed as a set of definitions describing what are the equivalent operations using \textit{wordsTheory} and \textit{combinTheory}. For example, the semantics of binary operators in BIR is defined with the following theorems\footnotemark:
 
 \footnotetext{Theorems \ref{bir_bin_exp_GET_OPER_def} and \ref{bir_bin_exp_def} have been reduced to only two operators and well-typed 64-bit expressions.}
 
@@ -1075,7 +1061,7 @@ As an intermediate language for formal verification, \gls{BIR} possesses a preci
     \end{equation}
 \end{small}
 
-Similarly, a set of definitions and theorems describe the semantic of operations on BIR memories. However, correct handling of endianness, alignment, and genericity over the size of memories cells and addresses, are pretty complicated to work with. The same is true for the semantic of operations on BIR variables, because of well-typedness and initialization.
+Similarly, a set of definitions and theorems describe the semantics of operations on BIR memories. However, correct handling of endianness, alignment, and genericity over the size of memories cells and addresses, are pretty complicated to work with. The same is true for the semantics of operations on BIR variables, because of well-typedness and initialization.
 
 For this reason---i.e. writing \gls{proof-producing} code is costly---, we decided to write a non-proof producing function \texttt{bir\_exp\_to\_words} that translates BIR expressions to the equivalent words expression. The obvious downside of such a function is that we now have to trust the translation to be sound because we no longer get any guarantee from the theorem prover. However, the development time is dramatically decreased and offers more time for experimenting. Moreover, this function can later be implemented in a proof-producing way for more trustful verification. Then, in order to have high confidence of correctness, software engineering practices apply:
 
@@ -1645,7 +1631,7 @@ We will now prove that the Hoare Triple holds on the BIR program.
 \end{theorem}
 
 \begin{proof}
-To prove this Hoare Triple, we used the \gls{proof-producing} procedure implemented in \gls{holba} in order to generate the weakest precondition. The automatically derived weakest precondition is shown in Figure \ref{proof_wp_exp}. Section \ref{contract-verif-holba} already discussed how to perform this proof: we have to prove Equation \ref{eval_pre_imp_eval_wp} with $\mathbf{wp}$ being the expression in Figure \ref{proof_wp_exp} and $\mathbf{pre}$ being $P^{exp}_{BIR}$. Because we want to use an \gls{SMT} solver, we need to turn the goal of the backward proof into a \textit{wordsTheory} expression. \textit{combinTheory} isn't needed in this case since BIR memories are not used. Equation \ref{eval_pre_imp_eval_wp} uses $bir\_eval\_exp$ which evaluates an expression in the given BIR state. Therefore, to translate the goal into a \textit{wordsTheory} expression, we need to use BIR's semantic. The semantic needs well-typedness and initialization of the variables. At the time of writing, HolBA offers no support for automatic rewriting with the semantic definitions, so multiple lemmas about initialization, well-typedness, and type equality must be manually proved for every variable. Those are not shown here because they consist of simple rewriting and simplification.
+To prove this Hoare Triple, we used the \gls{proof-producing} procedure implemented in \gls{holba} in order to generate the weakest precondition. The automatically derived weakest precondition is shown in Figure \ref{proof_wp_exp}. Section \ref{contract-verif-holba} already discussed how to perform this proof: we have to prove Equation \ref{eval_pre_imp_eval_wp} with $\mathbf{wp}$ being the expression in Figure \ref{proof_wp_exp} and $\mathbf{pre}$ being $P^{exp}_{BIR}$. Because we want to use an \gls{SMT} solver, we need to turn the goal of the backward proof into a \textit{wordsTheory} expression. \textit{combinTheory} isn't needed in this case since BIR memories are not used. Equation \ref{eval_pre_imp_eval_wp} uses $bir\_eval\_exp$ which evaluates an expression in the given BIR state. Therefore, to translate the goal into a \textit{wordsTheory} expression, we need to use BIR's semantics. The semantics needs well-typedness and initialization of the variables. At the time of writing, HolBA offers no support for automatic rewriting with the semantics definitions, so multiple lemmas about initialization, well-typedness, and type equality must be manually proved for every variable. Those are not shown here because they consist of simple rewriting and simplification.
 
 \begin{figure}[!h]
 	\includegraphics[scale=.65]{figures/proof_wp_exp.png}
@@ -1654,7 +1640,7 @@ To prove this Hoare Triple, we used the \gls{proof-producing} procedure implemen
 	\label{proof_wp_exp}
 \end{figure}
 
-Then, the proof consist of consecutively rewriting following the definition of $bir\_eval\_exp$ and the definition it uses until the goal only contains $$bir\_env\_read~(BVar~``nic\_x"~(BType\_Imm~Bit32))~bir\_state.bst\_environ$$ and similarly for $nic.dead$. Let's call those expressions $x\_val$ and $dead\_val$ respectively. For expressions, BIR semantic is defined over immutable and constant values. Therefore, we need to establish an equivalence between the values that we currently have.
+Then, the proof consist of consecutively rewriting following the definition of $bir\_eval\_exp$ and the definition it uses until the goal only contains $$bir\_env\_read~(BVar~``nic\_x"~(BType\_Imm~Bit32))~bir\_state.bst\_environ$$ and similarly for $nic.dead$. Let's call those expressions $x\_val$ and $dead\_val$ respectively. For expressions, BIR semantics is defined over immutable and constant values. Therefore, we need to establish an equivalence between the values that we currently have.
 
 \begin{lemma}
 	\begin{equation*}
@@ -1663,7 +1649,7 @@ Then, the proof consist of consecutively rewriting following the definition of $
 	\label{proof_exists_x_imm}
 \end{lemma}
 \begin{proof}
-Assuming well-typedness and initialization, this theorem immediately results from the BIR semantic.
+Assuming well-typedness and initialization, this theorem immediately results from the BIR semantics.
 \end{proof}
 
 \begin{lemma}
@@ -1673,10 +1659,10 @@ Assuming well-typedness and initialization, this theorem immediately results fro
 	\label{proof_exists_x_word}
 \end{lemma}
 \begin{proof}
-This lemma is part of the BIR semantic, as one of the six conjuncts of the \texttt{bir\_imm\_t\_nchotomy} theorem, which establishes this existence theorem for every BIR immutable types.
+This lemma is part of the BIR semantics, as one of the six conjuncts of the \texttt{bir\_imm\_t\_nchotomy} theorem, which establishes this existence theorem for every BIR immutable types.
 \end{proof}
 
-Now, using Lemma \ref{proof_exists_x_imm}, we are able to substitute all occurrences of $x\_val$ into $BVal\_Imm~(Imm32~x\_word)$, and similarly for $dead\_val$. Finally, rewriting the goal using the full set of BIR semantic theorems and some rewriting rules, the goal reduces to an expression free of BIR terms:
+Now, using Lemma \ref{proof_exists_x_imm}, we are able to substitute all occurrences of $x\_val$ into $BVal\_Imm~(Imm32~x\_word)$, and similarly for $dead\_val$. Finally, rewriting the goal using the full set of BIR semantics theorems and some rewriting rules, the goal reduces to an expression free of BIR terms:
 
 \begin{equation} \label{proof_wp_word_goal}
 \begin{split}
