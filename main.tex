@@ -216,7 +216,7 @@ Embedded systems are becoming more and more common with the current advent of \g
 
 \footnotetext{Throughout this document, emphasis on words indicates the presence of a related entry in the glossary.}
 
-The \gls{prosper} project \cite{noauthor_prosper:_nodate} aims to develop a secure and formally verified hypervisor for embedded systems. Hypervisors are thin layers running directly on top of hardware providing the ability to run virtualized applications, such as operating systems or real-time control systems. Those virtualized applications then don't have privileged access to the hardware and have to go through the hypervisor. This allows different applications to share the same hardware while providing strong isolation between them, thus ensuring confidentiality and security. Moreover, security not only means protection from external attacks but also resilience to bugs. If multiple critical systems are running on the same hardware, bugs or crashes in some systems shouldn't affect the others from behaving correctly. Figure \ref{figure-hypervisor-simple} shows a system running two isolated Linux on top of a hypervisor.
+The \gls{prosper} project \cite{noauthor_prosper:_nodate} aims to develop a secure and formally verified hypervisor for embedded systems. Hypervisors are thin layers running directly on top of hardware providing the ability to run virtualized applications, such as operating systems or real-time control systems. Those virtualized applications then don't have privileged access to the hardware and have to go through the hypervisor. This allows different applications to share the same hardware while providing strong isolation between them, thus ensuring confidentiality and integrity. Moreover, security not only means protection from external attacks but also resilience to bugs. If multiple critical systems are running on the same hardware, bugs or crashes in some systems shouldn't affect the others from behaving correctly. Figure \ref{figure-hypervisor-simple} shows a system running two isolated Linux on top of a hypervisor.
 
 \begin{figure}[ht]
 	\includegraphics[height=4cm]{figures/figure-hypervisor-simple.png}
@@ -266,7 +266,7 @@ The ultimate goal would be to obtain a fully automatic pipeline for performing s
 
 \section{Delimitations}
 
-This work being about exploration of techniques towards automation of verification techniques, instead of being about producing an actual complete proof of a hardware device, some implementations have not been completed in order to save time to explore in more areas. Additionally, this work mainly concerns the HolBA platform that is developed in the team where this thesis took place.
+This work being about exploration of techniques towards automation of verification techniques, instead of being about producing an actual complete proof of a hardware device, some implementations have not been completed in order to save time to explore in more areas. Additionally, this work mainly concerns the HolBA platform that is developed in the team where I conducted this thesis.
 
 \section{Choice of methodology}
 
@@ -317,8 +317,7 @@ For this project, we will use the \gls{holba} platform. However, several other b
 
 There are several other tools, platforms, and frameworks, such as \gls{bap} \cite{noauthor_binary_2019} or Angr. An interesting note though is that BIR's design is based upon CMU BAP's intermediate language.
 
-The novelty introduced in HolBA is that proofs are performed, directly on the generated assembly code, not at the source code level. Therefore, proofs can be performed on programs without needing their source code, and regardless on the programming language used as long as it can be compiled in assembly code in an \gls{ISA} supported by the platform.
-
+HolBA, like Valgrind or CMU BAP, works directly on the generated assembly code, not at the source code level. Therefore, programs can be analyzed without their source code, and regardless of the programming language used as long as it can be compiled to assembly code in an \gls{ISA} supported by the platform. However, unlike these platforms, its novelty is that it performs machine checked proofs for its results.
 
 \chapter{Overview of the formal verification of the NIC device} \label{chapter-overview-nic}
 \vspace{-1cm}

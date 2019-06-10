@@ -145,7 +145,7 @@ Pierre-\'Edouard Portier : Département Informatique -- INSA Lyon
 
 Embedded systems are becoming more and more common with the current advent of {IoT} and mobile computing platforms, such as smartphones. Those systems are fully-fledged computers with powerful hardware, complete operating systems, and access to the Internet. Such systems can run security-critical services, such as a building security system or automatic toll gates, or carry valuable information as it is the case for personal smartphones. Therefore, these two characteristics make them targets of choice for attackers.
 
-The {PROSPER} project \cite{noauthor_prosper:_nodate-1} aims to develop a secure and formally verified hypervisor for embedded systems. Hypervisors are thin layers running directly on top of hardware providing the ability to run virtualized applications, such as operating systems or real-time control systems. Those virtualized applications then don't have privileged access to the hardware and have to go through the hypervisor. This allows different applications to share the same hardware while providing strong isolation between them, thus ensuring confidentiality and security. Moreover, security not only means protection from external attacks but also resilience to bugs. If multiple critical systems are running on the same hardware, bugs or crashes in some systems shouldn't affect others from behaving correctly.
+The {PROSPER} project \cite{noauthor_prosper:_nodate-1} aims to develop a secure and formally verified hypervisor for embedded systems. Hypervisors are thin layers running directly on top of hardware providing the ability to run virtualized applications, such as operating systems or real-time control systems. Those virtualized applications then don't have privileged access to the hardware and have to go through the hypervisor. This allows different applications to share the same hardware while providing strong isolation between them, thus ensuring confidentiality and integrity. Moreover, security not only means protection from external attacks but also resilience to bugs. If multiple critical systems are running on the same hardware, bugs or crashes in some systems shouldn't affect others from behaving correctly.
 
 Previous work in the {PROSPER} project achieved to formally verify a simple separation kernel \cite{dam_formal_2013}, which later resulted into an implementation of a working hypervisor. Then, they formally verified memory isolation for virtualized applications \cite{nemati_trustworthy_2015}. However, hardware devices were not included in the verification, so devices, like Network Interface Controller ({NIC}), cannot be used by virtualized applications. This reduces the value of the hypervisor. In order to solve this issue, verification of hardware devices is being carried out.
 
@@ -168,7 +168,7 @@ The goal of this thesis project is to explore verification techniques in order t
 
 \subsection{Delimitations}
 
-This work being about exploration of techniques towards automation of verification techniques, instead of being about producing an actual complete proof of a hardware device, some implementations have not been completed in order to save time to explore in more areas. Additionally, this work concerned mainly the HolBA platform that is developed in the team where this thesis took place.
+This work being about exploration of techniques towards automation of verification techniques, instead of being about producing an actual complete proof of a hardware device, some implementations have not been completed in order to save time to explore in more areas. Additionally, this work concerned mainly the HolBA platform that is developed in the team where I conducted this thesis.
 
 \subsection{Choice of methodology}
 
@@ -186,9 +186,9 @@ Each of these projects intends to provide a secure hypervisor or operating syste
 
 For this project, we used the {HolBA} platform. However, several other binary analysis platforms have already been created for various purposes, such as formal verification or static analysis. A common characteristic of these platforms is their use of an Intermediate Representation ({IR}). IRs are designed to be simpler to use for each platforms' end purpose. HolBA has BIR as its intermediate representation.
 
-Microsoft has Boogie as both a tool and IR, which has been used for verification of {Hyper\nobreakdash-\hspace{0pt}V}. Valgrind is a popular framework for building program supervision tools, and uses a JIT x86-to-x86 compiler in order to transpile program to its IR. LLVM is a compiler infrastructure built around LLVM Virtual Instruction Set, its {IR}, that links together an ecosystem of tools at multiple stages of the compilation process, including verification and analysis. Mayhem is a system for automatically finding exploitable bugs in binary programs, and leverages Carnegie Mellon University Binary Analysis Platform (CMU BAP). An interesting note though is that BIR's design is based upon CMU BAP's IR.
+Microsoft has Boogie as both a tool and IR, which has been used for verification of {Hyper\nobreakdash-\hspace{0pt}V}. Valgrind is a popular framework for building program supervision tools, and uses a JIT x86-to-x86 compiler in order to transpile program to its IR. LLVM is a compiler infrastructure built around LLVM Virtual Instruction Set, its {IR}, that links together an ecosystem of tools at multiple stages of the compilation process, including verification and analysis. Mayhem is a system for automatically finding exploitable bugs in binary programs, and leverages Carnegie Mellon University Binary Analysis Platform (CMU BAP). An interesting note is that BIR's design is based upon CMU BAP's IR.
 
-The novelty introduced in HolBA, however, is that proofs are performed, directly on the generated assembly code, not at the source code level. Therefore, programs can be analyzed without their source code, and regardless on the programming language used as long as it can be compiled in assembly code in an Instruction Set Architecture ({ISA}) supported by the platform.
+HolBA, like Valgrind or CMU BAP, works directly on the generated assembly code, not at the source code level. Therefore, programs can be analyzed without their source code, and regardless of the programming language used as long as it can be compiled to assembly code in an Instruction Set Architecture ({ISA}) supported by the platform. However, unlike these platforms, its novelty is that it performs machine checked proofs for its results.
 
 % Note: Mayhem does work at binary level, but it doesn't produce proofs. It finds exploits but doesn't garantee their absence.
 
@@ -517,7 +517,7 @@ For step (d), we proved Theorem \ref{proof_d_thm}. We introduced $bir\_state$ an
 	&~\implies Q_{NIC}~nic~nic')
 \end{split}
 \end{equation}
-\paragraph{Limitation} \textit{$Q_{BIR}$ is a function of the end state only. Hence, in order to reason about the initial state, we need in general to introduce ghost variables postcondition. In this proof, since the contract that we are proving is simple, using the actual value of $nic.x$ is enough. However, this may pose a problem if we want to generalize the proof.}
+\paragraph{Limitation} \textit{$Q_{BIR}$ is a function of the end state only. Hence, in order to reason about the initial state, we need in general to introduce ghost variables in the postcondition. In this proof, since the contract that we are proving is simple, using the actual value of $nic.x$ is enough. However, this may pose a problem if we want to generalize the proof.}
 \medskip
 
 Finally, we proved that the Hoare Triple holds on the BIR program:
