@@ -1067,6 +1067,10 @@ BIR expressions are defined as a HOL4 algebraic data type in Listing \ref{bir_ex
 Testing of \texttt{bir\_exp\_to\_words} has been done using a set of $(bir\_exp,expected)$ couples with increasing complexity, where \texttt{bir\_exp\_to\_words} is used to translate each $bir\_exp$ and the result is compared to $expected$. Then, BIR expressions being defined as an algebraic data type, nesting of BIR expressions follows naturally. This achieves the second point of the previous list.
 
 \begin{lstlisting}[
+    backgroundcolor=\color{codebackcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    stringstyle=\color{codepurple},
     label=bir_exp_t_def,caption=bir\_exp\_t definition.,
     frame=tb,basicstyle=\footnotesize\ttfamily,
     breaklines=true,postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}]
