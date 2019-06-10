@@ -145,9 +145,9 @@ Pierre-\'Edouard Portier : Département Informatique -- INSA Lyon
 
 Embedded systems are becoming more and more common with the current advent of {IoT} and mobile computing platforms, such as smartphones. Those systems are fully-fledged computers with powerful hardware, complete operating systems, and access to the Internet. Such systems can run security-critical services, such as a building security system or automatic toll gates, or carry valuable information as it is the case for personal smartphones. Therefore, these two characteristics make them targets of choice for attackers.
 
-The {PROSPER} project \cite{noauthor_prosper:_nodate-1} aims to develop a secure and formally verified hypervisor for embedded systems. Hypervisors are thin layers running directly on top of hardware providing the ability to run virtualized applications, such that operating systems or real-time control systems. Those virtualized applications then don't have privileged access to the hardware and have to go through the hypervisor. This allows different applications to share the same hardware while providing strong isolation between them, thus ensuring confidentiality and security. Moreover, security not only means protection from external attacks but also resilience to bugs. If multiple critical systems are running on the same hardware, bugs or crashes in some systems shouldn't affect others from behaving correctly.
+The {PROSPER} project \cite{noauthor_prosper:_nodate-1} aims to develop a secure and formally verified hypervisor for embedded systems. Hypervisors are thin layers running directly on top of hardware providing the ability to run virtualized applications, such as operating systems or real-time control systems. Those virtualized applications then don't have privileged access to the hardware and have to go through the hypervisor. This allows different applications to share the same hardware while providing strong isolation between them, thus ensuring confidentiality and security. Moreover, security not only means protection from external attacks but also resilience to bugs. If multiple critical systems are running on the same hardware, bugs or crashes in some systems shouldn't affect others from behaving correctly.
 
-Previous work in the {PROSPER} project achieved to formally verify a simple separation kernel \cite{dam_formal_2013}, which later resulted into an implementation of a working hypervisor. Then, they formally verified memory isolation for virtualized applications \cite{nemati_trustworthy_2015}. However, hardware devices were not included in the verification, so devices, like Network Interface Controller ({NIC}), cannot be used by the virtualized applications. Thid reduces the value of the hypervisor. In order to solve this issue, verification of hardware devices is being carried out.
+Previous work in the {PROSPER} project achieved to formally verify a simple separation kernel \cite{dam_formal_2013}, which later resulted into an implementation of a working hypervisor. Then, they formally verified memory isolation for virtualized applications \cite{nemati_trustworthy_2015}. However, hardware devices were not included in the verification, so devices, like Network Interface Controller ({NIC}), cannot be used by virtualized applications. Thid reduces the value of the hypervisor. In order to solve this issue, verification of hardware devices is being carried out.
 
 A formal model of a {NIC} device has been produced, on which some security theorems have been proved \cite{haglund_formal_2016,haglund_trustworthy_nodate}. These theorems can be seen as high-level proofs relying on multiple layers of lower-level lemmas. This is illustrated in the left-hand side of Figure \ref{hol-v-bir-nic-model-simple}. However, there exist more devices that are of interest to verify, so it is very desirable to automate formal verification of devices and use a standard model for reasoning about them.
 %
@@ -158,7 +158,7 @@ A formal model of a {NIC} device has been produced, on which some security theor
 	\label{hol-v-bir-nic-model-simple}
 \end{figure}
 
-The team is now developing a new platform named {HolBA} for performing binary analysis in HOL4, an interactive theorem prover. This platform features a machine-independent Binary Intermediate Representation (BIR), a proof-producing transpiler from ARMv8 and Cortex-M0 assembly code to BIR, called the ``lifter'', a proof-producing weakest precondition generator for loop-free programs, and some supporting tools \cite{metere_sound_2017,lindner_trabin:_2019}.
+The team is now developing a new platform named {HolBA} for performing binary analysis in HOL4, an interactive theorem prover. This platform features a machine-independent Binary Intermediate Representation (BIR), a proof-producing transpiler from ARMv8 and Cortex-M$0$ assembly code to BIR, called the ``lifter'', a proof-producing weakest precondition generator for loop-free programs, and some supporting tools \cite{metere_sound_2017,lindner_trabin:_2019}.
 
 The idea of this work is to translate the formal {NIC} model of \cite{haglund_formal_2016} using {BIR}, then use HolBA's proof-producing weakest precondition tool to prove the same lower-level lemmas as the formal model. With all the lemmas proved, the security properties are implied. Figure \ref{hol-v-bir-nic-model-simple} gives an overview of this idea.
 
@@ -178,18 +178,19 @@ This work has been carried out step-by-step towards an ideal goal, i.e. re-estab
 
 \subsubsection{Secure execution platforms}
 
-The {PROSPER} project isn't the only project focused on high-security execution platforms. Platforms such that seL4, Microsoft Hyper-V, INTEGRITY Multivisor or even MINIX 3 are examples of platforms used in production that are providing strong security properties.
+The {PROSPER} project isn't the only project focused on high-security execution platforms. Platforms such as seL4, Microsoft Hyper-V, INTEGRITY Multivisor or even MINIX 3 are examples of platforms used in production that are providing strong security properties.
 
-Each of these projects intends to provide a secure hypervisor or operating system, but they all provide different levels of guarantee. seL4 is an open-source microkernel that has been formally verified down to binary code. Microsoft's hypervisor, Hyper-V, has also been verified down to its machine code, but with less trustworthy tools than seL4 because of its huge codebase. MINIX 3 rather intends to give security properties by design by giving the least responsibilities to the microkernel. INTEGRITY Multivisor doesn't provide much public information, but has had considerable formal verification and has got several industry and military certifications. However, to the best of our knowledge \todo{Is that true?}, none of these platforms include hardware devices in their formal verification process other than by their design.
+Each of these projects intends to provide a secure hypervisor or operating system, but they all provide different levels of guarantee. seL4 is an open-source microkernel that has been formally verified down to binary code. Microsoft's hypervisor, Hyper-V, has also been verified down to its machine code, but with less trustworthy tools than seL4 because of its huge codebase. MINIX 3 rather intends to give security properties by design by giving the least responsibilities to the microkernel. INTEGRITY Multivisor doesn't provide much public information, but has had considerable formal verification and has got several industry and military certifications. However, to the best of our knowledge, none of these platforms include hardware devices in their formal verification process other than by their design.
 
 \subsubsection{Binary analysis platforms}
 
 For this project, we used the {HolBA} platform. However, several other binary analysis platforms have already been created for various purposes, such as formal verification or static analysis. A common characteristic of these platforms is their use of an Intermediate Representation ({IR}). IRs are designed to be simpler to use for each platforms' end purpose. HolBA has BIR as its intermediate representation.
 
-Microsoft has Boogie as both a tool and IR, which has been used for verification of {Hyper\nobreakdash-\hspace{0pt}V}. Valgrind is a popular tool for building program supervision tools, and uses a JIT x86-to-x86 compiler in order to transpile program to its IR. LLVM is a compiler infrastructure built around LLVM Virtual Instruction Set, its {IR}, that links together an ecosystem of tools at multiple stages of the compilation process, including verification and analysis. Mayhem is a system for automatically finding exploitable bugs in binary programs, and leverages Carnegie Mellon University Binary Analysis Platform (CMU BAP). An interesting note though is that BIR's design is based upon CMU BAP's IR.
+Microsoft has Boogie as both a tool and IR, which has been used for verification of {Hyper\nobreakdash-\hspace{0pt}V}. Valgrind is a popular framework for building program supervision tools, and uses a JIT x86-to-x86 compiler in order to transpile program to its IR. LLVM is a compiler infrastructure built around LLVM Virtual Instruction Set, its {IR}, that links together an ecosystem of tools at multiple stages of the compilation process, including verification and analysis. Mayhem is a system for automatically finding exploitable bugs in binary programs, and leverages Carnegie Mellon University Binary Analysis Platform (CMU BAP). An interesting note though is that BIR's design is based upon CMU BAP's IR.
 
 The novelty introduced in HolBA, however, is that proofs are performed, directly on the generated assembly code, not at the source code level. Therefore, programs can be analyzed without their source code, and regardless on the programming language used as long as it can be compiled in assembly code in an Instruction Set Architecture ({ISA}) supported by the platform.
-\todo{What about Mayhemn, it also works at the binary level (and CMU BAP)}
+
+% Note: Mayhem does work at binary level, but it doesn't produce proofs. It finds exploits but doesn't garantee their absence.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -211,7 +212,7 @@ BIR is a machine independent binary representation. It aims to be simple while s
 
 This representation makes producing proofs easier than with classical binary representations, whose design are focused on execution speed rather than offline analysis.
 
-BIR is implemented as a set of HOL4 data types, and possesses a completely defined semantics. Section \ref{bir-memories-with-smt-solvers} contains a more thorough discussion of the BIR semantics.
+BIR is implemented as a set of HOL4 data types, and possesses a completely defined semantics.
 
 % Among its supporting tools, HolBA features a tool to visualize the Control Flow Graph ({CFG}) of BIR programs.
 
@@ -229,7 +230,7 @@ For example, \htriple{P}{\varnothing}{P} holds because an empty program doesn't 
 
 \subsubsection{Weakest preconditions}
 
-While Hoare Triples introduce sufficient preconditions, Dijkstra introduced the concept of necessary and sufficient preconditions, called ``weakest'' preconditions (WP) \cite{dijkstra_guarded_1975}. Such WP can be automatically derived from a program $prog$ and a postcondition $Q$. Let's call $\WP(prog, Q)$ such a WP. Then, from Equation \ref{ht_def} follows:
+While Hoare Triples introduce sufficient preconditions, Dijkstra introduced the concept of necessary and sufficient preconditions, called ``weakest'' preconditions (WP) \cite{dijkstra_guarded_1975}. WP can be automatically derived from a program $prog$ and a postcondition $Q$. Let's call $\WP(prog, Q)$ such a WP. Then, from Equation \ref{ht_def} follows:
 %
 \begin{equation}
   \forall (prog, Q),
@@ -274,8 +275,9 @@ DepGraph features two frontends that can extract dependencies between HOL4 theor
 
 \paragraph{The theory dependencies frontend} uses files generated by Holmake, the HOL4 compile system, in order to get the dependencies between theories. However, those files don't really represent dependencies but the files to be loaded before this script can be loaded, in a recursive fashion. Therefore, they represent the transitive reduction of the dependency graph. Because of this, precious knowledge is lost and cannot be recovered by using this method: edges representing direct dependencies are removed if the remaining edges still account for this dependency. Therefore, we are still able to tell which nodes depend on some node $n$, but we cannot identify the aforementioned fringe. In order to solve this problem, different approaches exist, such as implementing a simplified SML parser that looks only at dependencies, or injecting code inside the dependency resolution of an existing SML compiler. However, this would involve too much work that isn't the direct focus of this thesis.
 
-\paragraph{The definition, theorem and lemma dependencies frontend} uses word-based heuristics in order to extract dependencies, and is as such not quite reliable and cannot give any guarantee. As above, there exist similar solutions in order to get multiple levels of guarantees, such that implementing a SML parser or injecting code inside HOL4 theory and definitions handling, but this would also require too much work. Destructuring theories does not work because of how HOL4 has been designed. Moreover, such dependency graphs become quickly big, making them unusable in practice. Therefore, no further work has been put into this frontend.
+\paragraph{The definition, theorem and lemma dependencies frontend} uses word-based heuristics in order to extract dependencies, and is as such not quite reliable and cannot give any guarantee. As above, there exist similar solutions in order to get multiple levels of guarantees, such as implementing a SML parser or injecting code inside HOL4 theory and definitions handling, but this would also require too much work. Destructuring theories does not work because of how HOL4 has been designed. Moreover, such dependency graphs become quickly big, making them unusable in practice. Therefore, no further work has been put into this frontend.
 
+\medskip
 DepGraph's frontend for theory dependencies is still useful for documentation purpose, and has been used to visualize HolBA's architecture.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -308,9 +310,9 @@ One-to-one translation of the definitions related to the transmission automaton,
 
 \subsection{A toy BIR model} \label{alice-bob-toy}
 
-Before writing the whole NIC model by hand, we shall identify the structure of the model and develop tools that facilitate its implementation. Well-designed tools can reduce the boilerplate work of the implementation, help to focus only on the meaningful content, and reduce the chance of introducing bugs as the code is factored and mechanically shorter.
+Before writing the whole NIC model by hand, we shall identify the structure of the model and develop tools that facilitate its implementation. Well-designed tools can reduce the boilerplate work of the implementation, help focus only on the meaningful content, and reduce the chance of introducing bugs as the code is factored and mechanically shorter.
 
-A transition system similar to the one of the NIC model has been implemented, containing one scheduler and two automata. The two automata feature a simple linear transition system. Each of them has one non-autonomous transition, performed respectively by two external functions, that represent memory accesses from the CPU.
+A transition system similar to the one of the NIC model has been implemented, containing one scheduler and two automata. The two automata feature a simple linear transition system. Each of them has one non-autonomous transition that represent memory accesses from the CPU.
 
 This toy model has first been designed using the flowchart representation. Then, writing the BIR program has been a repetitive but straightforward step. The resulting BIR program is \num{450} lines of code long. Two issues have been identified:
 
@@ -321,7 +323,7 @@ This toy model has first been designed using the flowchart representation. Then,
 
 \subsection{BSL: BIR Simple Language} \label{bsl}
 
-A library, named BSL, offering the same expressiveness as BIR but with shorter constructs, has been implemented. This library has been kept simple and will serve as the base layer of possible later abstractions. As such, it has been decided that no feature other than pure syntactic construct, such that type inference, would be included.
+A library, named BSL, offering the same expressiveness as BIR but with shorter constructs, has been implemented. This library has been kept simple and will serve as the base layer of possible later abstractions. As such, it has been decided that no feature other than pure syntactic construct, such as type inference, would be included.
 
 BSL is composed of a set of functions with short names (prefixed with the letter \textit{b} in order to not clash with names in the global namespace), a coherent interface offering interoperability with HOL4 quotation system, and smart use of partial function application (e.g. for BIR types).
 
@@ -363,7 +365,7 @@ In order to prove Hoare Triples containing BIR memories, we need to use \textit{
 
 \subsection{Pretty-printing of BIR expressions} \label{pretty-printers}
 
-Generated WP quickly grow in size with the number of statements in a program, linearly or exponentially depending on the type of statements \footnote{Control flow statements produce exponential growth. While clever techniques can be implemented to keep their size reasonable \cite{lindner_trabin:_2019}, we often need to read and analyze them.}. The default printing of BIR terms is very verbose. In order to increase user-friendliness, the readibility of long BIR expressions should be improved. Therefore, we implemented four pretty-printers providing the following features:
+Generated WP quickly grow in size with the number of statements in a program, linearly or exponentially depending on the type of statements \footnote{Control flow statements produce exponential growth. While clever techniques can be implemented to keep their size reasonable \cite{lindner_trabin:_2019}, we often need to read and analyze them.}. The default printing of BIR terms is very verbose. In order to increase user-friendliness, the readibility of long BIR expressions should be improved. Therefore, we implemented a HOL4 pretty-printer library providing the following features:
 
 \begin{itemize}
     \item Simplification of verbose constructs.
@@ -429,7 +431,7 @@ The following Section \ref{trustful-nic-analysis} explores a new proof-producing
 
 \section{A new approach for trustful analysis} \label{trustful-nic-analysis}
 
-In order to perform proof-producing analysis on the NIC model, we successfully tried a new approach: we performed a proof on a BIR program and then lifted it to an abstract model. We decided to prove a simple property to prove the feasibility of the approach. We used a HOL4 data type composed of two variables, $NIC.dead$ ($bool$) and $NIC.x$ ($word32$), as a formal state on which we want to prove a property. Equations \ref{proof_nic_P_def}, \ref{proof_nic_Q_def} and \ref{proof_goal} present the property that we proved. Listing \ref{proof_prog} contains a pseudocode representation of the BIR program on which we performed the verification. Figure \ref{proof_schema} represents visually the structure of the verification and the steps that we took during the proof.
+In order to perform proof-producing analysis on the NIC model, we successfully tried a new approach: we performed a proof on a BIR program and then lifted it to an abstract model. We decided to prove a simple property to show the feasibility of the approach. We used a HOL4 data type composed of two variables, $NIC.dead$ ($bool$) and $NIC.x$ ($word32$), as a formal state on which we want to prove a property. Equations \ref{proof_nic_P_def}, \ref{proof_nic_Q_def} and \ref{proof_goal} present the property that we proved. Listing \ref{proof_prog} contains a pseudocode representation of the BIR program on which we performed the verification. Figure \ref{proof_schema} represents visually the structure of the verification and the steps that we took during the proof.
 %
 \begin{small}
 \begin{align}
