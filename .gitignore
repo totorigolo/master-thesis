@@ -17,3 +17,5 @@
 *.gls
 *.bak
 .vscode
+*.nav
+*.snm
