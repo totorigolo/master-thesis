@@ -133,11 +133,11 @@ group=1</panel_attributes>
     <coordinates>
       <x>640</x>
       <y>430</y>
-      <w>60</w>
+      <w>160</w>
       <h>100</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;80.0;10.0;40.0;40.0;40.0;40.0;10.0</additional_attributes>
+    <additional_attributes>10.0;80.0;10.0;50.0;140.0;50.0;140.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLSyncBarVertical</id>
@@ -327,13 +327,13 @@ group=12</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>700</x>
+      <x>670</x>
       <y>430</y>
-      <w>100</w>
+      <w>60</w>
       <h>100</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;80.0;10.0;40.0;80.0;40.0;80.0;10.0</additional_attributes>
+    <additional_attributes>40.0;80.0;40.0;40.0;10.0;40.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -344,7 +344,7 @@ group=12</panel_attributes>
       <h>100</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;80.0;10.0;50.0;50.0;50.0;50.0;10.0</additional_attributes>
+    <additional_attributes>10.0;80.0;10.0;40.0;50.0;40.0;50.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
