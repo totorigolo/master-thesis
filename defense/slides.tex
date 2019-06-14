@@ -88,6 +88,21 @@
 
 \section{Motivation}
 
+\subsection{Formal verification}
+
+\begin{frame}
+    \note{
+        Provers: generate a proof or not -> need tests or trustworthy
+    }
+\end{frame}
+
+\begin{frame}{HOL4}
+\end{frame}
+
+\begin{frame}{Proof-producing analysis}
+    \textit{Machine-checked proofs}
+\end{frame}
+
 \subsection{Security critical systems}
 
 \begin{frame}{Security critical systems}
@@ -161,7 +176,7 @@
             \end{itemize}
         \end{column}
     \end{columns}
-    \footnotetext{https://sel4.systems/Info/FAQ/proof.pml}
+    \footnotetext{\tiny \url{https://sel4.systems/Info/FAQ/proof.pml}}
 \end{frame}
 
 \begin{frame}{Secure operating systems}
@@ -172,7 +187,7 @@
             \end{center}
         \end{column}
         \begin{column}{0.6\textwidth}
-            Proof assumptions:
+            Proof assumptions\footnotemark:
             \pause
             \begin{itemize}
                 \item Use of Direct Memory Access (DMA) is excluded, or only allowed for \textbf{trusted drivers that have to be formally verified by the user}.
@@ -181,6 +196,7 @@
             \note{Ongoing work: IOMMUs on x86 or System MMUs on ARM.}
         \end{column}
     \end{columns}
+    \footnotetext{\tiny\url{https://docs.sel4.systems/FrequentlyAskedQuestions\#is-sel4-proven-secure}}
 \end{frame}
 
 \begin{frame}
@@ -233,10 +249,10 @@
     \end{figure}
 \end{frame}
 
-\subsection{How to verify hardware devices?}
-
-\begin{frame}
-    
+\begin{frame}{Research question}
+    \begin{center}
+        \textbf{Can we apply traditional software verification techniques and tools to show security properties of hardware devices?}
+    \end{center}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
