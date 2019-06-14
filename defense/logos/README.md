@@ -1,5 +1,7 @@
 # Logos
 
+I do not own any of the files in this directory.
+
 ## Licenses
 
 * Logo INSA Lyon

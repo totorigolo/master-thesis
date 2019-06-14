@@ -88,7 +88,7 @@
 
 \section{Motivation}
 
-\subsection{Network Interface Controllers}
+\subsection{Security critical systems}
 
 \begin{frame}{Security critical systems}
     \begin{columns}
@@ -127,13 +127,82 @@
     \end{columns}
 \end{frame}
 
-\begin{frame}
+\begin{frame}{Security critical systems - vulnerable}
     Vulnerabilities come because of:
     \begin{itemize}
         \item Increased surface of attack (more and more features, codebases explode in size)
         \item Connected to networks $\rightarrow$ remote attacks
     \end{itemize}
+
+    \note{Often a result of misconfiguration.}
 \end{frame}
+
+\begin{frame}{Secure operating systems}
+    \begin{columns}
+        \begin{column}{0.4\textwidth}
+            \begin{center}
+                \includegraphics[height=2cm]{logos/seL4-logo-text-white.png}
+            \end{center}
+        \end{column}
+        \pause
+        \begin{column}{0.6\textwidth}
+            Formal proof\footnotemark:
+            \begin{itemize}
+                \item The binary code correctly implements its \textbf{abstract specification}.
+                \item The specification guarantees \textbf{integrity} and \textbf{confidentiality}.
+            \end{itemize}
+
+            \bigskip
+            \pause
+
+            \begin{itemize}
+                \item \textbf{Integrity}: data cannot be \textit{changed} without permission.
+                \item \textbf{Confidentiality}: data cannot be \textit{read} without permission.
+            \end{itemize}
+        \end{column}
+    \end{columns}
+    \footnotetext{https://sel4.systems/Info/FAQ/proof.pml}
+\end{frame}
+
+\begin{frame}{Secure operating systems}
+    \begin{columns}
+        \begin{column}{0.4\textwidth}
+            \begin{center}
+                \includegraphics[height=2cm]{logos/seL4-logo-text-white.png}
+            \end{center}
+        \end{column}
+        \begin{column}{0.6\textwidth}
+            Proof assumptions:
+            \pause
+            \begin{itemize}
+                \item Use of Direct Memory Access (DMA) is excluded, or only allowed for \textbf{trusted drivers that have to be formally verified by the user}.
+            \end{itemize}
+
+            \note{Ongoing work: IOMMUs on x86 or System MMUs on ARM.}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}
+    \begin{center}
+        \begin{figure}
+            \only<1|handout:0>{\includegraphics[width=\textwidth]{figures/dma-hyp-apps-nodma.pdf}}
+            \only<2>{\includegraphics[width=\textwidth]{figures/dma-hyp-apps.pdf}}
+            \label{dma-dangers-1}
+        \end{figure}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \begin{center}
+        \begin{figure}
+            \includegraphics[width=\textwidth]{figures/dma-hyp-apps-bad.pdf}
+            \label{dma-dangers-2}
+        \end{figure}
+    \end{center}
+\end{frame}
+
+\subsection{Network Interface Controllers (NIC)}
 
 \begin{frame}
     \begin{figure}
@@ -145,22 +214,29 @@
 
 \begin{frame}
     \begin{figure}
-        \includegraphics[width=8cm]{../figures/cpu-memory-schema.pdf}
-        \caption{Communication between CPU and devices.}
-        \label{cpu_mem_schema}
+        \includegraphics[width=\textwidth]{figures/nic-bd.pdf}
+        \label{nic_bd}
     \end{figure}
-    \note{Dashed: register writes}
-    \note{Dotted: interrupts}
 \end{frame}
 
-\subsection{How to model a NIC}
-
-\begin{frame}{Simple frame}
+\begin{frame}
+    \begin{figure}
+        \includegraphics[width=\textwidth]{figures/nic-bd-in_mem.pdf}
+        \label{nic_bd_inmem}
+    \end{figure}
 \end{frame}
 
-\subsection{Using software verification tools for hardware devices?}
+\begin{frame}
+    \begin{figure}
+        \includegraphics[width=\textwidth]{figures/nic-bd-in_mem-overlap.pdf}
+        \label{nic_bd_inmem_overlap}
+    \end{figure}
+\end{frame}
 
-\begin{frame}{Simple frame}
+\subsection{How to verify hardware devices?}
+
+\begin{frame}
+    
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
