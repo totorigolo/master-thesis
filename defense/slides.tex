@@ -1,7 +1,18 @@
-\documentclass{beamer}
-\usetheme{Frankfurt}
+\documentclass[xcolor={x11names}]{beamer}
+
+% \usetheme{Frankfurt}
+
 % \setbeameroption{show notes}
 % \setbeamertemplate{note page}[plain]
+
+\usetheme{Boadilla}
+\usecolortheme{whale}
+
+% \usetheme{Madrid}
+% \useoutertheme{miniframes} % Alternatively: miniframes, infolines, split
+% \useinnertheme{circles}
+
+
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -9,6 +20,7 @@
 
 \usepackage{blindtext}
 \usepackage{appendixnumberbeamer}
+\usepackage{graphicx}
 
 \usepackage{tikz}
 \usetikzlibrary{positioning}
@@ -43,28 +55,28 @@
 }
 
 % Add page number in upper-right corner
-\makeatletter
-\defbeamertemplate*{headline}{my smoothbars theme}
-{%
-    \pgfuseshading{beamer@barshade}%
-    \ifbeamer@sb@subsection%
-    \vskip-9.75ex%
-    \else%
-    \vskip-7ex%
-    \fi%
-    \begin{beamercolorbox}[ignorebg,ht=2.25ex,dp=3.75ex]{section in head/foot}
-    \insertnavigation{.9\paperwidth}\hfill%
-    \insertframenumber/\inserttotalframenumber%
-    \hspace{.5em}
-    \end{beamercolorbox}%
-    \ifbeamer@sb@subsection%
-    \begin{beamercolorbox}[ignorebg,ht=2.125ex,dp=1.125ex,%
-        leftskip=.3cm,rightskip=.3cm plus1fil]{subsection in head/foot}
-        \usebeamerfont{subsection in head/foot}\insertsubsectionhead
-    \end{beamercolorbox}%
-    \fi%
-}%
-\makeatother
+% \makeatletter
+% \defbeamertemplate*{headline}{my smoothbars theme}
+% {%
+%     \pgfuseshading{beamer@barshade}%
+%     \ifbeamer@sb@subsection%
+%     \vskip-9.75ex%
+%     \else%
+%     \vskip-7ex%
+%     \fi%
+%     \begin{beamercolorbox}[ignorebg,ht=2.25ex,dp=3.75ex]{section in head/foot}
+%     \insertnavigation{.9\paperwidth}\hfill%
+%     \insertframenumber/\inserttotalframenumber%
+%     \hspace{.5em}
+%     \end{beamercolorbox}%
+%     \ifbeamer@sb@subsection%
+%     \begin{beamercolorbox}[ignorebg,ht=2.125ex,dp=1.125ex,%
+%         leftskip=.3cm,rightskip=.3cm plus1fil]{subsection in head/foot}
+%         \usebeamerfont{subsection in head/foot}\insertsubsectionhead
+%     \end{beamercolorbox}%
+%     \fi%
+% }%
+% \makeatother
 
 % To remove the navigation buttons at the bottom
 % \beamertemplatenavigationsymbolsempty
@@ -244,6 +256,8 @@
 \begin{frame}{System software verification}
     \textbf{Objective}: show absence of errors in modelisation of real systems
     \bigskip
+
+    \textbf{TODO: Ideallement -> implémentation de systems concrets}
 
     \begin{columns}[T]
         \begin{column}{0.5\textwidth}
@@ -485,15 +499,6 @@
 \begin{frame}{Contract-based verification pipeline}
     \begin{columns}
         \begin{column}[T]{.5\textwidth}
-            % \onslide<2->{
-            %     \begin{center}
-            %         $\{\neg dead \land well\_configured\}$\\
-            %         $~tx6~$\\
-            %         $\{\neg dead\}$
-            %     \end{center}
-            % }
-            % $\WP(tx6,~\neg dead)$
-
             \begin{enumerate}
                 \item[0.]<1-> Translate the model in BIR
                 \item[1.]<2-> Formulate a Hoare Triple
@@ -527,6 +532,7 @@
 
                     ``unsat''?
                 }
+                \textbf{TODO: unique SMT-ready de l'implication}
             \end{center}
         \end{column}
         \begin{column}[T]{.6\textwidth}
@@ -551,7 +557,7 @@
         \begin{column}{.5\textwidth}
             \begin{itemize}
                 \setlength\itemsep{1em}
-                \item<2-> SMT solver don't produce proofs
+                \item<2-> SMT solvers don't produce proofs
                 \item<3-> bir2bool isn't proof-producing
                 \item<4-> The BIR model may be wrong
             \end{itemize}
@@ -570,30 +576,31 @@
 \subsection{How powerful is it?}
 
 \begin{frame}{How powerful is it?}
-    \begin{block}{Not proof-producing}
+    \begin{block}<2->{Not proof-producing}
         Easier non-proof producing platforms exist
     \end{block}
-    \pause
-    \begin{block}{Limited by SMT solvers' logics}
+    \begin{block}<3->{Limited by SMT solvers' logics}
         \begin{itemize}
-            \item<3-> \htriple{\neg overlapping \land \neg cyclic}{transition}{\neg overlapping}
-            \item<4-> Logic: \textbf{QF}\_AUFBV $\rightarrow$ \textbf{Q}uantifier-\textbf{F}ree
+            \item<4-> \htriple{\neg overlapping \land \neg cyclic}{transition}{\neg overlapping}
+            \item<5-> SMT logic: \textbf{QF}\_AUFBV $\rightarrow$ \textbf{Q}uantifier-\textbf{F}ree
         \end{itemize}
     \end{block}
-    \pause
-    \begin{block}{Cannot compose theorems}
+    \begin{block}<6->{Cannot compose theorems}
         \begin{itemize}
-            \item<6-> HolBA limitation
-            \item<7-> Need theorems to compose trustfully
+            \item<7-> Partly a limitation of HolBA (work in progress)
+            % \item<8-> Need theorems to compose trustfully
         \end{itemize}
     \end{block}
 \end{frame}
 
 \section{Proof-producing verification}
 
-\subsection{Subsection 1}
+\begin{frame}{Goal}
+    Some theorems cannot be proved with previous pipeline
 
-\begin{frame}{Title}
+    We would like to prove them anyway
+
+
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
