@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>490</x>
+      <y>370</y>
+      <w>20</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>bg=#90ff90
+group=2</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>470</x>
+      <y>370</y>
+      <w>20</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>bg=#30a030
+group=2</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>570</x>
+      <y>380</y>
+      <w>20</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>bg=#6060a0
+group=5</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>550</x>
+      <y>380</y>
+      <w>20</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>bg=#3030a0
+group=5</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>530</x>
+      <y>380</y>
+      <w>20</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>bg=#0000a0
+group=5</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>730</x>
+      <y>370</y>
+      <w>20</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>bg=#6060a0
+group=6</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>710</x>
+      <y>370</y>
+      <w>20</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>bg=#3030a0
+group=6</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>690</x>
+      <y>370</y>
+      <w>20</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>bg=#0000a0
+group=6</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>550</x>
+      <y>370</y>
+      <w>20</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>bg=#90ff90
+group=7</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>530</x>
+      <y>370</y>
+      <w>20</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>bg=#30a030
+group=7</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>510</x>
+      <y>370</y>
+      <w>20</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>bg=#009000
+group=7</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>670</x>
+      <y>370</y>
+      <w>20</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>bg=#90ff90
+group=8</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>650</x>
+      <y>370</y>
+      <w>20</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>bg=#30a030
+group=8</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>630</x>
+      <y>370</y>
+      <w>20</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>bg=#009000
+group=8</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>450</x>
+      <y>370</y>
+      <w>20</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>bg=#009000
+group=2</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>460</x>
+      <y>570</y>
+      <w>60</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>fg=white</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>420</x>
+      <y>270</y>
+      <w>510</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>valign=center
+halign=center
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>420</x>
+      <y>270</y>
+      <w>110</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>bg=gray
+valign=center
+halign=center
+Hypervisor
+memory</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>530</x>
+      <y>270</y>
+      <w>60</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>bg=orange
+valign=center
+halign=center
+App1</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>590</x>
+      <y>270</y>
+      <w>180</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>bg=pink
+valign=center
+halign=center
+App2</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>310</x>
+      <y>280</y>
+      <w>110</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>Main memory</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>310</x>
+      <y>380</y>
+      <w>110</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>NIC memory</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSyncBarVertical</id>
+    <coordinates>
+      <x>700</x>
+      <y>270</y>
+      <w>20</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSyncBarVertical</id>
+    <coordinates>
+      <x>730</x>
+      <y>270</y>
+      <w>20</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>820</x>
+      <y>370</y>
+      <w>170</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>Buffer descriptors
+(ptr, bits, next)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>420</x>
+      <y>370</y>
+      <w>380</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>valign=center
+halign=center
+layer=-10</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>850</x>
+      <y>270</y>
+      <w>100</w>
+      <h>250</h>
+    </coordinates>
+    <panel_attributes>.
+fg=white</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSyncBarVertical</id>
+    <coordinates>
+      <x>560</x>
+      <y>270</y>
+      <w>20</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSyncBarVertical</id>
+    <coordinates>
+      <x>530</x>
+      <y>270</y>
+      <w>20</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>550</x>
+      <y>430</y>
+      <w>70</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>*overlap*
+fg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>530</x>
+      <y>310</y>
+      <w>200</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+fg=black</panel_attributes>
+    <additional_attributes>10.0;90.0;10.0;30.0;180.0;30.0;180.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>820</x>
+      <y>420</y>
+      <w>110</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>transmission
+fg=#008000</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>770</x>
+      <y>270</y>
+      <w>80</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>bg=cyan
+valign=center
+halign=center
+App3</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>300</x>
+      <y>480</y>
+      <w>730</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=.
+fg=white</panel_attributes>
+    <additional_attributes>10.0;10.0;710.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>820</x>
+      <y>450</y>
+      <w>110</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>reception
+fg=#0000c0</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

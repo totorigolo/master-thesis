@@ -2,9 +2,81 @@
 <diagram program="umlet" version="14.3.0">
   <zoom_level>10</zoom_level>
   <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>530</x>
+      <y>300</y>
+      <w>30</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+group=1</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>520</x>
+      <y>300</y>
+      <w>30</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+group=1</panel_attributes>
+    <additional_attributes>10.0;40.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>650</x>
+      <y>300</y>
+      <w>30</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+group=2</panel_attributes>
+    <additional_attributes>10.0;40.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>660</x>
+      <y>300</y>
+      <w>30</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+group=2</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>780</x>
+      <y>300</y>
+      <w>30</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+group=3</panel_attributes>
+    <additional_attributes>10.0;40.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>790</x>
+      <y>300</y>
+      <w>30</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+group=3</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>490</x>
+      <x>470</x>
       <y>400</y>
       <w>510</w>
       <h>50</h>
@@ -17,20 +89,33 @@ halign=center
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>490</x>
+      <x>470</x>
+      <y>510</y>
+      <w>80</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>valign=center
+halign=center
+fg=white</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>470</x>
       <y>340</y>
-      <w>380</w>
+      <w>510</w>
       <h>30</h>
     </coordinates>
     <panel_attributes>valign=center
 halign=center
-Hypervisor</panel_attributes>
+OS / Hypervisor</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>680</x>
+      <x>720</x>
       <y>360</y>
       <w>30</w>
       <h>60</h>
@@ -41,7 +126,7 @@ Hypervisor</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>670</x>
+      <x>710</x>
       <y>360</y>
       <w>30</w>
       <h>60</h>
@@ -52,7 +137,7 @@ Hypervisor</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>490</x>
+      <x>470</x>
       <y>400</y>
       <w>110</w>
       <h>50</h>
@@ -67,7 +152,7 @@ memory</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>600</x>
+      <x>580</x>
       <y>400</y>
       <w>60</w>
       <h>50</h>
@@ -81,7 +166,7 @@ App1</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>660</x>
+      <x>640</x>
       <y>400</y>
       <w>180</w>
       <h>50</h>
@@ -95,8 +180,8 @@ App2</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>490</x>
-      <y>300</y>
+      <x>470</x>
+      <y>280</y>
       <w>120</w>
       <h>30</h>
     </coordinates>
@@ -108,7 +193,7 @@ App1</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>890</x>
+      <x>870</x>
       <y>450</y>
       <w>110</w>
       <h>30</h>
@@ -119,8 +204,8 @@ App1</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>620</x>
-      <y>300</y>
+      <x>600</x>
+      <y>280</y>
       <w>120</w>
       <h>30</h>
     </coordinates>
@@ -130,10 +215,24 @@ App2</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>820</x>
+      <y>400</y>
+      <w>80</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>bg=cyan
+valign=center
+halign=center
+App3</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
     <id>Text</id>
     <coordinates>
-      <x>750</x>
-      <y>300</y>
+      <x>860</x>
+      <y>280</y>
       <w>40</w>
       <h>30</h>
     </coordinates>
@@ -143,12 +242,25 @@ App2</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>840</x>
+      <x>910</x>
       <y>410</y>
       <w>40</w>
       <h>30</h>
     </coordinates>
     <panel_attributes>*...*</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>730</x>
+      <y>280</y>
+      <w>120</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>valign=center
+halign=center
+App3</panel_attributes>
     <additional_attributes/>
   </element>
 </diagram>

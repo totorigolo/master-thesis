@@ -9,6 +9,7 @@
 
 \usepackage{blindtext}
 \usepackage{appendixnumberbeamer}
+\usepackage{tkz-graph}
 
 \title{Experiments on automation of formal verification of devices at the binary level}
 \subtitle{}
@@ -88,20 +89,7 @@
 
 \section{Motivation}
 
-\subsection{Formal verification}
-
-\begin{frame}
-    \note{
-        Provers: generate a proof or not -> need tests or trustworthy
-    }
-\end{frame}
-
-\begin{frame}{HOL4}
-\end{frame}
-
-\begin{frame}{Proof-producing analysis}
-    \textit{Machine-checked proofs}
-\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Security critical systems}
 
@@ -116,7 +104,7 @@
             \end{itemize}
         \end{column}
         \begin{column}{0.5\textwidth}
-            Security
+            Integrity
 
             \begin{itemize}
                 \item Hospital equipment
@@ -125,32 +113,58 @@
             \end{itemize}
         \end{column}
     \end{columns}
+
+    \vfill
+    \pause
+
+    \note{Systems are getting more and more complex with time, and}
+    \textbf{Problem}: complex systems almost always contain bugs
+    \note{bugs => vulnerabilities}
 \end{frame}
 
 \begin{frame}{Security critical systems - vulnerable}
+    \pause
     \begin{columns}
         \begin{column}{0.5\textwidth}
-            https://www.wired.com/2014/04/ hospital-equipment-vulnerable/
-
-            It's Insanely Easy to Hack Hospital Equipment
+            \begin{figure}
+                \centering
+                \includegraphics[height=.3\textheight]{figures/hospital-hacking.jpg}
+                \caption{``It's Insanely Easy to Hack Hospital Equipment'' \cite{zetter_its_2014}}
+                % zetter_its_2014: picture and article
+                \label{hack_hospital}
+            \end{figure}
+            \pause
+            \begin{itemize}
+                \item Remote control of equipment
+            \end{itemize}
         \end{column}
+        \pause
         \begin{column}{0.5\textwidth}
-            https://www.wired.com/2015/07/ hackers-remotely-kill-jeep-highway/
-
-            Hackers Remotely Kill a Jeep on the Highway—With Me in It
+            \begin{figure}
+                \centering
+                \includegraphics[height=.3\textheight]{figures/jeep_offroad.jpg}
+                \caption{``Remote Exploitation of an Unaltered Passenger Vehicle'' \cite{greenberg_hackers_2015,miller_remote_2015}}
+                % greenberg_hackers_2015: picture
+                % miller_remote_2015: white paper
+                \label{jeep_offroad}
+            \end{figure}
+            \pause
+            \begin{itemize}
+                \item Total control of drive system
+            \end{itemize}
         \end{column}
     \end{columns}
 \end{frame}
 
-\begin{frame}{Security critical systems - vulnerable}
-    Vulnerabilities come because of:
-    \begin{itemize}
-        \item Increased surface of attack (more and more features, codebases explode in size)
-        \item Connected to networks $\rightarrow$ remote attacks
-    \end{itemize}
+% \begin{frame}{Security critical systems - vulnerable}
+%     Vulnerabilities are caused by:
+%     \begin{itemize}
+%         \item Increased surface of attack (more and more features, codebases explode in size)
+%         \item Connected to networks $\rightarrow$ remote attacks
+%     \end{itemize}
 
-    \note{Often a result of misconfiguration.}
-\end{frame}
+%     \note{Often a result of misconfiguration.}
+% \end{frame}
 
 \begin{frame}{Secure operating systems}
     \begin{columns}
@@ -209,18 +223,61 @@
     \end{center}
 \end{frame}
 
-\begin{frame}
-    \begin{center}
-        \begin{figure}
-            \includegraphics[width=\textwidth]{figures/dma-hyp-apps-bad.pdf}
-            \label{dma-dangers-2}
-        \end{figure}
-    \end{center}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Formal verification with HOL4}
+
+\begin{frame}{System software verification}
+    \textbf{Objective}: show absence of errors in modelisation of real systems
+    \bigskip
+
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \visible<2->{
+                \textbf{Formal proof \phantom{long long long title}}
+                
+                machine checkable proofs using rigorous semantic
+                \phantom{needs 3 lines to align}
+            }
+
+            \bigskip
+            \visible<4->{
+                Use small reliable kernels \\
+                $\rightarrow$ produced theorems are trustworthy
+            }
+
+            \bigskip
+            \visible<6->{\textit{Examples}: HOL4, Coq, Isabelle}
+
+            % From ITP course:
+            \note{However complicated and potentially buggy your code is, if a value of type theorem is produced, it has been created through the small trusted interface. Therefore the statement really holds.}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \visible<3->{
+                \textbf{Non proof-producing verification}
+    
+                specialized programs or procedures that check a given property
+            }
+
+            \bigskip
+            \visible<5->{
+                Classic bug-prone software\\
+                $\rightarrow$ need tests, less trustworthy \phantom{one more line}
+            }
+
+            \bigskip
+            \visible<7->{SMT solvers, model checkers}
+        \end{column}
+    \end{columns}
+
+    \note{Also: model checking}
 \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Network Interface Controllers (NIC)}
 
-\begin{frame}
+\begin{frame}{Network Interface Controller (NIC)}
     \begin{figure}
         \includegraphics[]{figures/BBB_cpu_ram_nic.png}
         \caption{BeagleBone Black.}
@@ -228,26 +285,29 @@
     \end{figure}
 \end{frame}
 
-\begin{frame}
+\begin{frame}{Network Interface Controller (NIC)}
     \begin{figure}
         \includegraphics[width=\textwidth]{figures/nic-bd.pdf}
         \label{nic_bd}
     \end{figure}
 \end{frame}
 
-\begin{frame}
+\begin{frame}{Network Interface Controller (NIC)}
     \begin{figure}
         \includegraphics[width=\textwidth]{figures/nic-bd-in_mem.pdf}
         \label{nic_bd_inmem}
     \end{figure}
 \end{frame}
 
-\begin{frame}
+\begin{frame}{Network Interface Controller (NIC)}
     \begin{figure}
-        \includegraphics[width=\textwidth]{figures/nic-bd-in_mem-overlap.pdf}
+        \includegraphics<1>[width=\textwidth]{figures/nic-bd-in_mem-overlap1.pdf}
+        \includegraphics<2>[width=\textwidth]{figures/nic-bd-in_mem-overlap2.pdf}
+        \includegraphics<3>[width=\textwidth]{figures/nic-bd-in_mem-overlap3.pdf}
         \label{nic_bd_inmem_overlap}
     \end{figure}
     \note{Figure 32 in Jonas' MT}
+    \note{also: not circular}
 \end{frame}
 
 \begin{frame}{Research question}
@@ -260,12 +320,34 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Non proof-producing verification}
+\section{Automatic contract-based verification pipeline}
 
-\subsection{Subsection 1}
+\subsection{NIC model}
 
 \begin{frame}{Title}
+    \begin{itemize}
+        \item Transition system
+        \item Loop-free
+        \item Verification = prove invariants
+        \item (Show CFG?)
+    \end{itemize}
 \end{frame}
+
+\subsection{Contract-based verification}
+
+\begin{frame}{Title}
+    HT - WP -> SMT
+\end{frame}
+
+\begin{frame}{Title}
+    Example: invariant
+\end{frame}
+
+\begin{frame}
+\end{frame}
+
+%[label=foo]
+%\againframe{foo}
 
 \subsection{How trustful is it?}
 
@@ -299,7 +381,8 @@
 \appendix
 
 \begin{frame}[allowframebreaks]{References}
-    \bibliography{../references}
+    \nocite{*}
+    \bibliography{ref-slides}
     \bibliographystyle{plain}
 \end{frame}
 

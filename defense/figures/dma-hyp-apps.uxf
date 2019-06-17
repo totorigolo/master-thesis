@@ -17,14 +17,14 @@ halign=center
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>880</x>
-      <y>320</y>
+      <x>490</x>
+      <y>510</y>
       <w>80</w>
       <h>40</h>
     </coordinates>
     <panel_attributes>valign=center
 halign=center
-Device</panel_attributes>
+Device 1</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -32,18 +32,18 @@ Device</panel_attributes>
     <coordinates>
       <x>490</x>
       <y>340</y>
-      <w>380</w>
+      <w>510</w>
       <h>30</h>
     </coordinates>
     <panel_attributes>valign=center
 halign=center
-Hypervisor</panel_attributes>
+OS / Hypervisor</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>680</x>
+      <x>740</x>
       <y>360</y>
       <w>30</w>
       <h>60</h>
@@ -54,31 +54,31 @@ Hypervisor</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>900</x>
-      <y>350</y>
+      <x>600</x>
+      <y>440</y>
       <w>30</w>
-      <h>70</h>
+      <h>90</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>10.0;50.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>910</x>
-      <y>350</y>
-      <w>130</w>
-      <h>70</h>
+      <x>610</x>
+      <y>440</y>
+      <w>140</w>
+      <h>90</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 Direct Memory
 Access</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+    <additional_attributes>10.0;70.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>670</x>
+      <x>730</x>
       <y>360</y>
       <w>30</w>
       <h>60</h>
@@ -133,7 +133,7 @@ App2</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>490</x>
-      <y>300</y>
+      <y>280</y>
       <w>120</w>
       <h>30</h>
     </coordinates>
@@ -157,7 +157,7 @@ App1</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>620</x>
-      <y>300</y>
+      <y>280</y>
       <w>120</w>
       <h>30</h>
     </coordinates>
@@ -169,23 +169,22 @@ App2</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>880</x>
+      <x>840</x>
       <y>400</y>
       <w>80</w>
       <h>50</h>
     </coordinates>
-    <panel_attributes>bg=green
+    <panel_attributes>bg=cyan
 valign=center
 halign=center
-Device
-memory</panel_attributes>
+App3</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>750</x>
-      <y>300</y>
+      <x>880</x>
+      <y>280</y>
       <w>40</w>
       <h>30</h>
     </coordinates>
@@ -195,12 +194,143 @@ memory</panel_attributes>
   <element>
     <id>Text</id>
     <coordinates>
-      <x>840</x>
+      <x>930</x>
       <y>410</y>
       <w>40</w>
       <h>30</h>
     </coordinates>
     <panel_attributes>*...*</panel_attributes>
     <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>750</x>
+      <y>280</y>
+      <w>120</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>valign=center
+halign=center
+App3</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>540</x>
+      <y>300</y>
+      <w>30</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+group=1</panel_attributes>
+    <additional_attributes>10.0;40.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>550</x>
+      <y>300</y>
+      <w>30</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+group=1</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>680</x>
+      <y>300</y>
+      <w>30</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+group=2</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>670</x>
+      <y>300</y>
+      <w>30</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+group=2</panel_attributes>
+    <additional_attributes>10.0;40.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>810</x>
+      <y>300</y>
+      <w>30</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+group=3</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>800</x>
+      <y>300</y>
+      <w>30</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+group=3</panel_attributes>
+    <additional_attributes>10.0;40.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>580</x>
+      <y>510</y>
+      <w>80</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>valign=center
+halign=center
+Device 2</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Text</id>
+    <coordinates>
+      <x>670</x>
+      <y>520</y>
+      <w>40</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>*...*</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>530</x>
+      <y>440</y>
+      <w>30</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;70.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>520</x>
+      <y>440</y>
+      <w>30</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
   </element>
 </diagram>

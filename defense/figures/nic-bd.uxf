@@ -69,21 +69,6 @@ App2</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>930</x>
-      <y>350</y>
-      <w>70</w>
-      <h>50</h>
-    </coordinates>
-    <panel_attributes>bg=green
-valign=center
-halign=center
-NIC
-memory</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
     <id>Text</id>
     <coordinates>
       <x>430</x>
@@ -211,11 +196,11 @@ queue</panel_attributes>
     <coordinates>
       <x>920</x>
       <y>540</y>
-      <w>140</w>
+      <w>170</w>
       <h>40</h>
     </coordinates>
     <panel_attributes>Buffer descriptors
-(ptr, length, next)</panel_attributes>
+(ptr, bits, next)</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -487,6 +472,20 @@ group=13</panel_attributes>
     </coordinates>
     <panel_attributes>.
 fg=white</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>890</x>
+      <y>350</y>
+      <w>80</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>bg=cyan
+valign=center
+halign=center
+App3</panel_attributes>
     <additional_attributes/>
   </element>
 </diagram>
