@@ -45,20 +45,6 @@ WP (BIR)</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>760</x>
-      <y>530</y>
-      <w>120</w>
-      <h>60</h>
-    </coordinates>
-    <panel_attributes>valign=center
-halign=center
-WP
-("SMT-ready")</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
       <x>650</x>
       <y>660</y>
       <w>120</w>
@@ -80,18 +66,6 @@ decision</panel_attributes>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;20.0;170.0;20.0;170.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>810</x>
-      <y>480</y>
-      <w>90</w>
-      <h>70</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;-
-m1=bir2bool</panel_attributes>
-    <additional_attributes>10.0;50.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
@@ -161,12 +135,12 @@ m1=HolBA's WP tool</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>570</x>
-      <y>580</y>
+      <y>370</y>
       <w>270</w>
-      <h>50</h>
+      <h>260</h>
     </coordinates>
-    <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>250.0;10.0;250.0;30.0;10.0;30.0;10.0;10.0</additional_attributes>
+    <panel_attributes>lt=..</panel_attributes>
+    <additional_attributes>250.0;120.0;250.0;240.0;10.0;240.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -218,31 +192,5 @@ halign=center
 BIR
 expression</panel_attributes>
     <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>520</x>
-      <y>530</y>
-      <w>120</w>
-      <h>60</h>
-    </coordinates>
-    <panel_attributes>valign=center
-halign=center
-"SMT-ready"
-expression</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>570</x>
-      <y>370</y>
-      <w>90</w>
-      <h>180</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;-
-m1=bir2bool</panel_attributes>
-    <additional_attributes>10.0;160.0;10.0;10.0</additional_attributes>
   </element>
 </diagram>
