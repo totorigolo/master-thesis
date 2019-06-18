@@ -140,37 +140,37 @@
 
 \subsection{Security critical systems}
 
-\begin{frame}{Security critical systems}
-    \begin{columns}
-        \begin{column}{0.5\textwidth}
-            Privacy
+% \begin{frame}{Security critical systems}
+%     \begin{columns}
+%         \begin{column}{0.5\textwidth}
+%             Privacy
 
-            \begin{itemize}
-                \item Smartphones
-                \item Smart TVs
-            \end{itemize}
-        \end{column}
-        \begin{column}{0.5\textwidth}
-            Integrity
+%             \begin{itemize}
+%                 \item Smartphones
+%                 \item Smart TVs
+%             \end{itemize}
+%         \end{column}
+%         \begin{column}{0.5\textwidth}
+%             Integrity
 
-            \begin{itemize}
-                \item Hospital equipment
-                \item Traffic control systems
-                \item Power plants
-            \end{itemize}
-        \end{column}
-    \end{columns}
+%             \begin{itemize}
+%                 \item Hospital equipment
+%                 \item Traffic control systems
+%                 \item Power plants
+%             \end{itemize}
+%         \end{column}
+%     \end{columns}
 
-    \vfill
-    \pause
+%     \vfill
+%     \pause
 
-    \note{Systems are getting more and more complex with time, and}
-    \textbf{Problem}: complex systems almost always contain bugs
-    \note{bugs => vulnerabilities}
-\end{frame}
+%     \note{Systems are getting more and more complex with time, and}
+%     \textbf{Problem}: complex systems almost always contain bugs
+%     \note{bugs => vulnerabilities}
+% \end{frame}
 
 \begin{frame}{Security critical systems - vulnerable}
-    \pause
+    % \pause
     \begin{columns}
         \begin{column}{0.5\textwidth}
             \begin{figure}
@@ -185,7 +185,7 @@
             %     \item Remote control of equipment
             % \end{itemize}
         \end{column}
-        \pause
+        % \pause
         \begin{column}{0.5\textwidth}
             \begin{figure}
                 \centering
@@ -201,6 +201,11 @@
             % \end{itemize}
         \end{column}
     \end{columns}
+    \pause
+    \bigskip
+    \note{Systems are getting more and more complex with time, and}
+    \textbf{Problem}: complex systems almost always contain bugs
+    \note{bugs => vulnerabilities}
 \end{frame}
 
 % \begin{frame}{Security critical systems - vulnerable}
@@ -445,21 +450,21 @@
     \end{center}
 \end{frame}
 
-\begin{frame}<-7>{NIC: What the verification looks like \cite{haglund_formal_2016}}
-    \only<8->{\setbeamercovered{transparent}}
+\begin{frame}{NIC: What the verification looks like \cite{haglund_formal_2016}}
+    \only<5->{\setbeamercovered{transparent}}
 
-    \uncover<2->{
+    \uncover<2-5>{
         Low-level lemmas:
         \begin{itemize}
-            \item<3-8> \htriple{\neg dead \land well\_configured}{transition}{\neg dead}
-            \item<4-8> \htriple{\neg overlapping \land \neg cyclic}{transition}{\neg overlapping}
-            \item<5-8> \htriple{\neg overlapping \land \neg cyclic}{transition}{\neg cyclic}
+            \item<2-> \htriple{\neg dead \land well\_configured}{transition}{\neg dead}
+            \item<2-> \htriple{\neg overlapping \land \neg cyclic}{transition}{\neg overlapping}
+            \item<2-> \htriple{\neg overlapping \land \neg cyclic}{transition}{\neg cyclic}
         \end{itemize}
     }
 
     \bigskip
 
-    \uncover<6-7>{
+    \uncover<3-4>{
         Intermediate lemmas:
         \begin{itemize}
             \item \textit{\small Invariant}: $rx\_invariant\_well\_defined$
@@ -469,7 +474,7 @@
 
     \bigskip
 
-    \uncover<7-7>{
+    \uncover<4>{
         Security theorems:
         \begin{itemize}
             \item $\forall~tx\_bd.~readable(tx\_bd)$ ~~~~~~~ \textit{\tiny BD = Buffer Descriptor}
