@@ -390,54 +390,39 @@
             \note{The model describes these operations to the extent that they are used by the device driver of the NIC in Linux 3.10. The NIC is modeled as a transition system where each transition corresponds to one operation that accesses one field or byte of a NIC register or the memory.}
         \end{column}
     \end{columns}
-    \pause
-    \begin{center}
-        Unspecified behavior $\rightarrow$ ``dead'' state
-    \end{center}
+    % \pause
+    % \begin{center}
+    %     Unspecified behavior $\rightarrow$ ``dead'' state
+    % \end{center}
 \end{frame}
 
 \begin{frame}{Hoare Triple}
-    \only<2>{
-        \begin{center}
-            \begin{tikzpicture}
-                \matrix [matrix of nodes,ampersand replacement=\&, column sep=20mm]{
-                    \node (a) [draw,label={P},shape=circle] {$S$}; \&
-                    \node (b) [draw,label={Q},shape=circle] {$S'$}; \\
-                };
-                \draw[->,thick] (a) -- node[auto] {$program$} (b);
-            \end{tikzpicture}
-        \end{center}
-    }
-    \only<3->{
-        \begin{center}
-            \begin{equation*}
-                \onslide<3->{\forall S.~P(S)}~%
-                \onslide<4->{\land~S'=program(S)}~%
-                \onslide<5->{\implies~Q(S')}
-            \end{equation*}
-        \end{center}
-        \begin{columns}
-            \begin{column}{.5\textwidth}
-                \begin{center}
-                    \begin{tikzpicture}
-                        \matrix [matrix of nodes,ampersand replacement=\&, column sep=20mm]{
-                            \node (a) [draw,label={P},shape=circle,visible on=<3->] {$S$}; \&
-                            \node (b) [draw,label={Q},shape=circle,visible on=<5->] {$S'$}; \\
-                        };
-                        \draw[->,thick,visible on=<4->] (a) -- node[auto] {$program$} (b);
-                    \end{tikzpicture}
-                \end{center}
-            \end{column}
-            \begin{column}{.5\textwidth}
-                \begin{center}
-                    \begin{equation*}
-                        \onslide<3->{\{P\}} ~ \onslide<4->{program} ~ \onslide<5->{\{Q\}}
-                    \end{equation*}
-                    \bigskip
-                \end{center}
-            \end{column}
-        \end{columns}
-    }
+    \begin{center}
+        \begin{equation*}
+            \forall S.~P(S)~\land~S'=program(S)~\implies~Q(S')
+        \end{equation*}
+    \end{center}
+    \begin{columns}
+        \begin{column}{.5\textwidth}
+            \begin{center}
+                \begin{tikzpicture}
+                    \matrix [matrix of nodes,ampersand replacement=\&, column sep=20mm]{
+                        \node (a) [draw,label={P},shape=circle] {$S$}; \&
+                        \node (b) [draw,label={Q},shape=circle] {$S'$}; \\
+                    };
+                    \draw[->,thick] (a) -- node[auto] {$program$} (b);
+                \end{tikzpicture}
+            \end{center}
+        \end{column}
+        \begin{column}{.5\textwidth}
+            \begin{center}
+                \begin{equation*}
+                    \{P\} ~ program ~ \{Q\}
+                \end{equation*}
+                \bigskip
+            \end{center}
+        \end{column}
+    \end{columns}
 \end{frame}
 
 \begin{frame}{Weakest precondition}
@@ -446,7 +431,7 @@
         \begin{equation*}
             \htriple{WP}{program}{Q}
         \end{equation*}
-        \pause
+        
         \begin{equation*}
             \Big(\forall S.~P(S) \implies WP(S)\Big) \implies \htriple{P}{program}{Q}
         \end{equation*}
@@ -799,7 +784,8 @@
 \begin{frame}[allowframebreaks]{References}
     \nocite{*}
     \setbeamertemplate{bibliography item}{\insertbiblabel}
-    \bibliographystyle{IEEEtran}
+    \bibliographystyle{plain}
+    % \bibliographystyle{IEEEtran}
     \bibliography{ref-slides}
 \end{frame}
 
