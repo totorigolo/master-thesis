@@ -45,20 +45,6 @@ WP (BIR)</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>760</x>
-      <y>530</y>
-      <w>120</w>
-      <h>60</h>
-    </coordinates>
-    <panel_attributes>valign=center
-halign=center
-WP
-("SMT-ready")</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
       <x>650</x>
       <y>660</y>
       <w>120</w>
@@ -80,18 +66,6 @@ decision</panel_attributes>
     </coordinates>
     <panel_attributes>lt=-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;20.0;170.0;20.0;170.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>810</x>
-      <y>480</y>
-      <w>90</w>
-      <h>70</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;-
-m1=bir2bool</panel_attributes>
-    <additional_attributes>10.0;50.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
@@ -158,29 +132,6 @@ m1=HolBA's WP tool</panel_attributes>
     <additional_attributes>10.0;50.0;10.0;10.0</additional_attributes>
   </element>
   <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>570</x>
-      <y>580</y>
-      <w>270</w>
-      <h>50</h>
-    </coordinates>
-    <panel_attributes>lt=-</panel_attributes>
-    <additional_attributes>250.0;10.0;250.0;30.0;10.0;30.0;10.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>700</x>
-      <y>600</y>
-      <w>100</w>
-      <h>80</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;-
-HolSmtLib</panel_attributes>
-    <additional_attributes>10.0;60.0;10.0;10.0</additional_attributes>
-  </element>
-  <element>
     <id>UMLClass</id>
     <coordinates>
       <x>520</x>
@@ -220,30 +171,40 @@ expression</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>520</x>
-      <y>530</y>
-      <w>120</w>
-      <h>60</h>
-    </coordinates>
-    <panel_attributes>valign=center
-halign=center
-"SMT-ready"
-expression</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
     <id>Relation</id>
     <coordinates>
       <x>570</x>
       <y>370</y>
+      <w>270</w>
+      <h>170</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>250.0;120.0;250.0;150.0;10.0;150.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>700</x>
+      <y>510</y>
       <w>90</w>
-      <h>180</h>
+      <h>70</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 m1=bir2bool</panel_attributes>
-    <additional_attributes>10.0;160.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;50.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLUseCase</id>
+    <coordinates>
+      <x>660</x>
+      <y>490</y>
+      <w>140</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=.
+lw=2
+fg=red</panel_attributes>
+    <additional_attributes/>
   </element>
   <element>
     <id>UMLUseCase</id>
@@ -259,29 +220,29 @@ fg=red</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <id>UMLUseCase</id>
+    <id>Relation</id>
     <coordinates>
-      <x>530</x>
-      <y>460</y>
-      <w>140</w>
-      <h>90</h>
+      <x>700</x>
+      <y>610</y>
+      <w>100</w>
+      <h>70</h>
     </coordinates>
-    <panel_attributes>lt=.
-lw=2
-fg=red</panel_attributes>
-    <additional_attributes/>
+    <panel_attributes>lt=&lt;-
+HolSmtLib</panel_attributes>
+    <additional_attributes>10.0;50.0;10.0;10.0</additional_attributes>
   </element>
   <element>
-    <id>UMLUseCase</id>
+    <id>UMLClass</id>
     <coordinates>
-      <x>780</x>
-      <y>470</y>
-      <w>140</w>
-      <h>90</h>
+      <x>650</x>
+      <y>560</y>
+      <w>120</w>
+      <h>60</h>
     </coordinates>
-    <panel_attributes>lt=.
-lw=2
-fg=red</panel_attributes>
+    <panel_attributes>valign=center
+halign=center
+"SMT-ready"
+expression</panel_attributes>
     <additional_attributes/>
   </element>
 </diagram>

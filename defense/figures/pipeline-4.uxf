@@ -137,22 +137,22 @@ m1=HolBA's WP tool</panel_attributes>
       <x>570</x>
       <y>370</y>
       <w>270</w>
-      <h>260</h>
+      <h>170</h>
     </coordinates>
     <panel_attributes>lt=..</panel_attributes>
-    <additional_attributes>250.0;120.0;250.0;240.0;10.0;240.0;10.0;10.0</additional_attributes>
+    <additional_attributes>250.0;120.0;250.0;150.0;10.0;150.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
       <x>700</x>
-      <y>600</y>
+      <y>510</y>
       <w>100</w>
-      <h>80</h>
+      <h>170</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 HolSmtLib</panel_attributes>
-    <additional_attributes>10.0;60.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;150.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>

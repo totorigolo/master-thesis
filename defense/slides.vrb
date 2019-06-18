@@ -1,0 +1,24 @@
+\frametitle{BSL: BIR Simple Language}
+\begin{lstlisting}[
+        language=Caml,
+        basicstyle=\footnotesize\ttfamily,
+        frame=tb,
+        backgroundcolor=\color{codebackcolour},
+        commentstyle=\color{codegreen},
+        keywordstyle=\color{magenta},
+        stringstyle=\color{codepurple}
+    ]
+bite (
+  borl [
+    ble ((bden o bvarimm64) "x", bconst64 100),
+    bnot (ble (bplus ((bden o bvarimm64) "y", bconst64 1),
+               bconst64 10)),
+    ble (bplus ((bden o bvarimm64) "x",
+                (bden o bvarimm64) "y"),
+         bconst64 20)
+  ],
+  bmult ((bden o bvarimm64) "x", bconst64 2),
+  bplus (bmult ((bden o bvarimm64) "x", bconst64 3),
+         bconst64 1)
+)
+    \end{lstlisting}

@@ -12,8 +12,6 @@
 % \useoutertheme{miniframes} % Alternatively: miniframes, infolines, split
 % \useinnertheme{circles}
 
-
-
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[french,english]{babel}
@@ -21,28 +19,51 @@
 \usepackage{blindtext}
 \usepackage{appendixnumberbeamer}
 \usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+
+%% Listing colors
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{codeblue}{rgb}{0.10,0,0.82}
+\definecolor{codebackcolour}{rgb}{0.95,0.95,0.92}
 
 \usepackage{tikz}
 \usetikzlibrary{positioning}
 \usetikzlibrary{matrix}
+\usetikzlibrary{shapes.multipart}
 \tikzset{
     invisible/.style={opacity=0,%
     prefix after command={\pgfextra{\tikzset{every label/.style={opacity=0}}}}},
     visible on/.style={alt={#1{}{invisible}}},
     alt/.code args={<#1>#2#3}{%
-      \alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}}
+        \alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}}
+    },
+    onslide/.code args={<#1>#2}{%
+        \only<#1>{\pgfkeysalso{#2}}
+    },
+    temporal/.code args={<#1>#2#3#4}{%
+        \temporal<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}}{\pgfkeysalso{#4}}
+    },
+    von/.code args={<#1>}{%
+        \alt<#1>{\pgfkeysalso{opacity=1}}{\pgfkeysalso{opacity=.2}}
     },
 }
 
-\title{Experiments on automation of formal verification of devices at the binary level}
+\def\cov<#1>{\alt<#1>{\color{black!20}}{\color{black}}}
+\def\uncov<#1>{\alt<#1>{\color{black}}{\color{black!20}}}
+
+\title[Soutenance de PFE]{Experiments on automation of formal verification of devices at the binary level}
 \subtitle{}
 \author{Thomas Lacroix}
 \titlegraphic{\includegraphics[width=4cm]{logos/insa-logo-coul.png}}
-\institute{INSA Lyon \\ Soutenance de PFE (Option R\&D)}
-\date{19/06/2019}
+\institute[]{INSA Lyon \\ Soutenance de PFE (Option R\&D)}
+\date[19/06/2019]{Wednesday, June 19, 2019}
 
 \newcommand{\htriple}[3]{\ensuremath{\{#1\}~#2~\{#3\}}}
 \newcommand{\WP}{\ensuremath{\mathit{WP}}}
+\newcommand{\eqdef}{\ensuremath{\stackrel{def}{=}}}
 
 % Add pages before every section and subsections
 \AtBeginSection[]{\frame{\sectionpage}}
@@ -159,10 +180,10 @@
                 % zetter_its_2014: picture and article
                 \label{hack_hospital}
             \end{figure}
-            \pause
-            \begin{itemize}
-                \item Remote control of equipment
-            \end{itemize}
+            % \pause
+            % \begin{itemize}
+            %     \item Remote control of equipment
+            % \end{itemize}
         \end{column}
         \pause
         \begin{column}{0.5\textwidth}
@@ -174,10 +195,10 @@
                 % miller_remote_2015: white paper
                 \label{jeep_offroad}
             \end{figure}
-            \pause
-            \begin{itemize}
-                \item Total control of drive systems
-            \end{itemize}
+            % \pause
+            % \begin{itemize}
+            %     \item Total control of drive systems
+            % \end{itemize}
         \end{column}
     \end{columns}
 \end{frame}
@@ -192,31 +213,53 @@
 %     \note{Often a result of misconfiguration.}
 % \end{frame}
 
-\begin{frame}{Secure operating systems}
+\begin{frame}{Secure execution platforms}
     \begin{columns}
         \begin{column}{0.4\textwidth}
             \begin{center}
                 \includegraphics[height=2cm]{logos/seL4-logo-text-white.png}
             \end{center}
+            \only<1>{
+                \bigskip
+                \begin{center}
+                    \huge\textbf{\color{blue}{MINIX 3}}
+                \end{center}
+            }
         \end{column}
-        \pause
         \begin{column}{0.6\textwidth}
-            Formal proof\footnotemark:
-            \begin{itemize}
-                \item The binary code correctly implements its \textbf{abstract specification}.
-                \item The specification guarantees \textbf{integrity} and \textbf{confidentiality}.
-            \end{itemize}
+            \only<1>
+            {
+                \begin{center}
+                    \includegraphics[width=4cm]{logos/Integrity_Multivisor.jpg}
+                \end{center}
+                \bigskip
+                \bigskip
+                \begin{center}
+                    \includegraphics[height=1.1cm]{logos/microsoft-logo.png}\\
+                    \large\textbf{Hyper-V}
+                \end{center}
+            }
+            \only<2-4>
+            {
+                \visible<3->{
+                    Formal proof \cite{noauthor_what_nodate}:
+                    \begin{itemize}
+                        \item The binary code correctly implements its \textbf{abstract specification}.
+                        \item The specification guarantees \textbf{integrity} and \textbf{confidentiality}.
+                    \end{itemize}
+                    }
 
-            \bigskip
-            \pause
+                \bigskip
 
-            \begin{itemize}
-                \item \textbf{Integrity}: data cannot be \textit{changed} without permission.
-                \item \textbf{Confidentiality}: data cannot be \textit{read} without permission.
-            \end{itemize}
+                \visible<4->{
+                    \begin{itemize}
+                        \item \textbf{Integrity}: data cannot be \textit{changed} without permission.
+                        \item \textbf{Confidentiality}: data cannot be \textit{read} without permission.
+                    \end{itemize}
+                }
+            }
         \end{column}
     \end{columns}
-    \footnotetext{\tiny \url{https://sel4.systems/Info/FAQ/proof.pml}}
 \end{frame}
 
 \begin{frame}{Secure operating systems}
@@ -227,7 +270,7 @@
             \end{center}
         \end{column}
         \begin{column}{0.6\textwidth}
-            Proof assumptions\footnotemark:
+            Proof assumptions \cite{noauthor_is_nodate}:
             \pause
             \begin{itemize}
                 \item Use of Direct Memory Access (DMA) is excluded, or only allowed for \textbf{trusted drivers that have to be formally verified by the user}.
@@ -236,10 +279,9 @@
             \note{Ongoing work: IOMMUs on x86 or System MMUs on ARM.}
         \end{column}
     \end{columns}
-    \footnotetext{\tiny\url{https://docs.sel4.systems/FrequentlyAskedQuestions\#is-sel4-proven-secure}}
 \end{frame}
 
-\begin{frame}
+\begin{frame}{What is DMA?}
     \begin{center}
         \begin{figure}
             \only<1|handout:0>{\includegraphics[width=\textwidth]{figures/dma-hyp-apps-nodma.pdf}}
@@ -254,10 +296,10 @@
 \subsection{Formal verification with HOL4}
 
 \begin{frame}{System software verification}
-    \textbf{Objective}: show absence of errors in modelisation of real systems
+    \textbf{Objective}: show absence of errors (in modelisation) of real systems
     \bigskip
 
-    \textbf{TODO: Ideallement -> implémentation de systems concrets}
+    % \textbf{TODO: Ideallement -> implémentation de systems concrets}
 
     \begin{columns}[T]
         \begin{column}{0.5\textwidth}
@@ -338,7 +380,7 @@
     \note{also: not circular}
 \end{frame}
 
-\begin{frame}{NIC: How it has been modeled}
+\begin{frame}{NIC: How it has been modeled \cite{haglund_formal_2016}}
     \begin{columns}
         \begin{column}{0.5\textwidth}
             \begin{center}
@@ -426,14 +468,14 @@
     \end{center}
 \end{frame}
 
-\begin{frame}<-8>[label=lookslike]{NIC: What the verification looks like}
-    \only<8->{\setbeamercovered{transparent}}
+\begin{frame}{NIC: What the verification looks like \cite{haglund_formal_2016}}
+    % \only<8->{\setbeamercovered{transparent}}
 
     \uncover<2->{
         Low-level lemmas:
         \begin{itemize}
             \item<3-8> \htriple{\neg dead \land well\_configured}{transition}{\neg dead}
-            \item<4-9> \htriple{\neg overlapping \land \neg cyclic}{transition}{\neg overlapping}
+            \item<4-8> \htriple{\neg overlapping \land \neg cyclic}{transition}{\neg overlapping}
             \item<5-8> \htriple{\neg overlapping \land \neg cyclic}{transition}{\neg cyclic}
         \end{itemize}
     }
@@ -460,7 +502,6 @@
 
     \note{Cannot express forall with BIR, and ``QF_AUFBV''}
 \end{frame}
-% \againframe<9>{lookslike}
 
 \begin{frame}{Research question}
     \begin{center}
@@ -487,14 +528,6 @@
 \section{Contract-based verification}
 
 \subsection{Pipeline}
-
-% \begin{frame}<1>[label=pipeline]{Contract-base verification pipeline}
-%     \begin{center}
-%         \includegraphics<1>[height=.8\textheight]{figures/pipeline-1.pdf}
-%         \includegraphics<2>[height=.8\textheight]{figures/pipeline-2.pdf}
-%         \includegraphics<3>[height=.8\textheight]{figures/pipeline-3.pdf}
-%     \end{center}
-% \end{frame}
 
 \begin{frame}{Contract-based verification pipeline}
     \begin{columns}
@@ -532,7 +565,6 @@
 
                     ``unsat''?
                 }
-                \textbf{TODO: unique SMT-ready de l'implication}
             \end{center}
         \end{column}
         \begin{column}[T]{.6\textwidth}
@@ -587,7 +619,7 @@
     \end{block}
     \begin{block}<6->{Cannot compose theorems}
         \begin{itemize}
-            \item<7-> Partly a limitation of HolBA (work in progress)
+            \item<7-> Work in progress in HolBA
             % \item<8-> Need theorems to compose trustfully
         \end{itemize}
     \end{block}
@@ -596,11 +628,154 @@
 \section{Proof-producing verification}
 
 \begin{frame}{Goal}
-    Some theorems cannot be proved with previous pipeline
+    \begin{itemize}
+        \item[$\rightarrow$]<2-> Some theorems cannot be proved with previous pipeline
+        \item[$\rightarrow$]<3-> We would like to prove them anyway
+        \item[$\rightarrow$]<4-> We want to use them with the current proof
+    \end{itemize}
 
-    We would like to prove them anyway
+    % \tikzset{every label/.style={opacity=0.5}}
+    \begin{center}
+        \begin{tikzpicture}
+            \matrix [matrix of nodes,ampersand replacement=\&, column sep=25mm,row sep=10mm]{
+                \node (a) [draw,label={120:$P$},shape=circle,visible on=<5->] {$S$}; \&
+                \node (b) [draw,label={40:$Q$},shape=circle,visible on=<5->] {$S'$}; \\
+                \node (c) [draw,label={210:$P_{BIR}$},shape=circle,visible on=<6->] {$B$}; \&
+                \node (d) [draw,label={-50:$Q_{BIR}$},shape=circle,visible on=<6->] {$B'$}; \\
+            };
+            \draw[->,thick,dashed,visible on=<5->] (a) -- node[auto] {$formal~model$} (b);
+            \draw[->,thick,visible on=<6->] (c) -- node[auto] {$BIR~program$} (d);
+            \draw[->,thick,visible on=<7->] (a) -- node[auto] {} (c);
+            \draw[->,thick,visible on=<7->] (d) -- node[auto] {} (b);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
 
+\begin{frame}{Goal}
+    \begin{columns}
+        \begin{column}{.6\columnwidth}
+            \begin{center}
+                \uncov<1,5>{
+                    \htriple{P}{BIR\_prog}{Q}
 
+                    \medskip
+                    $\equiv$
+                    \medskip
+
+                    $\forall S~S'.~\mathbf{exec}~S~BIR\_prog~S'$\\
+                    $\implies \mathbf{P}~S \implies \mathbf{Q}~S'$
+                }
+
+                \bigskip
+                \bigskip
+
+                \uncover<2->{
+                    $\uncov<2,5>{\forall S~S'.~\mathbf{exec}~S~BIR\_prog~S'\eqdef}$\\
+                    $~~\uncov<5>{\forall B~B'.} (\uncov<3,5>{B' = \mathbf{BIR\_exec}~BIR\_prog~B}$\\
+                    $~~~\uncov<4,5>{\land~\mathbf{R}~S~B}) \uncov<4,5>{\implies \mathbf{R}~S'~B'}$
+                }
+            \end{center}
+        \end{column}
+        \begin{column}{.4\columnwidth}
+            \begin{center}
+                \begin{tikzpicture}[every text node part/.style={align=center}]
+                    \matrix [matrix of nodes,ampersand replacement=\&, column sep=25mm,row sep=10mm]{
+                        \node (a) [draw,label={[von={<1,5>}]90:$P$},shape=circle,von={<1,2,4,5>}] {$S$}; \&
+                        \node (b) [draw,label={[von={<1,5>}]90:$Q$},shape=circle,von={<1,2,4,5>}] {$S'$}; \\
+                        \node (c) [draw,label={[opacity=.2]-90:$P_{BIR}$},shape=circle,von={<3,4,5>}] {$B$}; \&
+                        \node (d) [draw,label={[opacity=.2]-90:$Q_{BIR}$},shape=circle,von={<3,4,5>}] {$B'$}; \\
+                    };
+                    \draw[->,thick,dashed,von={<2,5>}] (a) -- node[auto] {$formal~model$ \\ \small(a)} (b);
+                    \draw[->,thick,von={<1,2,3,5>}] (c) -- node[auto,below] {$BIR~program$ \\ \small(c)} (d);
+                    \draw[->,thick,von={<4,5>}] (a) -- node[auto] {\small (b)} (c);
+                    \draw[->,thick,von={<4,5>}] (d) -- node[auto] {\small (d)} (b);
+                \end{tikzpicture}
+            \end{center}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}<-11>{Proof overview}
+    \begin{columns}
+        \begin{column}{.6\columnwidth}
+            \only<9>{\raggedright
+                Notation: $\mathbf{P_{BIR}}~B~\eqdef~\mathbf{BIR\_eval}~P_{BIR}~B$
+                \bigskip
+
+                Where:
+                \begin{itemize}
+                    \item[-] $B$ is a BIR state % this is true enough for this presentation (it's an env)
+                    \item[-] $P_{BIR}$ is a BIR expression
+                \end{itemize}
+
+                \note{
+                    Explains why $Q_{BIR}~B~B'$ is impossible: \mathbf{BIR\_eval} has a fixed arity,
+                    where $P$ and $Q$ have been arbitrarily defined
+                }
+            }
+            \only<2-8,10->{
+                \begin{itemize}
+                    \item<2->[\alt<-10>{(a)}{1.}] \cov<3-9,11>{
+                        $\forall S~S'.~\mathbf{exec}~S~BIR\_prog~S'\eqdef$\\
+                        $~~\forall B~B'. (B' = \mathbf{BIR\_exec}~BIR\_prog~B$\\
+                        $~~~\land~\mathbf{R}~S~B) \implies \mathbf{R}~S'~B'$
+                    }
+                    \item<3->[\alt<-10>{--~}{2.}] \cov<4-9,11>{Relation between $S$ and $B$: $\mathbf{R}~S~B$}
+                    \item<4->[\alt<-10>{(b)}{3.}] \cov<5-9,11>{Injectivity: $\forall S.~\exists B.~\mathbf{R}~S~B$}
+                    \item<5->[\alt<-10>{(b)}{4.}] \cov<6-9,11>{$\forall B.~(\exists S.~\mathbf{R}~S~B \land \mathbf{P}~S) \implies \mathbf{P_{BIR}}~B$}
+                    \item<6->[\alt<-10>{(c)}{5.}] \cov<8-9,11>{\alt<-6>{
+                        % 6
+                        $\forall B~B'.~(\mathbf{P_{BIR}}~B \land B'=\mathbf{BIR\_exec}~BIR\_prog~B) \implies \mathbf{Q_{BIR}}~B'$
+                    }{
+                        % 7
+                        \htriple{P_{BIR}}{BIR~program}{Q_{BIR}}
+                    }}
+                    \item<8->[\alt<-10>{(d)}{6.}] \cov<11>{
+                        $\forall B'.~\mathbf{Q_{BIR}}~B' \implies$\\
+                        $(\forall S~S'~B.~\mathbf{P_{BIR}}~B \land \mathbf{R}~S~B~\land~\mathbf{R}~S'~B'$\\
+                        $\implies \mathbf{Q}~S~S')$
+                    }
+                \end{itemize}
+            }
+        \end{column}
+        \begin{column}{.4\columnwidth}
+            \begin{center}
+                \begin{tikzpicture}[every text node part/.style={align=center}]
+                    \matrix [matrix of nodes,ampersand replacement=\&, column sep=25mm,row sep=10mm]{
+                        \node (a) [draw,label={[von={<1,5,10>}]90:$P$},shape=circle,von={<1,2,3,4,5,10>}] {$S$}; \&
+                        \node (b) [draw,label={[von={<1,8-9,10>}]90:$Q$},shape=circle,von={<1,2,3,8-9,10>}] {$S'$}; \\
+                        \node (c) [draw,label={[von={<1,5,6-7,8-9,10>}]-90:$P_{BIR}$},shape=circle,von={<1,2,3,4,5,6-7,8-9,10>}] {$B$}; \&
+                        \node (d) [draw,label={[von={<1,6-7,8-9,10>}]-90:$Q_{BIR}$},shape=circle,von={<1,2,3,6-7,8-9,10>}] {$B'$}; \\
+                    };
+                    \draw[->,thick,dashed,von={<1,2,10>}] (a) -- node[auto] {$formal~model$ \\ \small(a)} (b);
+                    \draw[->,thick,von={<1,6-7,10>}] (c) -- node[auto,below] {$BIR~program$ \\ \small(c)} (d);
+                    \draw[->,thick,von={<1,3,4,5,10>}] (a) -- node[auto] {\small (b)} (c);
+                    \draw[->,thick,von={<1,3,8-9,10>}] (d) -- node[auto] {\small (d)} (b);
+                \end{tikzpicture}
+            \end{center}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Proof overview - automate?}
+    \begin{table}[]
+        \begin{tabular}{|l|c|c|}
+        \hline
+        Theorem & Length of proof (LoC) & Ease to automate \\
+        \hline
+        \hline
+        1. def $S \rightarrow S'$ \textit{\small (a)} & -- & \textit{Hard?} \textit{(lifter)} \\ \hline
+        2. def relation \textit{\small (R)} & -- & Easy \\ \hline
+        3. Injectivity & 10 & Very easy \\ \hline
+        4. $P \rightarrow P_{BIR}$ \textit{\small (b)} & 4 & Very easy \\ \hline
+        5. Hoare Triple \textit{\small (c)} & 151 & \textit{Medium?} *$^{2}$ \\ \hline
+        6. $Q_{BIR} \rightarrow S$ \textit{\small (d)} & 48 & Should be easy *$^{1}$ \\ \hline
+        \end{tabular}
+    \end{table}
+
+    \visible<2->{*$^{1}$ Need 2 simple tactics}
+
+    \visible<3->{*$^{2}$ Need smart tactics (multi-pass, goal aware)}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -608,6 +783,14 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Conclusion}
+
+\begin{frame}{Conclusion}
+    \begin{itemize}
+        \item Automation is feasible
+        \item Can reduce proof lengths and complexity
+        \item Trustworthy if proof-producing
+    \end{itemize}
+\end{frame}
 
 \begin{frame}
     \begin{center}
@@ -624,11 +807,114 @@
 
 \begin{frame}[allowframebreaks]{References}
     \nocite{*}
+    \setbeamertemplate{bibliography item}{\insertbiblabel}
+    \bibliographystyle{IEEEtran}
     \bibliography{ref-slides}
-    \bibliographystyle{plain}
 \end{frame}
 
-\begin{frame}{Other tools for software verification}
-    \textbf{TODO}: Jonas' MT, page 46 Section 2.5.4
+\begin{frame}{HolBA overview}
+    \begin{figure}
+        \centering
+        \includegraphics[height=4cm]{../figures/holba-overview.png}
+        \caption{Overview of the HolBA framework (lifter and WP tool)}
+    \end{figure}
 \end{frame}
+
+\begin{frame}{Fringe}
+    \begin{figure}
+        \centering
+        \includegraphics[height=5cm]{../figures/fringe.pdf}
+        \caption{Fringe of an ideally-shaped proof}
+    \end{figure}
+\end{frame}
+
+\begin{frame}[fragile]{Pipeline public interface}
+    \begin{lstlisting}[
+        language=Caml,
+        frame=tb,
+        backgroundcolor=\color{codebackcolour},
+        commentstyle=\color{codegreen},
+        keywordstyle=\color{magenta},
+        stringstyle=\color{codepurple}
+    ]
+val thm = prove_contract "cjmp"
+  cjmp_prog_def
+  (* Precondition *) (blabel_str "entry", btrue)
+  (* Postcondition *) (
+    [blabel_str "end"],
+    beq ((bden o bvarimm32) "y", bconst32 100)
+  )
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{BSL: BIR Simple Language}
+    \begin{lstlisting}[
+        language=Caml,
+        basicstyle=\footnotesize\ttfamily,
+        frame=tb,
+        backgroundcolor=\color{codebackcolour},
+        commentstyle=\color{codegreen},
+        keywordstyle=\color{magenta},
+        stringstyle=\color{codepurple}
+    ]
+bite (
+  borl [
+    ble ((bden o bvarimm64) "x", bconst64 100),
+    bnot (ble (bplus ((bden o bvarimm64) "y", bconst64 1),
+               bconst64 10)),
+    ble (bplus ((bden o bvarimm64) "x",
+                (bden o bvarimm64) "y"),
+         bconst64 20)
+  ],
+  bmult ((bden o bvarimm64) "x", bconst64 2),
+  bplus (bmult ((bden o bvarimm64) "x", bconst64 3),
+         bconst64 1)
+)
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}{BIR pretty-printer - disabled}
+    \begin{figure}
+        \centering
+        \includegraphics[height=5cm]{../figures/pp_ex_default_printing.png}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{BIR pretty-printer - enabled}
+    \begin{figure}
+        \centering
+        \includegraphics[height=5cm]{../figures/pp_ex_pretty_printing.png}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Exception pretty-printer and LogLib}
+    \begin{figure}
+        \centering
+        \includegraphics[height=5cm]{../figures/loglib-ppexn-ppterm.png}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Continuous Integration (CI) - tests}
+    \begin{figure}
+        \centering
+        \includegraphics[height=2cm]{figures/ci_tests.png}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Continuous Integration (CI) - static analysis}
+    \begin{figure}
+        \centering
+        \includegraphics[height=5cm]{figures/ci_static_analysis.png}
+    \end{figure}
+\end{frame}
+
+% \begin{frame}{Other work}
+%     \begin{itemize}
+%         \item \textbf{TODO}: Pictures of BSL
+%         \item \textbf{TODO}: Pictures of interface
+%         \item \textbf{TODO}: Pictures of CI
+%         \item \textbf{TODO}: Some code
+%     \end{itemize}
+% \end{frame}
+
 \end{document}

@@ -1,19 +1,36 @@
 
+@thesis{haglund_formal_2016,
+	title = {Formal verification of systems software},
+	abstract = {Embedded systems provide critical services in numerous applications requiring complex functionality. The complex functionality is often implemented by complex software stacks, such as {GNU}/Linux. Since complex software often contains bugs, some of which might be exploitable by attackers, embedded systems are exposed to security attacks. For instance, malicious software might be injected by exploiting a buffer overflow bug. In addition, the number of embedded systems connected to the Internet is increasing, enabling attackers to perform their attacks remotely and thus making embedded systems even more exposed to security attacks. 
+
+To address this issue, this thesis presents a software design and an implementation that host Linux with Internet support, such that only signed (non-malicious) Linux code is executed. The software design consists of three software components: A hypervisor and two guests, Linux and a monitor. These three software components can be executed on the development board {BeagleBone} Black, containing an {ARMv}7 {CPU} and a network interface controller ({NIC}). The hypervisor ensures that the three software components are securely separated and the monitor ensures that only signed Linux code is executed. The software design and the implementation take into account that Linux code might instruct the {CPU} to configure the {NIC} to access memory. This software design and implementation therefore ensure that the security service provided by the monitor is not breached by the {NIC}. In order to increase the reliability of this system, a pen-and-paper proof plan is presented with the purpose of guiding a formal proof of that only signed Linux code is executed in this system.
+
+The original software design and implementation of the hypervisor, provided by the {PROSPER} project, did not have {NIC} support. The software design and the implementation of the hypervisor therefore have been extended with a security layer that intercepts writes to {NIC} registers that are performed by the {CPU} when it is executing Linux. If a {NIC} register write cannot enable unsigned (malicious) Linux code to be executed, the hypervisor lets the {NIC} register write take effect, and otherwise blocks it. In addition, the original software design of the monitor, also provided by the {PROSPER} project, did not consider the operation of the {NIC}. The design of the monitor therefore has also been extended in order to prevent memory configurations of Linux that enable unsigned Linux code to be executed. The proof plan describes and motivates how it can be formally proved in a theorem prover that only signed Linux code is executed in this system. For the purposes of the proof plan, {HOL}4 models of the hardware have been identified and a formal model of the {NIC} has been specified in pseudocode.
+
+If the work presented in this thesis is fully implemented and combined with earlier work from the {PROSPER} project, a networked embedded system is acquired in which, with high reliability, no malicious Linux code is executed.},
+	pagetotal = {290},
+	institution = {{KTH} Royal Institute of Technology},
+	type = {Master's Thesis},
+	author = {Haglund, Jonas},
+	date = {2016-11-05},
+	langid = {english},
+	file = {Haglund - Formell verifiering av systemmjukvara.pdf:/home/t/h/tholac/Zotero/storage/87WQB87N/Haglund - Formell verifiering av systemmjukvara.pdf:application/pdf}
+}
+
 @unpublished{tuerk_interactive_nodate,
 	title = {Interactive Theorem Proving ({ITP}) Course},
 	url = {https://hol-theorem-prover.org/hol-course.pdf},
 	author = {Tuerk, Thomas},
 	langid = {english},
-	file = {Tuerk - Interactive Theorem Proving (ITP) Course.pdf:/home/totorigolo/Zotero/storage/2U73LUL7/Tuerk - Interactive Theorem Proving (ITP) Course.pdf:application/pdf}
+	file = {Tuerk - Interactive Theorem Proving (ITP) Course.pdf:/home/t/h/tholac/Zotero/storage/2U73LUL7/Tuerk - Interactive Theorem Proving (ITP) Course.pdf:application/pdf}
 }
 
 @article{miller_remote_2015,
 	title = {Remote Exploitation of an Unaltered Passenger Vehicle},
-	pages = {91},
 	author = {Miller, Dr Charlie and Valasek, Chris},
 	date = {2015-08-10},
 	langid = {english},
-	file = {Miller and Valasek - Remote Exploitation of an Unaltered Passenger Vehi.pdf:/home/totorigolo/Zotero/storage/AE5KUTHM/Miller and Valasek - Remote Exploitation of an Unaltered Passenger Vehi.pdf:application/pdf}
+	file = {Miller and Valasek - Remote Exploitation of an Unaltered Passenger Vehi.pdf:/home/t/h/tholac/Zotero/storage/AE5KUTHM/Miller and Valasek - Remote Exploitation of an Unaltered Passenger Vehi.pdf:application/pdf}
 }
 
 @article{greenberg_hackers_2015,
@@ -26,7 +43,7 @@
 	urldate = {2019-06-15},
 	date = {2015-07-21},
 	keywords = {Car Hacking, Chrysler, hacks, longreads, {WIRED} Classic},
-	file = {Snapshot:/home/totorigolo/Zotero/storage/I8IYE293/hackers-remotely-kill-jeep-highway.html:text/html}
+	file = {Snapshot:/home/t/h/tholac/Zotero/storage/I8IYE293/hackers-remotely-kill-jeep-highway.html:text/html}
 }
 
 @article{zetter_its_2014,
@@ -38,5 +55,19 @@
 	author = {Zetter, Kim},
 	urldate = {2019-06-15},
 	date = {2014-04-25},
-	file = {Snapshot:/home/totorigolo/Zotero/storage/2C4GDPJH/hospital-equipment-vulnerable.html:text/html}
+	file = {Snapshot:/home/t/h/tholac/Zotero/storage/2C4GDPJH/hospital-equipment-vulnerable.html:text/html}
+}
+
+@online{noauthor_what_nodate,
+	title = {What is Proved and What is Assumed {\textbar} {seL}4},
+	url = {https://sel4.systems/Info/FAQ/proof.pml},
+	urldate = {2019-06-18},
+	file = {What is Proved and What is Assumed | seL4:/home/t/h/tholac/Zotero/storage/9ZAG22QS/proof.html:text/html}
+}
+
+@online{noauthor_is_nodate,
+	title = {Is {seL}4 proven secure? {\textbar} {FAQ} {\textbar} {seL}4 docs},
+	url = {https://docs.sel4.systems/FrequentlyAskedQuestions#is-sel4-proven-secure},
+	urldate = {2019-06-18},
+	file = {Frequently Asked Questions on seL4 | seL4 docs:/home/t/h/tholac/Zotero/storage/E5IXTZ57/FrequentlyAskedQuestions.html:text/html}
 }
