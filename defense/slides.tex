@@ -293,50 +293,42 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Formal verification with HOL4}
+\subsection{Formal verification}
 
 \begin{frame}{System software verification}
-    \textbf{Objective}: show absence of errors (in modelisation) of real systems
+    \textbf{Objective}: show absence of errors in modelisation of real systems
     \bigskip
-
-    % \textbf{TODO: Ideallement -> implémentation de systems concrets}
+    \pause
 
     \begin{columns}[T]
         \begin{column}{0.5\textwidth}
-            \visible<2->{
-                \textbf{Formal proof \phantom{long long long title}}
+            \textbf{Formal proof \phantom{long long long title}}
 
-                machine checkable proofs using rigorous semantic
-                \phantom{needs 3 lines to align}
-            }
+            machine checkable proofs using rigorous semantic
+            \phantom{needs 3 lines to align}
 
             \bigskip
-            \visible<4->{
-                Use small reliable kernels \\
-                $\rightarrow$ produced theorems are trustworthy
-            }
+            Use small reliable kernels \\
+            $\rightarrow$ produced theorems are trustworthy
 
             \bigskip
-            \visible<6->{\textit{Examples}: HOL4, Coq, Isabelle}
+            \textit{Examples}: HOL4, Coq, Isabelle
 
             % From ITP course:
             \note{However complicated and potentially buggy your code is, if a value of type theorem is produced, it has been created through the small trusted interface. Therefore the statement really holds.}
         \end{column}
+        \pause
         \begin{column}{0.5\textwidth}
-            \visible<3->{
                 \textbf{Non proof-producing verification}
 
                 specialized programs or procedures that check a given property
-            }
 
             \bigskip
-            \visible<5->{
-                Classic bug-prone software\\
-                $\rightarrow$ need tests, less trustworthy \phantom{one more line}
-            }
+            Classic bug-prone software\\
+            $\rightarrow$ need tests, less trustworthy \phantom{one more line}
 
             \bigskip
-            \visible<7->{SMT solvers, model checkers}
+            SMT solvers, model checkers
         \end{column}
     \end{columns}
 
@@ -468,8 +460,8 @@
     \end{center}
 \end{frame}
 
-\begin{frame}{NIC: What the verification looks like \cite{haglund_formal_2016}}
-    % \only<8->{\setbeamercovered{transparent}}
+\begin{frame}<-7>{NIC: What the verification looks like \cite{haglund_formal_2016}}
+    \only<8->{\setbeamercovered{transparent}}
 
     \uncover<2->{
         Low-level lemmas:
@@ -524,8 +516,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% \section{Automatic contract-based verification pipeline}
-\section{Contract-based verification}
+\section{Automatic contract-based verification}
 
 \subsection{Pipeline}
 
@@ -591,7 +582,7 @@
                 \setlength\itemsep{1em}
                 \item<2-> SMT solvers don't produce proofs
                 \item<3-> bir2bool isn't proof-producing
-                \item<4-> The BIR model may be wrong
+                % \item<4-> The BIR model may be wrong
             \end{itemize}
         \end{column}
         \begin{column}{.6\textwidth}
@@ -599,7 +590,7 @@
                 \includegraphics<1>[height=.8\textheight]{figures/pipeline-all.pdf}
                 \includegraphics<2>[height=.8\textheight]{figures/pipeline-all-trustful-1.pdf}
                 \includegraphics<3>[height=.8\textheight]{figures/pipeline-all-trustful-2.pdf}
-                \includegraphics<4>[height=.8\textheight]{figures/pipeline-all-trustful-3.pdf}
+                % \includegraphics<4>[height=.8\textheight]{figures/pipeline-all-trustful-3.pdf}
             \end{center}
         \end{column}
     \end{columns}
@@ -702,11 +693,11 @@
                 Notation: $\mathbf{P_{BIR}}~B~\eqdef~\mathbf{BIR\_eval}~P_{BIR}~B$
                 \bigskip
 
-                Where:
-                \begin{itemize}
-                    \item[-] $B$ is a BIR state % this is true enough for this presentation (it's an env)
-                    \item[-] $P_{BIR}$ is a BIR expression
-                \end{itemize}
+                % Where:
+                % \begin{itemize}
+                %     \item[-] $B$ is a BIR state % this is true enough for this presentation (it's an env)
+                %     \item[-] $P_{BIR}$ is a BIR expression
+                % \end{itemize}
 
                 \note{
                     Explains why $Q_{BIR}~B~B'$ is impossible: \mathbf{BIR\_eval} has a fixed arity,
